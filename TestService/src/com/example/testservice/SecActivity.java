@@ -100,8 +100,9 @@ TextPaint tp;
 		mtextview2.append("版本:           " + info.getversion() + "\n");
 		mtextview2.append("IMEI:          " + info.getIMEI() + "\n");
 		mtextview2.append("IMSI:          " + info.getIMSI() + "\n");
-		
-		mtextview2.append("本机IP地址:  " + info.getlocalIp() );
+		mtextview2.append("本机IP地址:  " + info.getlocalIp()+ "\n" );
+		mtextview2.append("内存占用率:  " + info.getMemRate() + "\n");
+		mtextview2.append("CPU使用率:  " + info.getcpuRate() + "\n");
 
 		// 基站信息
 	
@@ -116,10 +117,10 @@ TextPaint tp;
 		mtextview4.append("RSRP:  " + info.getRSRP() + "\n");
 		mtextview4.append("RSRQ:  " + info.getRSRQ() + "\n");
 		mtextview4.append("RSSI:  " + info.getRSSI() + "\n");
-		mtextview4.append("SNR:  " + info.getSNR() );
+		mtextview4.append("SNR:  " + info.getSNR() + "\n");
 		// 业务异常信息
 	
-		mtextview5.append("业务异常信息:");
+		mtextview5.append("应用业务信息:");
 
 		mtextview6.append("启动时间:  " + info.gettime() + "\n");
 		mtextview6.append("退出时间:  " + info.getextime() + "\n");
@@ -129,10 +130,8 @@ TextPaint tp;
 		mtextview6.append("PID:  " + info.getpid() + "\n");
 		mtextview6.append("进程数量:  " + info.getpidNumber() + "\n");
 		mtextview6.append("GID:  " + info.getgid() + "\n");
-		mtextview6.append("内存占用率:  " + info.getMemRate() + "\n");
-		mtextview6.append("CPU使用率:  " + info.getcpuRate() + "\n");
 		mtextview6.append("发送字节量:  " + info.getTxByte() + "\n");
-		mtextview6.append("接收字节量:  " + info.getRxByte() );
+		mtextview6.append("接收字节量:  " + info.getRxByte()+ "\n" );
 
 	}
 
