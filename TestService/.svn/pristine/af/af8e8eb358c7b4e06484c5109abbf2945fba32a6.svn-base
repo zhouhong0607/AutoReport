@@ -1,0 +1,850 @@
+package com.example.testservice;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Service;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.sql.Array;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.util.InetAddressUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.protocol.HTTP;
+
+import android.content.Intent;
+import android.os.Binder;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.TrafficStats;
+import android.util.Log;
+import android.widget.Toast;
+
+public class TestService extends Service
+{
+	long max_rx = 0;
+	long tx1 = 0;
+	long rx1 = 0;
+	public static final String MY_PKG_NAME = "com.UCMobile";// UC浏览器包名
+	// public static final String TAG = "测试";// 日志输出
+	// public static final long TXJudegeNumber = 5;// 发送判断标准，1KB
+	public static final long RXJudegeNumber = 51200;// 接收判断标准，20KB
+
+	boolean Browserun = false;// 浏览器运行判断
+	boolean assit = false;// 辅助判断参数
+	boolean Browserquit = false;// 浏览器退出判断
+
+	MyQueue txqueue = new MyQueue(20);// 构建发送接受队列，时间长度10秒
+	MyQueue rxqueue = new MyQueue(20);// 0.1秒间隔 ，20秒的数据
+
+	int count = 0;// 应用运行时间记录
+	int record = 0;// 记录数据时间
+	int upload_time = 0;// 周期上传时间
+
+	String pkgname = "";
+
+	String data = "";
+	// 文件记录
+	String filePath = "/sdcard/Test/";
+	String drxfileName = "drx.txt";
+
+	ActivityManager am = null;
+	ConnectivityManager cm = null;
+	TelephonyManager tm = null;
+
+	// 信息提取
+	Info addInfo = new Info();// 每次添加的异常信息单元
+
+	String pid = "";// 多个pid加入到一个字符串中
+	int pidNum = 0;// pid计数,每次进入清零
+	int uid = 0;
+	String RSRP = "";
+	String RSRQ = "";
+	String RSSI = "";
+	String sigStr = "";
+	String RSSNR = "";// 新@@@@@@@@@
+	// String CQI = "";// 新@@@@@@@@@
+	String LaunTime;
+	String exitTime;
+
+	String AppName;
+	String add_uid;
+	String netType;
+	String add_pid;
+	String add_pid_num;
+
+	@Override
+	public void onCreate()
+	{
+		super.onCreate();
+		cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+		am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+		/******************* 信号强度监听 **********************/
+
+		PhoneStateListener MyPhoneListener = new PhoneStateListener()
+		{
+			public void onSignalStrengthsChanged(SignalStrength signalStrength)
+			{
+				String singalInformation = signalStrength.toString();
+				String parts[] = singalInformation.split(" ");
+				sigStr = parts[8];
+				RSSI = String.valueOf(-113 + 2 * Integer.parseInt(parts[8]));
+				RSRP = parts[9];
+				RSRQ = parts[10];
+
+				RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
+
+				// RSSI=String.valueOf(Integer.valueOf(RSRP)+17-Integer.valueOf(RSRQ));
+				// CQI = parts[12];// 新@@@@@@@@@
+
+			}
+		};
+
+		tm.listen(MyPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+		/******************* 信号强度监听 **********************/
+
+		new Timer().schedule(new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				upload_time++;
+				/********************自动上传****************************/
+				if (upload_time % 60 == 0)// 60秒上传一次
+				{
+					if (MyApp.infolist.size() != 0)// 有数据则上传
+					{
+						new Thread(new Runnable()
+						{
+
+							@Override
+							public void run()
+							{
+								// TODO Auto-generated method stub
+								for (int i = 0; i < MyApp.infolist.size(); i++)
+								{
+									if (MyApp.infolist.get(i).getupFlag().equals("0"))// 检测没上传过的
+									{
+										if (upload_data(MyApp.infolist.get(i)))
+											MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为1
+									}
+								}
+
+							}
+						}).start();
+
+					}
+				}
+				/********************自动上传****************************/
+
+
+				if (getNetWorkType())// 有网络情况下再进行如下操作
+				{
+					// 对浏览器状态监视
+					// Log.i("AAA", AppList.FindAppName(getAppName()));
+					if (AppList.FindAppName(getAppName()) != null)// 查找当前应用是否在Applist
+					{
+						// 第一次进入应用获取pid与uid
+
+						Browserun = true;
+						if (assit == false)// 进入应用的时刻
+						{
+							pid = "";// 每次进入清零
+							pidNum = 0;// 每次进入清零
+
+							LaunTime = getTime();
+							AppName = AppList.CurAppName;
+							add_uid = String.valueOf(uid);
+
+							getpid();// 根据uid获取pid
+							add_pid = pid;
+							add_pid_num = String.valueOf(pidNum);
+
+							handler.sendEmptyMessage(2);
+							Log.i("AAA", "应用启动");
+						}
+					} else
+					{
+						Browserun = false;
+					}
+
+					if (Browserun == false && assit == true)
+					{
+						Browserquit = true;
+						Log.i("AAA", "应用退出");
+						exitTime = getTime();
+						handler.sendEmptyMessage(3);
+					} else
+					{
+						Browserquit = false;
+					}
+
+					assit = Browserun;
+
+					if (Browserun)
+					{
+						// 流量统计
+						count++;
+
+						if (count > 4 && count < 25)// 5~24 20个数据
+						{
+							// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 接收RX
+							long rx = TrafficStats.getUidRxBytes(uid);
+							long drx = rx - rx1;
+							rx1 = rx;
+							// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 发送TX
+							long tx = TrafficStats.getUidTxBytes(uid);
+							long dtx = tx - tx1;
+							tx1 = tx;
+
+							if (count == 5)
+							{
+								drx = 0;
+								dtx = 0;
+							}
+							// tx，rx数据插入
+							// if (dtx>3000&&drx<3000)
+							// {
+							// handler.sendEmptyMessage(1);// 异常出现
+							// Log.i("AAA", "异常出现");
+							// record++;
+							// }
+
+							if (max_rx < drx)
+								max_rx = drx;
+
+							rxqueue.insert(drx);
+							// Log.i("AAA", String.valueOf(drx));
+							txqueue.insert(dtx);
+							record++;
+						}
+
+					} else if (Browserquit)// 浏览器退出时候进行判断，并清空两个队列，以及一些全局变量
+					{
+
+						rxqueue.calculate_expectation();// 计算期望rx
+						rxqueue.calculate_variance();// 计算方差tx
+
+						txqueue.calculate_expectation();// 计算期望rx
+						txqueue.calculate_variance();// 计算方差tx
+
+				
+						if (max_rx < 10000 && record > 5)// 异常判决
+						{
+
+							Log.i("AAA", "可疑异常出现");
+							getInfo();
+							new Thread(new Runnable()// 进行一次http二次测试
+							{
+								@Override
+								public void run()
+								{
+									Log.i("AAA", "开始http测试");
+									if (!upload_data(new Info()))// http测试不成功
+									{
+										MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
+										Log.i("AAA", "异常出现");
+									} else
+									{
+										Log.i("AAA", "不是异常");
+										MyApp.infolist.remove(MyApp.infolist.size() - 1);// 测试通过
+																							// ，移除这条非异常数据
+									}
+								}
+							}).start();
+						} else
+						{
+							Log.i("AAA", "初次判决不是异常");
+						}
+/******************************文件操作***********************/
+						// if (MyApp.infolist.size() > 0)
+						// {
+						// // 记录到文件
+						// String sdrx = "\r\n" + "时间:" +
+						// MyApp.infolist.get(MyApp.infolist.size() -
+						// 1).gettime()
+						// + "\r\n" + "TX数据:" + txqueue.get_data() + "\r\n" +
+						// "TX期望:" + txqueue.expectation
+						// + "\r\n" + "TX方差:" + txqueue.variance + "\r\n" +
+						// "TX最大值:" + txqueue.get_maxValue()
+						// + "\r\n" + "RX数据:" + rxqueue.get_data() + "\r\n" +
+						// "RX期望:" + rxqueue.expectation
+						// + "\r\n" + "RX方差:" + rxqueue.variance + "\r\n" +
+						// "RX最大值:" + rxqueue.get_maxValue()
+						// + "\r\n" + "RSRP:" +
+						// MyApp.infolist.get(MyApp.infolist.size() -
+						// 1).getRSRP()
+						// + "\r\n" + "RSRQ:" +
+						// MyApp.infolist.get(MyApp.infolist.size() -
+						// 1).getRSRQ()
+						// + /*
+						// * "\r\n" + "CQI:" +
+						// * MyApp.infolist.get(MyApp.infolist.
+						// * size() - 1).getCQI() +
+						// */"\r\n" + "SNR:" +
+						// MyApp.infolist.get(MyApp.infolist.size() -
+						// 1).getSNR()
+						// + "\r\n"
+						// + "\r\n" + "网络类型:" +
+						// MyApp.infolist.get(MyApp.infolist.size() -
+						// 1).getNetType();
+						// writeTxtToFile(sdrx, filePath, drxfileName);
+						// }
+						/******************************文件操作***********************/
+						// 数据清零
+						rx1 = 0;
+						tx1 = 0;
+						count = 0;
+						record = 0;
+						rxqueue.clear();
+						txqueue.clear();
+						max_rx = 0;
+
+					}
+
+				} else
+				// 没网络情况把参数重置
+				{
+					// 数据清零
+					rx1 = 0;
+					tx1 = 0;
+					count = 0;
+					record = 0;
+					rxqueue.clear();
+					txqueue.clear();
+					max_rx = 0;
+				}
+
+			}
+		}, 0, 1000);
+
+	}
+
+	public boolean upload_data(Info info)
+	{
+		String urlStr = "http://www.mengqi.win/LoginServlet";
+		HttpPost request = new HttpPost(urlStr);
+		BasicHttpParams httpParams = new BasicHttpParams();
+		// 设置请求超时
+		int timeoutConnection = 500 ;//* 1000
+		HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
+		
+		// // 设置响应超时
+		int timeoutSocket = 500 ;   //500临界点
+		HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
+
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+		// 上传信息加入
+		params.add(new BasicNameValuePair("launtime", info.gettime()));
+		params.add(new BasicNameValuePair("exittime", info.getextime()));
+		params.add(new BasicNameValuePair("usetime", info.getusetime()));
+		params.add(new BasicNameValuePair("brand", info.getbrand()));
+		params.add(new BasicNameValuePair("type", info.gettype()));
+		params.add(new BasicNameValuePair("version", info.getversion()));
+		params.add(new BasicNameValuePair("IMEI", info.getIMEI()));
+		params.add(new BasicNameValuePair("IMSI", info.getIMSI()));
+		params.add(new BasicNameValuePair("corporation", info.getcorporation()));
+		params.add(new BasicNameValuePair("LAC", info.getLAC()));
+		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id()));
+		params.add(new BasicNameValuePair("RSRP", info.getRSRP()));
+		params.add(new BasicNameValuePair("RSSI", info.getRSSI()));
+		params.add(new BasicNameValuePair("RSRQ", info.getRSRQ()));
+		params.add(new BasicNameValuePair("cpuRate", info.getcpuRate()));
+		params.add(new BasicNameValuePair("localIp", info.getlocalIp()));
+		params.add(new BasicNameValuePair("AppName", info.getAppName()));
+		params.add(new BasicNameValuePair("uid", info.getuid()));
+		params.add(new BasicNameValuePair("pid", info.getpid()));
+		params.add(new BasicNameValuePair("gid", info.getgid()));
+		params.add(new BasicNameValuePair("pidNumber", info.getpidNumber()));
+		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
+		params.add(new BasicNameValuePair("TxByte", info.getTxByte()));
+		params.add(new BasicNameValuePair("RxByte", info.getRxByte()));
+		params.add(new BasicNameValuePair("NetType", info.getNetType()));
+		params.add(new BasicNameValuePair("RSSNR", info.getSNR()));
+		params.add(new BasicNameValuePair("Flag", info.getFlag()));
+
+		try
+		{
+			request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			HttpClient httpclient = new DefaultHttpClient(httpParams);
+
+			HttpResponse response = httpclient.execute(request);
+
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+			{
+				Log.i("AAA", "上传成功");
+				return true;
+
+			} else
+			{
+				Log.i("AAA", "上传失败");
+				return false;
+
+			}
+		} catch (SocketTimeoutException e)
+		{
+			// TODO: handle exception
+			Log.i("AAA", "响应超时");
+			return false;
+		} catch (ConnectTimeoutException e)
+		{
+			Log.i("AAA", "连接超时");
+			return false;
+		}
+
+		catch (Exception e)
+		{
+			// TODO: handle exception
+			e.printStackTrace();
+			Log.i("AAA", "上传失败");
+			return false;
+		}
+	}
+
+	// 判决是否是LTE
+	public boolean getNetWorkType()// 移动网络返回true
+	{
+
+//		return true;
+		/*********** 对网络类型监视 ***************/
+		if (tm.getSimOperatorName().equals("CMCC"))
+		{
+			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+			if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+			{
+
+				netType = networkInfo.getSubtypeName();
+				// Log.i("AAA", "网络类型"+netType);
+				return true;
+
+			} else
+			{
+				// Log.i("AAA", "没有网络或不是移动网络");
+				netType = null;
+				return false;
+				// return false;
+			}
+		} else
+		{
+			Log.i("AAA", "不是CMCC");
+			return false;
+		}
+		/*********** 对网络类型监视 ***************/
+
+	}
+
+	public String getTime()
+	{
+		// 获取时间*****************
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
+
+		String str = formatter.format(curDate);
+
+		return str;
+		// 获取时间*****************
+	}
+
+	// 余下信息提取与加入到异常信息向量
+	public void getInfo()// 获取信息
+	{
+		Info updateinfo = new Info();
+		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();
+
+		updateinfo.settime(LaunTime);
+		updateinfo.setextime(exitTime);
+		updateinfo.setusetime(String.valueOf(count));
+		updateinfo.setAppName(AppName);
+		updateinfo.setuid(add_uid);
+		updateinfo.setpid(add_pid);
+		updateinfo.setgid(add_uid);// gid与uid相同
+		updateinfo.setpidNumber(add_pid_num);
+		updateinfo.setlocalIp(getlocalIP());// 获取本机IP地址
+		updateinfo.setbrand(android.os.Build.BRAND);
+		updateinfo.settype(android.os.Build.MODEL);
+		updateinfo.setversion(android.os.Build.VERSION.RELEASE);
+		updateinfo.setIMEI(tm.getDeviceId());
+		updateinfo.setIMSI(tm.getSubscriberId());
+
+		updateinfo.setcorporation(tm.getSimOperatorName());
+		updateinfo.setLAC(String.valueOf(location.getLac()));
+		updateinfo.setCell_Id(String.valueOf(location.getCid()));
+
+		updateinfo.setRSRP(RSRP);
+		updateinfo.setRSRQ(RSRQ);
+		updateinfo.setSNR(RSSNR);
+		updateinfo.setRSSI(RSSI);
+		// addInfo.setCQI(CQI);
+		updateinfo.setMemRate(getMemRate());// 内存占用率
+		updateinfo.setNetType(netType);// 网络类型
+		updateinfo.setTxByte(txqueue.get_data());// 设置发送字节数据
+		updateinfo.setRxByte(rxqueue.get_data());// 接收字节量
+		// addInfo.setcpuName(getCpuName());
+		// addInfo.setcpuMaxFreq(getMaxCpuFreq());
+		// addInfo.setcpuMinFreq(getMinCpuFreq());
+		// addInfo.setcpuCurFreq(getCurCpuFreq());
+		updateinfo.setcpuRate(getCpuRate());
+
+		MyApp.infolist.add(updateinfo);
+
+		Log.i("AAA", "异常信息加入成功");
+
+	}
+
+	/**
+	 * 获取手机内存占用率
+	 *
+	 * @return
+	 */
+	private String getMemRate()
+	{
+
+		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+		am.getMemoryInfo(mi);
+		return String.valueOf((mi.totalMem - mi.availMem) * 100 / mi.totalMem) + "%";// 内存使用率
+	}
+
+	/**
+	 * 获取手机CPU占用率
+	 *
+	 * @return
+	 */
+	public static String getCpuRate()
+	{ // 获取系统总CPU使用时间
+		String[] cpuInfos = null;
+		try
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/stat")), 1000);
+			String load = reader.readLine();
+			reader.close();
+			cpuInfos = load.split(" ");
+		} catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+
+		long usedCpu = Long.parseLong(cpuInfos[2]) + Long.parseLong(cpuInfos[3]) + Long.parseLong(cpuInfos[4]);
+		long totalCpu = Long.parseLong(cpuInfos[2]) + Long.parseLong(cpuInfos[3]) + Long.parseLong(cpuInfos[4])
+				+ Long.parseLong(cpuInfos[5]);
+
+		return String.valueOf(usedCpu * 100 / totalCpu) + "%";
+	}
+
+	// *********************binder
+	class UpdateBinder extends Binder
+	{
+		public void sendUpdateBro()// 一旦接收到活动的启动，发送更新广播
+		{
+			Intent intent = new Intent("UPDATE_ACTION");
+			sendBroadcast(intent);
+		}
+
+	}
+
+	private UpdateBinder myUpdateBinder = new UpdateBinder();
+
+	@Override
+	public IBinder onBind(Intent intent)
+	{
+		return myUpdateBinder;
+	}
+
+	// *********************binder
+	Handler handler = new Handler()
+	{
+		@Override
+		public void handleMessage(Message msg)
+		{
+			int what = msg.what;
+			switch (what)
+			{
+			case 1:
+				showToast(1);
+				break;
+			case 2:
+				showToast(2);
+				break;
+			case 3:
+				showToast(3);
+				break;
+			default:
+				break;
+			}
+			super.handleMessage(msg);
+		}
+	};
+
+	public void showToast(int i)
+	{
+		Toast toast;
+
+		switch (i)
+		{
+		case 1:
+			toast = Toast.makeText(getApplicationContext(), "异常出现", Toast.LENGTH_LONG);
+			toast.show();
+			break;
+		case 2:
+			toast = Toast.makeText(getApplicationContext(), "应用启动", Toast.LENGTH_LONG);
+			toast.show();
+			break;
+		case 3:
+			toast = Toast.makeText(getApplicationContext(), "应用退出", Toast.LENGTH_SHORT);
+			toast.show();
+			break;
+
+		default:
+			break;
+		}
+
+	}
+
+	// 获取当前应用名称
+	public String getAppName()
+	{
+		PackageManager pkgmanager = null;
+		ApplicationInfo appinfo = null;
+		String appname = "";
+		// if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+		// final Set<String> activePackages = new HashSet<String>();
+		// final List<ActivityManager.RunningAppProcessInfo> processInfos =
+		// am.getRunningAppProcesses();
+		// for (ActivityManager.RunningAppProcessInfo processInfo :
+		// processInfos)
+		// {
+		// if (processInfo.importance ==
+		// ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND)
+		// {
+		// activePackages.addAll(Arrays.asList(processInfo.pkgList));
+		// }
+		// }
+		// String[] pkgs = activePackages.toArray(new
+		// String[activePackages.size()]);
+		// Log.i("AAA", String.valueOf(pkgs.length));
+		// if (pkgs != null)
+		// {
+		// for (String pkg : pkgs)
+		// {
+		// try
+		// {
+		// Log.i("AAA", pkg);
+		// pkgmanager = (PackageManager)
+		// getApplicationContext().getPackageManager();
+		// appinfo = pkgmanager.getApplicationInfo(pkg, 0);
+		// } catch (PackageManager.NameNotFoundException e)
+		//
+		// {
+		// appinfo = null;
+		// // TODO: handle exception
+		// }
+		// appname = (String) pkgmanager.getApplicationLabel(appinfo);
+		//
+		// if (AppList.FindAppName(appname) != null)
+		// {
+		// pkgname = pkg;
+		// uid = appinfo.uid;
+		// return appname;
+		// }
+		//
+		// }
+		//
+		// }
+		//
+		// return null;
+
+		// } else {
+		RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
+		// 包名
+		pkgname = info1.topActivity.getPackageName();
+
+		// Log.i("AAA", "包名："+pkgname);
+
+		try
+		{
+			pkgmanager = (PackageManager) getApplicationContext().getPackageManager();
+			appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
+			uid = appinfo.uid;
+		} catch (PackageManager.NameNotFoundException e)
+
+		{
+			appinfo = null;
+			// TODO: handle exception
+		}
+
+		appname = (String) pkgmanager.getApplicationLabel(appinfo);
+		// Log.i("AAA", appname);
+		return appname;
+	}
+
+	public void getpid()
+	{
+		// 获取所有正在运行的app
+		List<RunningAppProcessInfo> appProcesses = am.getRunningAppProcesses();
+		// 遍历app，获取应用名称或者包名
+		for (RunningAppProcessInfo appProcess : appProcesses)
+		{
+			if (appProcess.uid == uid)// 根据uid获取pid
+			{
+				if (appProcess != appProcesses.get(appProcesses.size() - 1))
+				{
+					pid += String.valueOf(appProcess.pid) + ",";
+					pidNum++;
+					// Log.i("AAA", "pid:" + pid);
+				} else
+				{
+					pid += String.valueOf(appProcess.pid);
+					pidNum++;
+				}
+			}
+		}
+
+	}
+
+	public String getlocalIP()
+	{
+		try
+		{
+			for (Enumeration<NetworkInterface> mEnumeration = NetworkInterface.getNetworkInterfaces(); mEnumeration
+					.hasMoreElements();)
+			{
+				NetworkInterface intf = mEnumeration.nextElement();
+				for (Enumeration<InetAddress> enumIPAddr = intf.getInetAddresses(); enumIPAddr.hasMoreElements();)
+				{
+					InetAddress inetAddress = enumIPAddr.nextElement();
+					// 如果不是回环地址
+					if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address)
+					{
+						// 直接返回本地IP地址
+						// Log.i("AAA", "提取IP成功");
+						return inetAddress.getHostAddress().toString();
+
+					}
+				}
+			}
+		} catch (SocketException ex)
+		{
+			Log.e("AAA", ex.toString());
+		}
+		return null;
+
+	}
+
+	/**
+	 * 文件读写
+	 *
+	 * @return
+	 */
+
+	// 数据记录dtx.text, drx.text
+	public void writeTxtToFile(String strcontent, String filePath, String fileName)
+	{
+		// 生成文件夹之后，再生成文件，不然会出错
+		makeFilePath(filePath, fileName);
+
+		String strFilePath = filePath + fileName;
+		// 每次写入时，都换行写
+		String strContent = strcontent + "\r\n";
+		try
+		{
+			File file = new File(strFilePath);
+			if (!file.exists())
+			{
+				Log.d("TestFile", "Create the file:" + strFilePath);
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+			}
+
+			RandomAccessFile raf = new RandomAccessFile(file, "rwd");
+			raf.seek(file.length());
+			raf.write(strContent.getBytes());
+
+			raf.close();
+		} catch (Exception e)
+		{
+			Log.e("TestFile", "Error on write File:" + e);
+		}
+	}
+
+	// 生成文件
+	public File makeFilePath(String filePath, String fileName)
+	{
+		File file = null;
+		makeRootDirectory(filePath);
+		try
+		{
+			file = new File(filePath + fileName);
+			if (!file.exists())
+			{
+				file.createNewFile();
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return file;
+	}
+
+	// 生成文件夹
+	public static void makeRootDirectory(String filePath)
+	{
+		File file = null;
+		try
+		{
+			file = new File(filePath);
+			if (!file.exists())
+			{
+				file.mkdir();
+			}
+		} catch (Exception e)
+		{
+			Log.i("error:", e + "");
+		}
+
+	}
+
+}
