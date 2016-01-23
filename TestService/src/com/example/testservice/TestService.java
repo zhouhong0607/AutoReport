@@ -4,6 +4,8 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -26,8 +29,10 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -43,6 +48,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
@@ -66,10 +72,10 @@ public class TestService extends Service
 	long max_rx = 0;
 	long tx1 = 0;
 	long rx1 = 0;
-	//	public static final String MY_PKG_NAME = "com.UCMobile";// UC浏览器包名
+	// public static final String MY_PKG_NAME = "com.UCMobile";// UC浏览器包名
 	// public static final String TAG = "测试";// 日志输出
 	// public static final long TXJudegeNumber = 5;// 发送判断标准，1KB
-	//	public static final long RXJudegeNumber = 51200;// 接收判断标准，20KB
+	// public static final long RXJudegeNumber = 51200;// 接收判断标准，20KB
 
 	boolean Browserun = false;// 浏览器运行判断
 	boolean assit = false;// 辅助判断参数
@@ -77,7 +83,7 @@ public class TestService extends Service
 
 	MyQueue txqueue_laun = new MyQueue(30);// 构建发送接受队列，时间长度10秒
 	MyQueue rxqueue_laun = new MyQueue(30);// 0.1秒间隔 ，20秒的数据
-	
+
 	MyQueue txqueue_exit = new MyQueue(30);// 构建发送接受队列，时间长度10秒
 	MyQueue rxqueue_exit = new MyQueue(30);// 0.1秒间隔 ，20秒的数据
 
@@ -248,22 +254,21 @@ public class TestService extends Service
 							drx = 0;
 							dtx = 0;
 						}
-						
-						if(count<31)  //30个数据
+
+						if (count < 31) // 30个数据
 						{
-							
-						if (max_rx < drx)
-							max_rx = drx;
-						rxqueue_laun.insert(drx);
-						// Log.i("AAA", String.valueOf(drx));
-						txqueue_laun.insert(dtx);
-						record++;
+
+							if (max_rx < drx)
+								max_rx = drx;
+							rxqueue_laun.insert(drx);
+							// Log.i("AAA", String.valueOf(drx));
+							txqueue_laun.insert(dtx);
+							record++;
 						}
-						
+
 						rxqueue_exit.insert(drx);
 						txqueue_exit.insert(dtx);
-						
-						
+
 						if (count == 30)// 30秒进行第一个 判断
 						{
 							rxqueue_laun.calculate_expectation();// 计算期望rx
@@ -272,7 +277,7 @@ public class TestService extends Service
 							txqueue_laun.calculate_expectation();// 计算期望rx
 							txqueue_laun.calculate_variance();// 计算方差tx
 
-							if (max_rx < 10000 )// 异常判决
+							if (max_rx < 10000)// 异常判决
 							{
 
 								Log.i("AAA", "可疑异常出现");
@@ -311,44 +316,43 @@ public class TestService extends Service
 							txqueue_laun.calculate_expectation();// 计算期望rx
 							txqueue_laun.calculate_variance();// 计算方差tx
 
-							Log.i("AAA", "30秒内最大值"+max_rx);
-							
-							if (max_rx < 10000 )// 异常判决
+							Log.i("AAA", "30秒内最大值" + max_rx);
+
+							if (max_rx < 10000)// 异常判决
 							{
-								isAbnormal=true;
+								isAbnormal = true;
 								Log.i("AAA", "30秒内异常出现");
 
-								
 							} else
 							{
 								Log.i("AAA", "30秒内判决不是异常");
 							}
 						}
-						
-					if(count>35)//进行第二次 测试
+
+						if (count > 35)// 进行第二次 测试
 						{
-							new Thread(new Runnable() 
+							new Thread(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									Log.i("AAA", "开始http测试");
+									if (!upload_data(new Info()))// http测试不成功
 									{
-										@Override
-										public void run()
-										{
-											Log.i("AAA", "开始http测试");
-											if (!upload_data(new Info()))// http测试不成功
-											{
-												getInfo(true);//参数true 为 第一次 异常，  
-												MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
-												Log.i("AAA", "第二次异常出现");
-											} else
-											{
-												Log.i("AAA", "第二次不是异常");
-	
-											}
-										}
-									}).start();
+										getInfo(true);// 参数true 为 第一次 异常，
+										MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
+										Log.i("AAA", "第二次异常出现");
+									} else
+									{
+										Log.i("AAA", "第二次不是异常");
+
+									}
+								}
+							}).start();
 						}
-						if (isAbnormal)//第一次判决异常
+						if (isAbnormal)// 第一次判决异常
 						{
-							getInfo(false);//参数false为 第二次 异常，  
+							getInfo(false);// 参数false为 第二次 异常，
 							MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
 							// MyApp.infolist.remove(MyApp.infolist.size() -
 							// 1);// 测试通过
@@ -427,6 +431,9 @@ public class TestService extends Service
 
 	public boolean upload_data(Info info)
 	{
+		
+		
+		
 		String urlStr = "http://www.mengqi.win/LoginServlet";
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
@@ -522,18 +529,18 @@ public class TestService extends Service
 				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
 				{
 					netType = networkInfo.getSubtypeName();
-//					Log.i("AAA", "网络类型" + netType);
+					// Log.i("AAA", "网络类型" + netType);
 					return true;
 				} else
 				{
-//					Log.i("AAA", "不是移动数据，WIFI");
+					// Log.i("AAA", "不是移动数据，WIFI");
 					netType = null;
 					return false;
 				}
 
 			} else
 			{
-//				Log.i("AAA", "没有网络");
+				// Log.i("AAA", "没有网络");
 
 				netType = null;
 				return false;
@@ -541,7 +548,7 @@ public class TestService extends Service
 			}
 		} else
 		{
-//			Log.i("AAA", "不是CMCC");
+			// Log.i("AAA", "不是CMCC");
 			return false;
 		}
 		/*********** 对网络类型监视 ***************/
@@ -567,7 +574,7 @@ public class TestService extends Service
 		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();
 
 		updateinfo.settime(LaunTime);
-		
+
 		updateinfo.setAppName(AppName);
 		updateinfo.setuid(add_uid);
 		updateinfo.setpid(add_pid);
@@ -589,7 +596,7 @@ public class TestService extends Service
 		// addInfo.setCQI(CQI);
 		updateinfo.setMemRate(getMemRate());// 内存占用率
 		updateinfo.setNetType(netType);// 网络类型
-		
+
 		// addInfo.setcpuName(getCpuName());
 		// addInfo.setcpuMaxFreq(getMaxCpuFreq());
 		// addInfo.setcpuMinFreq(getMinCpuFreq());
@@ -597,22 +604,19 @@ public class TestService extends Service
 		updateinfo.setcpuRate(getCpuRate());
 		updateinfo.setextime(exitTime);
 		updateinfo.setusetime(String.valueOf(count));
-	
-		if(judge)  // true  第一次异常参数
+
+		if (judge) // true 第一次异常参数
 		{
-			
+
 			updateinfo.setTxByte(txqueue_laun.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_laun.get_data());// 接收字节量
-		}else // false  第二次异常参数
+		} else // false 第二次异常参数
 		{
-			
+
 			updateinfo.setTxByte(txqueue_exit.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_exit.get_data());// 接收字节量
 		}
-		
-		
-		
-		
+
 		MyApp.infolist.add(updateinfo);
 
 		Log.i("AAA", "异常信息加入成功");
@@ -727,64 +731,54 @@ public class TestService extends Service
 
 	}
 
+	/**
+	 * 获取最顶层程序包名
+	 *
+	 * @return
+	 */
+	// @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	// @SuppressLint("NewApi")
+	private String getTaskPackname()
+	{
+		String currentApp = "CurrentNULL";
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+		{
+			@SuppressWarnings("ResourceType")
+			UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
+			long time = System.currentTimeMillis();
+			List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
+			if (appList != null && appList.size() > 0)
+			{
+				SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+				for (UsageStats usageStats : appList)
+				{
+					mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+				}
+				if (mySortedMap != null && !mySortedMap.isEmpty())
+				{
+					currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+				}
+			}
+		} else
+		{
+			
+			
+			RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
+			currentApp = info1.topActivity.getPackageName();
+		}
+		Log.e("TAG", "Current App in foreground is: " + currentApp);
+		return currentApp;
+	}
+
 	// 获取当前应用名称
 	public String getAppName()
 	{
-		PackageManager pkgmanager = null;
+		
 		ApplicationInfo appinfo = null;
-		String appname = "";
-		// if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-		// final Set<String> activePackages = new HashSet<String>();
-		// final List<ActivityManager.RunningAppProcessInfo> processInfos =
-		// am.getRunningAppProcesses();
-		// for (ActivityManager.RunningAppProcessInfo processInfo :
-		// processInfos)
-		// {
-		// if (processInfo.importance ==
-		// ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND)
-		// {
-		// activePackages.addAll(Arrays.asList(processInfo.pkgList));
-		// }
-		// }
-		// String[] pkgs = activePackages.toArray(new
-		// String[activePackages.size()]);
-		// Log.i("AAA", String.valueOf(pkgs.length));
-		// if (pkgs != null)
-		// {
-		// for (String pkg : pkgs)
-		// {
-		// try
-		// {
-		// Log.i("AAA", pkg);
-		// pkgmanager = (PackageManager)
-		// getApplicationContext().getPackageManager();
-		// appinfo = pkgmanager.getApplicationInfo(pkg, 0);
-		// } catch (PackageManager.NameNotFoundException e)
-		//
-		// {
-		// appinfo = null;
-		// // TODO: handle exception
-		// }
-		// appname = (String) pkgmanager.getApplicationLabel(appinfo);
-		//
-		// if (AppList.FindAppName(appname) != null)
-		// {
-		// pkgname = pkg;
-		// uid = appinfo.uid;
-		// return appname;
-		// }
-		//
-		// }
-		//
-		// }
-		//
-		// return null;
-
-		// } else {
-		RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
+		PackageManager pkgmanager = null;
 		// 包名
-		pkgname = info1.topActivity.getPackageName();
-
+		String appname = "";
+		pkgname = getTaskPackname();
 		// Log.i("AAA", "包名："+pkgname);
 
 		try
