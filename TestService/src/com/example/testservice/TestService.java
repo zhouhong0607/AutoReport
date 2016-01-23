@@ -55,6 +55,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.provider.Settings;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -516,8 +517,9 @@ public class TestService extends Service
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 
-		// return true;
+//		 return true;
 		/*********** 对网络类型监视 ***************/
+//		 Log.i("AAA", "数据类型" + tm.getSimOperatorName());
 		if (tm.getSimOperatorName().equals("CMCC"))
 		{
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -741,20 +743,23 @@ public class TestService extends Service
 		String currentApp = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			@SuppressWarnings("ResourceType")
-			UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
-			long time = System.currentTimeMillis();
-			List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
-			if (appList != null && appList.size() > 0)
+			if (!UStats.getUsageStatsList(this).isEmpty())
 			{
-				SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-				for (UsageStats usageStats : appList)
+				@SuppressWarnings("ResourceType")
+				UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
+				long time = System.currentTimeMillis();
+				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
+				if (appList != null && appList.size() > 0)
 				{
-					mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-				}
-				if (mySortedMap != null && !mySortedMap.isEmpty())
-				{
-					currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+					SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+					for (UsageStats usageStats : appList)
+					{
+						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+					}
+					if (mySortedMap != null && !mySortedMap.isEmpty())
+					{
+						currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+					}
 				}
 			}
 		} else
