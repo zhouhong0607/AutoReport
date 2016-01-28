@@ -65,7 +65,8 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 
 		// Check if permission enabled
-
+		try
+		{
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
 
@@ -74,6 +75,10 @@ public class MainActivity extends Activity
 				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
 				startActivity(intent);
 			}
+		}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 		// 注册广播
 		filter1.addAction("UPDATE_ACTION");

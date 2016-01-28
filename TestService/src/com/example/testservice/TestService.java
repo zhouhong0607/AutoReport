@@ -125,6 +125,7 @@ public class TestService extends Service
 	String add_pid_num;
 
 	boolean isAbnormal = false;// 异常标志
+	boolean isAbnormal2 = false;// 异常标志
 
 	@Override
 	public void onCreate()
@@ -181,8 +182,13 @@ public class TestService extends Service
 									if (MyApp.infolist.get(i).getupFlag().equals("0"))// 检测没上传过的
 									{
 										if (upload_data(MyApp.infolist.get(i)))
+										{
 											MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为1
-										Log.i("AAA", "60秒上传成功");
+											Log.i("AAA", "60秒上传成功");
+										} else
+										{
+											Log.i("AAA", "60秒上传失败");
+										}
 									}
 								}
 
@@ -222,7 +228,6 @@ public class TestService extends Service
 					{
 						Browserun = false;
 					}
-
 					if (Browserun == false && assit == true)
 					{
 						Browserquit = true;
@@ -340,8 +345,7 @@ public class TestService extends Service
 									Log.i("AAA", "开始http测试");
 									if (!upload_data(new Info()))// http测试不成功
 									{
-										getInfo(true);// 参数true 为 第一次 异常，
-										MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
+										isAbnormal2 = true;
 										Log.i("AAA", "第二次异常出现");
 									} else
 									{
@@ -350,6 +354,11 @@ public class TestService extends Service
 									}
 								}
 							}).start();
+							if (isAbnormal2)
+							{
+								getInfo(true);// 参数true 为 第一次 异常，
+								MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
+							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
@@ -406,6 +415,7 @@ public class TestService extends Service
 						rxqueue_exit.clear();
 						max_rx = 0;
 						isAbnormal = false;
+						isAbnormal2 = false;
 
 					}
 
@@ -423,6 +433,7 @@ public class TestService extends Service
 					rxqueue_exit.clear();
 					max_rx = 0;
 					isAbnormal = false;
+					isAbnormal2 = false;
 				}
 
 			}
@@ -437,11 +448,11 @@ public class TestService extends Service
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
 		// 设置请求超时
-		int timeoutConnection = 800;// * 1000
+		int timeoutConnection = 1000;// 800
 		HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
 
 		// // 设置响应超时
-		int timeoutSocket = 800; // 500临界点
+		int timeoutSocket = 1000; // 500临界点
 		HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -517,9 +528,9 @@ public class TestService extends Service
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 
-//		 return true;
+		// return true;
 		/*********** 对网络类型监视 ***************/
-//		 Log.i("AAA", "数据类型" + tm.getSimOperatorName());
+		// Log.i("AAA", "数据类型" + tm.getSimOperatorName());
 		if (tm.getSimOperatorName().equals("CMCC"))
 		{
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -548,7 +559,7 @@ public class TestService extends Service
 			}
 		} else
 		{
-			// Log.i("AAA", "不是CMCC");
+			Log.i("AAA", "不是CMCC");
 			return false;
 		}
 		/*********** 对网络类型监视 ***************/
@@ -571,15 +582,15 @@ public class TestService extends Service
 	public void getInfo(boolean judge)// 获取信息
 	{
 		Info updateinfo = new Info();
-		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();
+		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();//*#*#4636#*#* 
 
 		updateinfo.settime(LaunTime);
 
 		updateinfo.setAppName(AppName);
 		updateinfo.setuid(add_uid);
-		updateinfo.setpid(add_pid);
+
 		updateinfo.setgid(add_uid);// gid与uid相同
-		updateinfo.setpidNumber(add_pid_num);
+
 		updateinfo.setlocalIp(getlocalIP());// 获取本机IP地址
 		updateinfo.setbrand(android.os.Build.BRAND);
 		updateinfo.settype(android.os.Build.MODEL);
@@ -589,14 +600,26 @@ public class TestService extends Service
 		updateinfo.setcorporation(tm.getSimOperatorName());
 		updateinfo.setLAC(String.valueOf(location.getLac()));
 		updateinfo.setCell_Id(String.valueOf(location.getCid()));
-		updateinfo.setRSRP(RSRP);
-		updateinfo.setRSRQ(RSRQ);
-		updateinfo.setSNR(RSSNR);
+		
 		updateinfo.setRSSI(RSSI);
+		
 		// addInfo.setCQI(CQI);
+		if(netType.equals("LTE"))
+		{
+			updateinfo.setRSRP(RSRP);
+			updateinfo.setRSRQ(RSRQ);
+			updateinfo.setSNR(RSSNR);
+	
+		
+		}else
+		{
+			updateinfo.setRSRP("N/A");
+			updateinfo.setRSRQ("N/A");
+			updateinfo.setSNR("N/A");
+		
+		}
 		updateinfo.setMemRate(getMemRate());// 内存占用率
 		updateinfo.setNetType(netType);// 网络类型
-
 		// addInfo.setcpuName(getCpuName());
 		// addInfo.setcpuMaxFreq(getMaxCpuFreq());
 		// addInfo.setcpuMinFreq(getMinCpuFreq());
@@ -604,6 +627,15 @@ public class TestService extends Service
 		updateinfo.setcpuRate(getCpuRate());
 		updateinfo.setextime(exitTime);
 		updateinfo.setusetime(String.valueOf(count));
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+		{
+			updateinfo.setpid("N/A");
+			updateinfo.setpidNumber("N/A");
+		} else
+		{
+			updateinfo.setpid(add_pid);
+			updateinfo.setpidNumber(add_pid_num);
+		}
 
 		if (judge) // true 第一次异常参数
 		{
@@ -748,7 +780,8 @@ public class TestService extends Service
 				@SuppressWarnings("ResourceType")
 				UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
 				long time = System.currentTimeMillis();
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
+				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000,
+						time);
 				if (appList != null && appList.size() > 0)
 				{
 					SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
@@ -768,7 +801,7 @@ public class TestService extends Service
 			RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
 			currentApp = info1.topActivity.getPackageName();
 		}
-		Log.i("TAG", "Current App in foreground is: " + currentApp);
+		// Log.i("TAG", "Current App in foreground is: " + currentApp);
 		return currentApp;
 	}
 
