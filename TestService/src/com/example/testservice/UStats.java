@@ -28,8 +28,8 @@ public class UStats
 		calendar.add(Calendar.YEAR, -1);
 		long startTime = calendar.getTimeInMillis();
 
-		Log.d(TAG, "Range start:" + dateFormat.format(startTime));
-		Log.d(TAG, "Range end:" + dateFormat.format(endTime));
+//		Log.d(TAG, "Range start:" + dateFormat.format(startTime));
+//		Log.d(TAG, "Range end:" + dateFormat.format(endTime));
 
 		UsageEvents uEvents = usm.queryEvents(startTime, endTime);
 		while (uEvents.hasNextEvent())
@@ -39,7 +39,7 @@ public class UStats
 
 			if (e != null)
 			{
-				Log.d(TAG, "Event: " + e.getPackageName() + "\t" + e.getTimeStamp());
+//				Log.d(TAG, "Event: " + e.getPackageName() + "\t" + e.getTimeStamp());
 			}
 		}
 	}
@@ -52,8 +52,8 @@ public class UStats
 		calendar.add(Calendar.YEAR, -1);
 		long startTime = calendar.getTimeInMillis();
 
-		Log.d(TAG, "Range start:" + dateFormat.format(startTime));
-		Log.d(TAG, "Range end:" + dateFormat.format(endTime));
+//		Log.d(TAG, "Range start:" + dateFormat.format(startTime));
+//		Log.d(TAG, "Range end:" + dateFormat.format(endTime));
 
 		List<UsageStats> usageStatsList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST, startTime, endTime);
 		return usageStatsList;

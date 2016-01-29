@@ -50,7 +50,8 @@ public class SecActivity extends Activity
 	TextView mtextview6;
 	Button upload;
 	int position;
-TextPaint tp;
+	TextPaint tp;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -62,9 +63,9 @@ TextPaint tp;
 		mtextview4 = (TextView) findViewById(R.id.textview4);
 		mtextview5 = (TextView) findViewById(R.id.textview5);
 		mtextview6 = (TextView) findViewById(R.id.textview6);
-	mtextview1.setTextColor(Color.RED);
-	mtextview3.setTextColor(Color.RED);
-	mtextview5.setTextColor(Color.RED);
+		mtextview1.setTextColor(Color.RED);
+		mtextview3.setTextColor(Color.RED);
+		mtextview5.setTextColor(Color.RED);
 		Intent intent = getIntent();
 		position = intent.getIntExtra("position", 0);
 
@@ -100,29 +101,31 @@ TextPaint tp;
 		mtextview2.append("版本:           " + info.getversion() + "\n");
 		mtextview2.append("IMEI:          " + info.getIMEI() + "\n");
 		mtextview2.append("IMSI:          " + info.getIMSI() + "\n");
-		mtextview2.append("本机IP地址:  " + info.getlocalIp()+ "\n" );
+		mtextview2.append("本机IP地址:  " + info.getlocalIp() + "\n");
 		mtextview2.append("内存占用率:  " + info.getMemRate() + "\n");
 		mtextview2.append("CPU使用率:  " + info.getcpuRate() + "\n");
 
-		// 基站信息
-	
+		// 无线环境信息
+
 		mtextview3.append("无线环境信息:");
-	
-		
+
 		mtextview4.append("运营商:  " + info.getcorporation() + "\n");
 		mtextview4.append("网络类型:  " + info.getNetType() + "\n");
 		mtextview4.append("LAC:  " + info.getLAC() + "\n");
 		mtextview4.append("Cell-ID:  " + info.getCell_Id() + "\n");
-	
+
 		mtextview4.append("RSRP:  " + info.getRSRP() + "\n");
 		mtextview4.append("RSRQ:  " + info.getRSRQ() + "\n");
 		mtextview4.append("RSSI:  " + info.getRSSI() + "\n");
 		mtextview4.append("SNR:  " + info.getSNR() + "\n");
-		// 业务异常信息
-	
+		// 应用业务信息
+
 		mtextview5.append("应用业务信息:");
 
 		mtextview6.append("启动时间:  " + info.gettime() + "\n");
+		mtextview6.append("异常时间:  " + info.getExcepTime() + "\n");
+		mtextview6.append("上报时间:  " + info.getUploadTime() + "\n");
+		mtextview6.append("上报次数:  " + info.getUploadNum() + "\n");
 		mtextview6.append("退出时间:  " + info.getextime() + "\n");
 		mtextview6.append("运行时间:  " + info.getusetime() + "\n");
 		mtextview6.append("应用名称:  " + info.getAppName() + "\n");
@@ -131,7 +134,7 @@ TextPaint tp;
 		mtextview6.append("进程数量:  " + info.getpidNumber() + "\n");
 		mtextview6.append("GID:  " + info.getgid() + "\n");
 		mtextview6.append("发送字节量:  " + info.getTxByte() + "\n");
-		mtextview6.append("接收字节量:  " + info.getRxByte()+ "\n" );
+		mtextview6.append("接收字节量:  " + info.getRxByte() + "\n");
 
 	}
 
@@ -179,7 +182,6 @@ TextPaint tp;
 		params.add(new BasicNameValuePair("RSSNR", info.getSNR()));
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
 
-
 		try
 		{
 			request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
@@ -190,11 +192,11 @@ TextPaint tp;
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
 			{
 				Log.i("AAA", "上传成功");
-//				Toast.makeText(this, "上传成功", Toast.LENGTH_LONG).show();
+				// Toast.makeText(this, "上传成功", Toast.LENGTH_LONG).show();
 			} else
 			{
 				Log.i("AAA", "上传失败");
-//				Toast.makeText(this, "上传失败", Toast.LENGTH_LONG).show();
+				// Toast.makeText(this, "上传失败", Toast.LENGTH_LONG).show();
 			}
 		} catch (Exception e)
 		{

@@ -117,7 +117,8 @@ public class TestService extends Service
 	// String CQI = "";// 新@@@@@@@@@
 	String LaunTime;
 	String exitTime;
-
+	String excepTime1;// 第一次异常时间点
+	String excepTime2;// 第二次异常时间点
 	String AppName;
 	String add_uid;
 	String netType;
@@ -147,9 +148,14 @@ public class TestService extends Service
 				RSSI = String.valueOf(-113 + 2 * Integer.parseInt(parts[8]));
 				RSRP = parts[9];
 				RSRQ = parts[10];
-
+				
+				if(isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
+				{
 				RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
-
+				}
+				
+//				Log.i("BBB", "RSSNR"+RSSNR);
+				
 				// RSSI=String.valueOf(Integer.valueOf(RSRP)+17-Integer.valueOf(RSRQ));
 				// CQI = parts[12];// 新@@@@@@@@@
 
@@ -179,14 +185,17 @@ public class TestService extends Service
 								// TODO Auto-generated method stub
 								for (int i = 0; i < MyApp.infolist.size(); i++)
 								{
-									if (MyApp.infolist.get(i).getupFlag().equals("0"))// 检测没上传过的
+									if (!MyApp.infolist.get(i).getupFlag())// 检测没上传过的
 									{
+										MyApp.infolist.get(i).setUploadTime(getTime());// 每次上传提取时间
 										if (upload_data(MyApp.infolist.get(i)))
 										{
-											MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为1
+											MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为true
 											Log.i("AAA", "60秒上传成功");
 										} else
 										{
+											MyApp.infolist.get(i).setUploadTime("");//清空上传时间
+											MyApp.infolist.get(i).setUploadNum();// 上传失败记录次数+1
 											Log.i("AAA", "60秒上传失败");
 										}
 									}
@@ -288,24 +297,25 @@ public class TestService extends Service
 
 								Log.i("AAA", "可疑异常出现");
 
-								new Thread(new Runnable()// 进行一次http二次测试
+								// new Thread(new Runnable()// 进行一次http二次测试
+								// {
+								// @Override
+								// public void run()
+								// {
+								Log.i("AAA", "开始http测试");
+								if (!upload_data(new Info()))// http测试不成功
 								{
-									@Override
-									public void run()
-									{
-										Log.i("AAA", "开始http测试");
-										if (!upload_data(new Info()))// http测试不成功
-										{
+									excepTime1 = getTime();
+									Log.i("AAA", "第一次异常时间"+excepTime1);
+									isAbnormal = true;
+									Log.i("AAA", "异常出现");
+								} else
+								{
+									Log.i("AAA", "不是异常");
 
-											isAbnormal = true;
-											Log.i("AAA", "异常出现");
-										} else
-										{
-											Log.i("AAA", "不是异常");
-
-										}
-									}
-								}).start();
+								}
+								// }
+								// }).start();
 							} else
 							{
 								Log.i("AAA", "初次判决不是异常");
@@ -326,6 +336,8 @@ public class TestService extends Service
 
 							if (max_rx < 10000)// 异常判决
 							{
+								excepTime1 = getTime();
+								Log.i("AAA", "第一次异常时间"+excepTime1);
 								isAbnormal = true;
 								Log.i("AAA", "30秒内异常出现");
 
@@ -337,32 +349,34 @@ public class TestService extends Service
 
 						if (count > 35)// 进行第二次 测试
 						{
-							new Thread(new Runnable()
+							// new Thread(new Runnable()
+							// {
+							// @Override
+							// public void run()
+							// {
+							Log.i("AAA", "开始http测试");
+							if (!upload_data(new Info()))// http测试不成功
 							{
-								@Override
-								public void run()
-								{
-									Log.i("AAA", "开始http测试");
-									if (!upload_data(new Info()))// http测试不成功
-									{
-										isAbnormal2 = true;
-										Log.i("AAA", "第二次异常出现");
-									} else
-									{
-										Log.i("AAA", "第二次不是异常");
+								excepTime2 = getTime();
+								Log.i("AAA", "第二次异常时间"+excepTime1);
+								isAbnormal2 = true;
+								Log.i("AAA", "第二次异常出现");
+							} else
+							{
+								Log.i("AAA", "第二次不是异常");
 
-									}
-								}
-							}).start();
+							}
+							// }
+							// }).start();
 							if (isAbnormal2)
 							{
-								getInfo(true);// 参数true 为 第一次 异常，
+								getInfo(false);// 参数true 为 第二次 异常，
 								MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
-							getInfo(false);// 参数false为 第二次 异常，
+							getInfo(true);// 参数true为 第一次 异常，
 							MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
 							// MyApp.infolist.remove(MyApp.infolist.size() -
 							// 1);// 测试通过
@@ -416,6 +430,8 @@ public class TestService extends Service
 						max_rx = 0;
 						isAbnormal = false;
 						isAbnormal2 = false;
+						excepTime1="";
+						excepTime2="";
 
 					}
 
@@ -434,6 +450,8 @@ public class TestService extends Service
 					max_rx = 0;
 					isAbnormal = false;
 					isAbnormal2 = false;
+					excepTime1="";
+					excepTime2="";
 				}
 
 			}
@@ -450,7 +468,6 @@ public class TestService extends Service
 		// 设置请求超时
 		int timeoutConnection = 1000;// 800
 		HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
-
 		// // 设置响应超时
 		int timeoutSocket = 1000; // 500临界点
 		HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
@@ -566,6 +583,18 @@ public class TestService extends Service
 
 	}
 
+
+	public boolean isBigDecimal(String str)//判断是否是小数
+	{
+	    Boolean strResult = str.matches("-?[0-9]+.*[0-9]*");
+	    if(strResult == true) {
+	     return true;
+	    } else {
+	     return false;
+	    }
+	}
+
+	
 	public String getTime()
 	{
 		// 获取时间*****************
@@ -582,7 +611,7 @@ public class TestService extends Service
 	public void getInfo(boolean judge)// 获取信息
 	{
 		Info updateinfo = new Info();
-		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();//*#*#4636#*#* 
+		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
 
 		updateinfo.settime(LaunTime);
 
@@ -600,23 +629,22 @@ public class TestService extends Service
 		updateinfo.setcorporation(tm.getSimOperatorName());
 		updateinfo.setLAC(String.valueOf(location.getLac()));
 		updateinfo.setCell_Id(String.valueOf(location.getCid()));
-		
+
 		updateinfo.setRSSI(RSSI);
-		
+
 		// addInfo.setCQI(CQI);
-		if(netType.equals("LTE"))
+		if (netType.equals("LTE"))
 		{
 			updateinfo.setRSRP(RSRP);
 			updateinfo.setRSRQ(RSRQ);
 			updateinfo.setSNR(RSSNR);
-	
-		
-		}else
+
+		} else
 		{
 			updateinfo.setRSRP("N/A");
 			updateinfo.setRSRQ("N/A");
 			updateinfo.setSNR("N/A");
-		
+
 		}
 		updateinfo.setMemRate(getMemRate());// 内存占用率
 		updateinfo.setNetType(netType);// 网络类型
@@ -627,6 +655,7 @@ public class TestService extends Service
 		updateinfo.setcpuRate(getCpuRate());
 		updateinfo.setextime(exitTime);
 		updateinfo.setusetime(String.valueOf(count));
+
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
 			updateinfo.setpid("N/A");
@@ -639,12 +668,14 @@ public class TestService extends Service
 
 		if (judge) // true 第一次异常参数
 		{
-
+			Log.i("AAA", "第一次记录异常时间"+excepTime1);
+			updateinfo.setExcepTime(excepTime1);
 			updateinfo.setTxByte(txqueue_laun.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_laun.get_data());// 接收字节量
 		} else // false 第二次异常参数
 		{
-
+			Log.i("AAA", "第二次记录异常时间"+excepTime2);
+			updateinfo.setExcepTime(excepTime2);
 			updateinfo.setTxByte(txqueue_exit.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_exit.get_data());// 接收字节量
 		}

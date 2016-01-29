@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import android.app.Activity;
+import android.app.usage.UsageStats;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -69,7 +70,7 @@ public class MainActivity extends Activity
 		{
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-
+			
 			if (UStats.getUsageStatsList(this).isEmpty())
 			{
 				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
@@ -78,6 +79,7 @@ public class MainActivity extends Activity
 		}
 		}catch(Exception e)
 		{
+			Toast.makeText(getApplicationContext(), "权限不能获取", Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 		// 注册广播

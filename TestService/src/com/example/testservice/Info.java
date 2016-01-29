@@ -11,6 +11,9 @@ public class Info implements Serializable
 	//27项信息
 	private String launTime;//启动时刻
 	private String exitTime;//退出时刻
+	private String excepTime;//异常时刻
+	private int uploadNum;//失败上传的次数
+	private String uploadTime;//上报时刻
 	private String useTime;//使用时间
 	private String brand;//品牌
 	private String type;//型号
@@ -49,14 +52,93 @@ public class Info implements Serializable
 	
 	
 	private String Flag;//标志位
-	private String upload_Flag;//上传标志位
+	private boolean upload_Flag;//上传标志位
 	 Info()
 	{
 		this.Flag="0";
-		this.upload_Flag="0";
+		this.upload_Flag=false;
+		this.uploadNum=0;
 	}
 	
-	
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	public int getUploadNum()
+	{
+		return uploadNum;
+	}
+
+
+
+
+
+
+
+
+	public void setUploadNum()
+	{
+		this.uploadNum ++;
+	}
+
+
+
+
+
+
+
+
+	public String getExcepTime()
+	{
+		return excepTime;
+	}
+
+
+
+
+
+
+
+
+	public void setExcepTime(String excepTime)
+	{
+		this.excepTime = excepTime;
+	}
+
+
+
+
+
+
+
+
+	public String getUploadTime()
+	{
+		return uploadTime;
+	}
+
+
+
+
+
+
+
+
+	public void setUploadTime(String uploadTime)
+	{
+		this.uploadTime = uploadTime;
+	}
+
+
+
+
+
+
+
+
 	//参数设置
 	public void settime(String s)
 	{
@@ -203,7 +285,7 @@ public class Info implements Serializable
 		}
 		public void setupFlag()
 		{
-			this.upload_Flag="1";
+			this.upload_Flag=true;
 		}
 		
 //		public void setCQI(String s)
@@ -353,7 +435,7 @@ public class Info implements Serializable
 			{
 				return this.Flag;
 			}
-			public String getupFlag()
+			public boolean getupFlag()
 			{
 				return this.upload_Flag;
 			}
