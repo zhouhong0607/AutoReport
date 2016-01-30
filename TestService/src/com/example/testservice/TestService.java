@@ -1,5 +1,6 @@
 package com.example.testservice;
 
+import android.R.integer;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -462,7 +463,9 @@ public class TestService extends Service
 	public boolean upload_data(Info info)
 	{
 
+//		String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
 		String urlStr = "http://www.mengqi.win/LoginServlet";
+		
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
 		// 设置请求超时
@@ -478,6 +481,11 @@ public class TestService extends Service
 		params.add(new BasicNameValuePair("launtime", info.gettime()));
 		params.add(new BasicNameValuePair("exittime", info.getextime()));
 		params.add(new BasicNameValuePair("usetime", info.getusetime()));
+		
+		params.add(new BasicNameValuePair("excepTime", info.getExcepTime()));
+		params.add(new BasicNameValuePair("uploadNum", String.valueOf(info.getUploadNum())));
+		params.add(new BasicNameValuePair("uploadTime", info.getUploadTime()));
+		
 		params.add(new BasicNameValuePair("brand", info.getbrand()));
 		params.add(new BasicNameValuePair("type", info.gettype()));
 		params.add(new BasicNameValuePair("version", info.getversion()));
