@@ -14,12 +14,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URLEncoder;
 import java.sql.Array;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -149,14 +151,14 @@ public class TestService extends Service
 				RSSI = String.valueOf(-113 + 2 * Integer.parseInt(parts[8]));
 				RSRP = parts[9];
 				RSRQ = parts[10];
-				
-				if(isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
+
+				if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
 				{
-				RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
+					RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
 				}
-				
-//				Log.i("BBB", "RSSNR"+RSSNR);
-				
+
+				// Log.i("BBB", "RSSNR"+RSSNR);
+
 				// RSSI=String.valueOf(Integer.valueOf(RSRP)+17-Integer.valueOf(RSRQ));
 				// CQI = parts[12];// 新@@@@@@@@@
 
@@ -195,7 +197,7 @@ public class TestService extends Service
 											Log.i("AAA", "60秒上传成功");
 										} else
 										{
-											MyApp.infolist.get(i).setUploadTime("");//清空上传时间
+											MyApp.infolist.get(i).setUploadTime("");// 清空上传时间
 											MyApp.infolist.get(i).setUploadNum();// 上传失败记录次数+1
 											Log.i("AAA", "60秒上传失败");
 										}
@@ -307,7 +309,7 @@ public class TestService extends Service
 								if (!upload_data(new Info()))// http测试不成功
 								{
 									excepTime1 = getTime();
-									Log.i("AAA", "第一次异常时间"+excepTime1);
+									Log.i("AAA", "第一次异常时间" + excepTime1);
 									isAbnormal = true;
 									Log.i("AAA", "异常出现");
 								} else
@@ -338,7 +340,7 @@ public class TestService extends Service
 							if (max_rx < 10000)// 异常判决
 							{
 								excepTime1 = getTime();
-								Log.i("AAA", "第一次异常时间"+excepTime1);
+								Log.i("AAA", "第一次异常时间" + excepTime1);
 								isAbnormal = true;
 								Log.i("AAA", "30秒内异常出现");
 
@@ -359,7 +361,7 @@ public class TestService extends Service
 							if (!upload_data(new Info()))// http测试不成功
 							{
 								excepTime2 = getTime();
-								Log.i("AAA", "第二次异常时间"+excepTime1);
+								Log.i("AAA", "第二次异常时间" + excepTime1);
 								isAbnormal2 = true;
 								Log.i("AAA", "第二次异常出现");
 							} else
@@ -431,8 +433,8 @@ public class TestService extends Service
 						max_rx = 0;
 						isAbnormal = false;
 						isAbnormal2 = false;
-						excepTime1="";
-						excepTime2="";
+						excepTime1 = "";
+						excepTime2 = "";
 
 					}
 
@@ -451,8 +453,8 @@ public class TestService extends Service
 					max_rx = 0;
 					isAbnormal = false;
 					isAbnormal2 = false;
-					excepTime1="";
-					excepTime2="";
+					excepTime1 = "";
+					excepTime2 = "";
 				}
 
 			}
@@ -463,9 +465,9 @@ public class TestService extends Service
 	public boolean upload_data(Info info)
 	{
 
-//		String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
+		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
 		String urlStr = "http://www.mengqi.win/LoginServlet";
-		
+
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
 		// 设置请求超时
@@ -481,11 +483,11 @@ public class TestService extends Service
 		params.add(new BasicNameValuePair("launtime", info.gettime()));
 		params.add(new BasicNameValuePair("exittime", info.getextime()));
 		params.add(new BasicNameValuePair("usetime", info.getusetime()));
-		
+
 		params.add(new BasicNameValuePair("excepTime", info.getExcepTime()));
 		params.add(new BasicNameValuePair("uploadNum", String.valueOf(info.getUploadNum())));
 		params.add(new BasicNameValuePair("uploadTime", info.getUploadTime()));
-		
+
 		params.add(new BasicNameValuePair("brand", info.getbrand()));
 		params.add(new BasicNameValuePair("type", info.gettype()));
 		params.add(new BasicNameValuePair("version", info.getversion()));
@@ -549,14 +551,49 @@ public class TestService extends Service
 		}
 	}
 
+	/**
+	 * 返回用户手机运营商名称 * @param telephonyManager * @return
+	 */
+	public String getProvidersName(TelephonyManager telephonyManager)
+	{
+		String ProvidersName = null;
+		telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+		String IMSI; // 返回唯一的用户ID;就是这张卡的编号神马的
+		IMSI = telephonyManager.getSubscriberId();
+		if (IMSI == null)
+			return "unkwon";
+		// IMSI号前面3位460是国家，紧接着后面2位00 02是中国移动，01是中国联通，03是中国电信。其中
+		if (IMSI.startsWith("46000") || IMSI.startsWith("46002"))
+		{
+			ProvidersName = "中国移动";
+		} else if (IMSI.startsWith("46001"))
+		{
+			ProvidersName = "中国联通";
+		} else if (IMSI.startsWith("46003"))
+		{
+			ProvidersName = "中国电信";
+		}
+//		try
+//		{
+//			ProvidersName = URLEncoder.encode("" + ProvidersName, "UTF-8");
+//		} catch (UnsupportedEncodingException e)
+//		{
+//		e.printStackTrace();
+//			// TODO Auto-generated catch block e.printStackTrace();
+//		}
+		return ProvidersName;
+	}
+
 	// 判决是否是LTE
 	public boolean getNetWorkType()// 移动网络返回true
 	{
-
 		// return true;
 		/*********** 对网络类型监视 ***************/
-		// Log.i("AAA", "数据类型" + tm.getSimOperatorName());
-		if (tm.getSimOperatorName().equals("CMCC"))
+
+		// Log.i("AAA", "状态" + tm.getSimState()); //5 是 准备状态
+		String OPname=getProvidersName(tm);
+
+		if (OPname.equals("中国移动"))
 		{
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
@@ -584,25 +621,25 @@ public class TestService extends Service
 			}
 		} else
 		{
-			Log.i("AAA", "不是CMCC");
+			Log.i("AAA", "不是CMCC,"+OPname);
 			return false;
 		}
 		/*********** 对网络类型监视 ***************/
 
 	}
 
-
-	public boolean isBigDecimal(String str)//判断是否是小数
+	public boolean isBigDecimal(String str)// 判断是否是小数
 	{
-	    Boolean strResult = str.matches("-?[0-9]+.*[0-9]*");
-	    if(strResult == true) {
-	     return true;
-	    } else {
-	     return false;
-	    }
+		Boolean strResult = str.matches("-?[0-9]+.*[0-9]*");
+		if (strResult == true)
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
 	}
 
-	
 	public String getTime()
 	{
 		// 获取时间*****************
@@ -676,13 +713,13 @@ public class TestService extends Service
 
 		if (judge) // true 第一次异常参数
 		{
-			Log.i("AAA", "第一次记录异常时间"+excepTime1);
+			Log.i("AAA", "第一次记录异常时间" + excepTime1);
 			updateinfo.setExcepTime(excepTime1);
 			updateinfo.setTxByte(txqueue_laun.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_laun.get_data());// 接收字节量
 		} else // false 第二次异常参数
 		{
-			Log.i("AAA", "第二次记录异常时间"+excepTime2);
+			Log.i("AAA", "第二次记录异常时间" + excepTime2);
 			updateinfo.setExcepTime(excepTime2);
 			updateinfo.setTxByte(txqueue_exit.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_exit.get_data());// 接收字节量
@@ -814,26 +851,31 @@ public class TestService extends Service
 		String currentApp = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			if (!UStats.getUsageStatsList(this).isEmpty())
-			{
-				@SuppressWarnings("ResourceType")
-				UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
-				long time = System.currentTimeMillis();
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000,
-						time);
-				if (appList != null && appList.size() > 0)
-				{
-					SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-					for (UsageStats usageStats : appList)
-					{
-						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-					}
-					if (mySortedMap != null && !mySortedMap.isEmpty())
-					{
-						currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-					}
-				}
-			}
+			// if (!UStats.getUsageStatsList(this).isEmpty())
+			// {
+			// @SuppressWarnings("ResourceType")
+			// UsageStatsManager usm = (UsageStatsManager)
+			// this.getSystemService("usagestats");
+			// long time = System.currentTimeMillis();
+			// List<UsageStats> appList =
+			// usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000
+			// * 1000,
+			// time);
+			// if (appList != null && appList.size() > 0)
+			// {
+			// SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long,
+			// UsageStats>();
+			// for (UsageStats usageStats : appList)
+			// {
+			// mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+			// }
+			// if (mySortedMap != null && !mySortedMap.isEmpty())
+			// {
+			// currentApp =
+			// mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+			// }
+			// }
+			// }
 		} else
 		{
 
