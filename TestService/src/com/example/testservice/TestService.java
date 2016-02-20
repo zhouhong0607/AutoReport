@@ -145,6 +145,9 @@ public class TestService extends Service
 		{
 			public void onSignalStrengthsChanged(SignalStrength signalStrength)
 			{
+				
+				try
+				{
 				String singalInformation = signalStrength.toString();
 				String parts[] = singalInformation.split(" ");
 				sigStr = parts[8];
@@ -156,7 +159,11 @@ public class TestService extends Service
 				{
 					RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
 				}
-
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+//					Log.e("BBB", "信号强度监视有问题");
+				}
 				// Log.i("BBB", "RSSNR"+RSSNR);
 
 				// RSSI=String.valueOf(Integer.valueOf(RSRP)+17-Integer.valueOf(RSRQ));
@@ -573,14 +580,14 @@ public class TestService extends Service
 		{
 			ProvidersName = "中国电信";
 		}
-//		try
-//		{
-//			ProvidersName = URLEncoder.encode("" + ProvidersName, "UTF-8");
-//		} catch (UnsupportedEncodingException e)
-//		{
-//		e.printStackTrace();
-//			// TODO Auto-generated catch block e.printStackTrace();
-//		}
+		// try
+		// {
+		// ProvidersName = URLEncoder.encode("" + ProvidersName, "UTF-8");
+		// } catch (UnsupportedEncodingException e)
+		// {
+		// e.printStackTrace();
+		// // TODO Auto-generated catch block e.printStackTrace();
+		// }
 		return ProvidersName;
 	}
 
@@ -591,7 +598,9 @@ public class TestService extends Service
 		/*********** 对网络类型监视 ***************/
 
 		// Log.i("AAA", "状态" + tm.getSimState()); //5 是 准备状态
-		String OPname=getProvidersName(tm);
+		String OPname = getProvidersName(tm);
+
+		// Log.i("AAA", "状态" + OPname); //5 是 准备状态
 
 		if (OPname.equals("中国移动"))
 		{
@@ -621,7 +630,7 @@ public class TestService extends Service
 			}
 		} else
 		{
-			Log.i("AAA", "不是CMCC,"+OPname);
+//			Log.i("AAA", "不是CMCC," + OPname);
 			return false;
 		}
 		/*********** 对网络类型监视 ***************/
@@ -851,31 +860,26 @@ public class TestService extends Service
 		String currentApp = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			// if (!UStats.getUsageStatsList(this).isEmpty())
-			// {
-			// @SuppressWarnings("ResourceType")
-			// UsageStatsManager usm = (UsageStatsManager)
-			// this.getSystemService("usagestats");
-			// long time = System.currentTimeMillis();
-			// List<UsageStats> appList =
-			// usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000
-			// * 1000,
-			// time);
-			// if (appList != null && appList.size() > 0)
-			// {
-			// SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long,
-			// UsageStats>();
-			// for (UsageStats usageStats : appList)
-			// {
-			// mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-			// }
-			// if (mySortedMap != null && !mySortedMap.isEmpty())
-			// {
-			// currentApp =
-			// mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-			// }
-			// }
-			// }
+			if (!UStats.getUsageStatsList(this).isEmpty())
+			{
+				@SuppressWarnings("ResourceType")
+				UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
+				long time = System.currentTimeMillis();
+				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000,
+						time);
+				if (appList != null && appList.size() > 0)
+				{
+					SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+					for (UsageStats usageStats : appList)
+					{
+						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+					}
+					if (mySortedMap != null && !mySortedMap.isEmpty())
+					{
+						currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+					}
+				}
+			}
 		} else
 		{
 

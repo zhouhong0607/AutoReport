@@ -15,7 +15,7 @@ public class Alert
 	String[] para_var;//监视参数的值,  数组长度为para_num的值,  para_num为0时该参数无用
 	int time_interval;//监视 时间的长度  ,  以小时为最小单位
 	int abnormal_num;//异常次数的 个数,  也就是队列的长度
-	
+
 	List<AlertQueue> alert_list=null;
 	boolean set_length=false;//监视参数的个数 ，默认是不设置长度，既全部监视
 	
