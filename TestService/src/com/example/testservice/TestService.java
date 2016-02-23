@@ -59,6 +59,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.provider.Settings;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoLte;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -73,7 +75,7 @@ import android.widget.Toast;
 
 public class TestService extends Service
 {
-	long max_rx = 0;
+	// long max_rx = 0;
 	long tx1 = 0;
 	long rx1 = 0;
 	// public static final String MY_PKG_NAME = "com.UCMobile";// UC浏览器包名
@@ -145,24 +147,62 @@ public class TestService extends Service
 		{
 			public void onSignalStrengthsChanged(SignalStrength signalStrength)
 			{
-				
+
 				try
 				{
-				String singalInformation = signalStrength.toString();
-				String parts[] = singalInformation.split(" ");
-				sigStr = parts[8];
-				RSSI = String.valueOf(-113 + 2 * Integer.parseInt(parts[8]));
-				RSRP = parts[9];
-				RSRQ = parts[10];
+					String singalInformation = signalStrength.toString();
 
-				if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
+					// Log.i("BBB", singalInformation);
+
+					String parts[] = singalInformation.split(" ");
+
+					// for(int i=0;i<parts.length;i++)
+					// {
+					// Log.i("BBB","第"+i+"个:"+ parts[i]);
+					// }
+
+					// ASU 8, RSRP 9,RSRQ 10 snr 11 华为荣耀系列 7为AUS（需要提取） 8为RSRP
+					// 9为RSRQ 10为SNR
+
+					// sigStr = parts[8];
+					// RSSI = String.valueOf(-113 + 2 *
+					// Integer.parseInt(parts[8]));
+
+					if (android.os.Build.BRAND.toUpperCase().equals("HUAWEI"))
+					{
+						RSRP = parts[11];
+						RSRQ = parts[12];
+
+						if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
+						{
+							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[13])));
+						}
+					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
+					{
+
+						RSRP = parts[8];
+						RSRQ = parts[9];
+
+						if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
+						{
+							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[10])));
+						}
+
+					} else
+					{
+						RSRP = parts[9];
+						RSRQ = parts[10];
+
+						if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
+						{
+							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
+						}
+					}
+
+				} catch (Exception e)
 				{
-					RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
-				}
-				}catch(Exception e)
-				{
-					e.printStackTrace();
-//					Log.e("BBB", "信号强度监视有问题");
+					// e.printStackTrace();
+					// Log.e("BBB", "信号强度监视有问题");
 				}
 				// Log.i("BBB", "RSSNR"+RSSNR);
 
@@ -256,6 +296,7 @@ public class TestService extends Service
 					} else
 					{
 						Browserquit = false;
+
 					}
 
 					assit = Browserun;
@@ -282,9 +323,9 @@ public class TestService extends Service
 
 						if (count < 31) // 30个数据
 						{
-
-							if (max_rx < drx)
-								max_rx = drx;
+							//
+							// if (max_rx < drx)
+							// max_rx = drx;
 							rxqueue_laun.insert(drx);
 							// Log.i("AAA", String.valueOf(drx));
 							txqueue_laun.insert(dtx);
@@ -302,7 +343,7 @@ public class TestService extends Service
 							txqueue_laun.calculate_expectation();// 计算期望rx
 							txqueue_laun.calculate_variance();// 计算方差tx
 
-							if (max_rx < 10000)// 异常判决
+							if (rxqueue_laun.get_maxValue() < 10000)// 异常判决
 							{
 
 								Log.i("AAA", "可疑异常出现");
@@ -342,9 +383,9 @@ public class TestService extends Service
 							txqueue_laun.calculate_expectation();// 计算期望rx
 							txqueue_laun.calculate_variance();// 计算方差tx
 
-							Log.i("AAA", "30秒内最大值" + max_rx);
+							Log.i("AAA", "30秒内最大值" + rxqueue_laun.get_maxValue());
 
-							if (max_rx < 10000)// 异常判决
+							if (rxqueue_laun.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = getTime();
 								Log.i("AAA", "第一次异常时间" + excepTime1);
@@ -364,18 +405,23 @@ public class TestService extends Service
 							// @Override
 							// public void run()
 							// {
-							Log.i("AAA", "开始http测试");
-							if (!upload_data(new Info()))// http测试不成功
-							{
-								excepTime2 = getTime();
-								Log.i("AAA", "第二次异常时间" + excepTime1);
-								isAbnormal2 = true;
-								Log.i("AAA", "第二次异常出现");
-							} else
-							{
-								Log.i("AAA", "第二次不是异常");
 
+							if (rxqueue_exit.get_maxValue() < 10000)
+							{
+								Log.i("AAA", "开始http测试");
+								if (!upload_data(new Info()))// http测试不成功
+								{
+									excepTime2 = getTime();
+									Log.i("AAA", "第二次异常时间" + excepTime1);
+									isAbnormal2 = true;
+									Log.i("AAA", "第二次异常出现");
+								} else
+								{
+									Log.i("AAA", "第二次不是异常");
+
+								}
 							}
+
 							// }
 							// }).start();
 							if (isAbnormal2)
@@ -437,7 +483,7 @@ public class TestService extends Service
 						txqueue_laun.clear();
 						txqueue_exit.clear();
 						rxqueue_exit.clear();
-						max_rx = 0;
+						// max_rx = 0;
 						isAbnormal = false;
 						isAbnormal2 = false;
 						excepTime1 = "";
@@ -457,7 +503,7 @@ public class TestService extends Service
 					txqueue_laun.clear();
 					txqueue_exit.clear();
 					rxqueue_exit.clear();
-					max_rx = 0;
+					// max_rx = 0;
 					isAbnormal = false;
 					isAbnormal2 = false;
 					excepTime1 = "";
@@ -501,10 +547,16 @@ public class TestService extends Service
 		params.add(new BasicNameValuePair("IMEI", info.getIMEI()));
 		params.add(new BasicNameValuePair("IMSI", info.getIMSI()));
 		params.add(new BasicNameValuePair("corporation", info.getcorporation()));
-		params.add(new BasicNameValuePair("LAC", info.getLAC()));
-		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id()));
+		params.add(new BasicNameValuePair("LAC", info.getLAC_GSM()));
+		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id_GSM()));
 		params.add(new BasicNameValuePair("RSRP", info.getRSRP()));
-		params.add(new BasicNameValuePair("RSSI", info.getRSSI()));
+		// params.add(new BasicNameValuePair("RSSI", info.getRSSI()));
+
+		params.add(new BasicNameValuePair("PCI", info.getPCI()));
+		params.add(new BasicNameValuePair("CI", info.getCI()));
+		params.add(new BasicNameValuePair("ENODBID", info.getENODBID()));
+		params.add(new BasicNameValuePair("CELLID", info.getCELLID()));
+		params.add(new BasicNameValuePair("TAC", info.getTAC()));
 		params.add(new BasicNameValuePair("RSRQ", info.getRSRQ()));
 		params.add(new BasicNameValuePair("cpuRate", info.getcpuRate()));
 		params.add(new BasicNameValuePair("localIp", info.getlocalIp()));
@@ -519,7 +571,6 @@ public class TestService extends Service
 		params.add(new BasicNameValuePair("NetType", info.getNetType()));
 		params.add(new BasicNameValuePair("RSSNR", info.getSNR()));
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
-
 		try
 		{
 			request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
@@ -538,15 +589,15 @@ public class TestService extends Service
 				return false;
 
 			}
-		} catch (SocketTimeoutException e)
-		{
-			// TODO: handle exception
-			Log.i("AAA", "响应超时");
-			return false;
 		} catch (ConnectTimeoutException e)
 		{
 			Log.i("AAA", "连接超时");
 			return false;
+		} catch (SocketTimeoutException e)
+		{
+			// TODO: handle exception
+			Log.i("AAA", "响应超时");
+			return true;
 		}
 
 		catch (Exception e)
@@ -630,7 +681,7 @@ public class TestService extends Service
 			}
 		} else
 		{
-//			Log.i("AAA", "不是CMCC," + OPname);
+			// Log.i("AAA", "不是CMCC," + OPname);
 			return false;
 		}
 		/*********** 对网络类型监视 ***************/
@@ -666,7 +717,33 @@ public class TestService extends Service
 	{
 		Info updateinfo = new Info();
 		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
+		/******************** 4G位置信息 ***********************/
+		List<CellInfo> cellInfoList = tm.getAllCellInfo();
 
+		int index = 0;
+		for (CellInfo cellInfo : cellInfoList)
+		{
+			// 获取所有Lte网络信息
+			if (cellInfo instanceof CellInfoLte)
+			{
+
+				if (cellInfo.isRegistered())
+				{
+
+					updateinfo.setPCI(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci()));
+					updateinfo.setCI(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi()));
+					updateinfo.setENODBID(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
+					updateinfo.setCELLID(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
+					updateinfo.setTAC(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
+					//
+				}
+
+			}
+
+			index++;
+		}
+
+		/******************** 4G位置信息 ***********************/
 		updateinfo.settime(LaunTime);
 
 		updateinfo.setAppName(AppName);
@@ -681,10 +758,10 @@ public class TestService extends Service
 		updateinfo.setIMEI(tm.getDeviceId());
 		updateinfo.setIMSI(tm.getSubscriberId());
 		updateinfo.setcorporation(tm.getSimOperatorName());
-		updateinfo.setLAC(String.valueOf(location.getLac()));
-		updateinfo.setCell_Id(String.valueOf(location.getCid()));
+		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
+		updateinfo.setCell_Id_GSM(String.valueOf(location.getCid()));
 
-		updateinfo.setRSSI(RSSI);
+		// updateinfo.setRSSI(RSSI);
 
 		// addInfo.setCQI(CQI);
 		if (netType.equals("LTE"))

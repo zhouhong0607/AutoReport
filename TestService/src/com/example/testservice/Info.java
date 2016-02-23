@@ -22,12 +22,16 @@ public class Info implements Serializable
 	private String IMSI;//IMSI
 //	private String number;//手机号
 	private String corporation;//运营商
-	private String LAC;//LAC号
-	private String Cell_Id;//cell-id号
+	private String LAC_GSM;//LAC号
+	private String Cell_Id_GSM;//cell-id号
 //	private String sigStrength;//信号强度   XXXXXXX
 	private String RSRP;//RSRP
 	private String RSRQ;//RSRQ
-	private String RSSI;//RSRQ
+	/******************2016/2/23删除参数*****************/
+//	private String RSSI;//RSRQ
+	/******************2016/2/23删除参数*****************/
+	
+	
 //	private String fullMemory;//总内存  XXXXXXX
 //	private String availMemory;//可用内存  XXXXXXX
 //	private String cpuName;//cpu名字  XXXXXXX
@@ -49,7 +53,156 @@ public class Info implements Serializable
 	private String NetType;//网络类型 (LTE)
 	private String RSSNR;//SNR
 //	private String CQI;//CQI
-	
+	/******************2016/2/23新加入参数*****************/
+	private String PCI;
+	private String CI;
+	private String ENODBID;
+	private String CELLID;
+	/**
+	 * @return the pCI
+	 */
+	public String getPCI()
+	{
+		return PCI;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @param pCI the pCI to set
+	 */
+	public void setPCI(String pCI)
+	{
+		PCI = pCI;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @return the cI
+	 */
+	public String getCI()
+	{
+		return CI;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @param cI the cI to set
+	 */
+	public void setCI(String cI)
+	{
+		CI = cI;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @return the eNODBID
+	 */
+	public String getENODBID()
+	{
+		return ENODBID;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @param eNODBID the eNODBID to set
+	 */
+	public void setENODBID(String eNODBID)
+	{
+		ENODBID = eNODBID;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @return the cELLID
+	 */
+	public String getCELLID()
+	{
+		return CELLID;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @param cELLID the cELLID to set
+	 */
+	public void setCELLID(String cELLID)
+	{
+		CELLID = cELLID;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @return the tAC
+	 */
+	public String getTAC()
+	{
+		return TAC;
+	}
+
+
+
+
+
+
+
+
+	/**
+	 * @param tAC the tAC to set
+	 */
+	public void setTAC(String tAC)
+	{
+		TAC = tAC;
+	}
+	private String TAC;
+
+	/******************2016/2/23新加入参数*****************/
 	
 	private String Flag;//标志位
 	private boolean upload_Flag;//上传标志位
@@ -180,13 +333,13 @@ public class Info implements Serializable
 	{
 		this.corporation=s;
 	}
-	public void setLAC(String s)
+	public void setLAC_GSM(String s)
 	{
-		this.LAC=s;
+		this.LAC_GSM=s;
 	}
-	public void setCell_Id(String s)
+	public void setCell_Id_GSM(String s)
 	{
-		this.Cell_Id=s;
+		this.Cell_Id_GSM=s;
 	}
 //	public void setsigStrength(String s)
 //	{
@@ -200,10 +353,10 @@ public class Info implements Serializable
 	{
 		this.RSRQ=s;
 	}
-	public void setRSSI(String s)
-	{
-		this.RSSI=s;
-	}
+//	public void setRSSI(String s)
+//	{
+//		this.RSSI=s;
+//	}
 //	public void setfullMemory(String s)
 //	{
 //		this.fullMemory=s;
@@ -333,13 +486,13 @@ public class Info implements Serializable
 	{
 		return this.corporation;
 	}
-	public String getLAC()
+	public String getLAC_GSM()
 	{
-		return this.LAC;
+		return this.LAC_GSM;
 	}
-	public String getCell_Id()
+	public String getCell_Id_GSM()
 	{
-		return this.Cell_Id;
+		return this.Cell_Id_GSM;
 	}
 //	public String getsigStrength()
 //	{
@@ -353,10 +506,10 @@ public class Info implements Serializable
 	{
 		return this.RSRQ;
 	}
-	public String getRSSI()
-	{
-		return this.RSSI;
-	}
+//	public String getRSSI()
+//	{
+//		return this.RSSI;
+//	}
 //	public String getfullMemory()
 //	{
 //		return this.fullMemory;
