@@ -65,6 +65,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.text.TextPaint;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -90,8 +91,8 @@ public class TestService extends Service
 	MyQueue txqueue_laun = new MyQueue(30);// 构建发送接受队列，时间长度10秒
 	MyQueue rxqueue_laun = new MyQueue(30);// 0.1秒间隔 ，20秒的数据
 
-	MyQueue txqueue_exit = new MyQueue(30);// 构建发送接受队列，时间长度10秒
-	MyQueue rxqueue_exit = new MyQueue(30);// 0.1秒间隔 ，20秒的数据
+	MyQueue txqueue_exit = new MyQueue(10);// 构建发送接受队列，时间长度10秒
+	MyQueue rxqueue_exit = new MyQueue(10);// 0.1秒间隔 ，20秒的数据
 
 	int count = 0;// 应用运行时间记录
 	int record = 0;// 记录数据时间
@@ -233,20 +234,25 @@ public class TestService extends Service
 							public void run()
 							{
 								// TODO Auto-generated method stub
-								for (int i = 0; i < MyApp.infolist.size(); i++)
+
+								synchronized ("")
 								{
-									if (!MyApp.infolist.get(i).getupFlag())// 检测没上传过的
+									for (int i = 0; i < MyApp.infolist.size(); i++)
 									{
-										MyApp.infolist.get(i).setUploadTime(getTime());// 每次上传提取时间
-										if (upload_data(MyApp.infolist.get(i)))
+										if (!MyApp.infolist.get(i).getupFlag())// 检测没上传过的
 										{
-											MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为true
-											Log.i("AAA", "60秒上传成功");
-										} else
-										{
-											MyApp.infolist.get(i).setUploadTime("");// 清空上传时间
-											MyApp.infolist.get(i).setUploadNum();// 上传失败记录次数+1
-											Log.i("AAA", "60秒上传失败");
+											MyApp.infolist.get(i).setUploadTime(getTime());// 每次上传提取时间
+											if (upload_data(MyApp.infolist.get(i)))
+											{
+												MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为true
+												Log.i("AAA", "60秒上传成功");
+											} else
+											{
+												
+												MyApp.infolist.get(i).setUploadTime("");// 清空上传时间
+												MyApp.infolist.get(i).setUploadNum();// 上传失败记录次数+1
+												Log.i("AAA", "60秒上传失败");
+											}
 										}
 									}
 								}
@@ -597,7 +603,7 @@ public class TestService extends Service
 		{
 			// TODO: handle exception
 			Log.i("AAA", "响应超时");
-			return true;
+			return false;
 		}
 
 		catch (Exception e)

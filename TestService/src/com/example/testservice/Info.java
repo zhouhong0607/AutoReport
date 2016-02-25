@@ -58,6 +58,12 @@ public class Info implements Serializable
 	private String CI;
 	private String ENODBID;
 	private String CELLID;
+	private String TAC;
+
+	/******************2016/2/23新加入参数*****************/
+	
+	private String Flag;//标志位
+	private boolean upload_Flag;//上传标志位
 	/**
 	 * @return the pCI
 	 */
@@ -200,12 +206,7 @@ public class Info implements Serializable
 	{
 		TAC = tAC;
 	}
-	private String TAC;
 
-	/******************2016/2/23新加入参数*****************/
-	
-	private String Flag;//标志位
-	private boolean upload_Flag;//上传标志位
 	 Info()
 	{
 		this.Flag="0";
