@@ -101,10 +101,8 @@ public class BackMonitor extends Service
 	ConnectivityManager cm = null;
 	TelephonyManager tm = null;
 	// 信息提取
-	String pid = "";// 多个pid加入到一个字符串中
-	int pidNum = 0;// pid计数,每次进入清零
-//	String add_pid;
-//	String add_pid_num;
+	String[] pidInfo=new String[2]; 
+
 	int uid = 0;
 	String RSRP = "";
 	String RSRQ = "";
@@ -114,7 +112,7 @@ public class BackMonitor extends Service
 	String excepTime1;// 第一次异常时间点
 	String excepTime2;// 第二次异常时间点
 	String AppName;
-	String add_uid;
+	
 	String netType;
 	
 	boolean isAbnormal = false;// 异常标志
@@ -235,24 +233,20 @@ public class BackMonitor extends Service
 
 				if (getNetWorkType())// 有网络情况下再进行如下操作
 				{
+				
+					
 					// 对浏览器状态监视
-					if (AppList.FindAppName(getAppName()) != null)// 查找当前应用是否在Applist
+					if (AppList.FindAppName(ExtraUtil.getAppName(ExtraUtil.getCurPackname())) != null)// 查找当前应用是否在Applist
 					{
 						// 第一次进入应用获取pid与uid
 
 						Browserun = true;
 						if (assit == false)// 进入应用的时刻
 						{
-							pid = "";// 每次进入清零
-							pidNum = 0;// 每次进入清零
-
 							LaunTime = ExtraUtil.getCurTime();
 							AppName = AppList.CurAppName;
-							add_uid = String.valueOf(uid);
-
-							getpid();// 根据uid获取pid
-//							add_pid = pid;
-//							add_pid_num = String.valueOf(pidNum);
+							uid=ExtraUtil.getUid(ExtraUtil.getCurPackname());
+							pidInfo=ExtraUtil.getPidInfo(uid);// 根据uid获取pid,由于pid提取依赖uid，所以uid提取应该在pid之前,返回的pidInfo是String[2],第一项是pid信息，第二项是pidNum
 
 							// handler.sendEmptyMessage(2);
 							Log.i("AAA", "应用启动");
@@ -368,7 +362,7 @@ public class BackMonitor extends Service
 								if (!upload_data(new Info()))// http测试不成功
 								{
 									excepTime2 = ExtraUtil.getCurTime();
-									Log.i("AAA", "第二次异常时间" + excepTime1);
+									Log.i("AAA", "第二次异常时间" + excepTime2);
 									isAbnormal2 = true;
 									Log.i("AAA", "第二次异常出现");
 								} else
@@ -392,16 +386,13 @@ public class BackMonitor extends Service
 						rx1 = 0;
 						tx1 = 0;
 						count = 0;
-
 						rxqueue_laun.clear();
 						txqueue_laun.clear();
 						txqueue_exit.clear();
 						rxqueue_exit.clear();
-						// max_rx = 0;
 						isAbnormal = false;
 						isAbnormal2 = false;
-						excepTime1 = "";
-						excepTime2 = "";
+						
 
 					}
 
@@ -412,15 +403,13 @@ public class BackMonitor extends Service
 					rx1 = 0;
 					tx1 = 0;
 					count = 0;
-
 					rxqueue_laun.clear();
 					txqueue_laun.clear();
 					txqueue_exit.clear();
 					rxqueue_exit.clear();
 					isAbnormal = false;
 					isAbnormal2 = false;
-					excepTime1 = "";
-					excepTime2 = "";
+				
 				}
 			}
 		}, 0, 1000);
@@ -515,34 +504,13 @@ public class BackMonitor extends Service
 		}
 	}
 
-	/*************** 获取手机运营商名字 ************************/
-	public String getProvidersName(TelephonyManager telephonyManager)
-	{
-		String ProvidersName = null;
-		telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-		String IMSI; // 返回唯一的用户ID;就是这张卡的编号神马的
-		IMSI = telephonyManager.getSubscriberId();
-		if (IMSI == null)
-			return "unkwon";
-		// IMSI号前面3位460是国家，紧接着后面2位00 02是中国移动，01是中国联通，03是中国电信。其中
-		if (IMSI.startsWith("46000") || IMSI.startsWith("46002"))
-		{
-			ProvidersName = "中国移动";
-		} else if (IMSI.startsWith("46001"))
-		{
-			ProvidersName = "中国联通";
-		} else if (IMSI.startsWith("46003"))
-		{
-			ProvidersName = "中国电信";
-		}
-		return ProvidersName;
-	}
+	
 
 	// 判决是否是LTE
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 		/*********** 对网络类型监视 ***************/
-		String OPname = getProvidersName(tm);
+		String OPname = ExtraUtil.getProvidersName(tm);
 		if (OPname.equals("中国移动"))
 		{
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -612,8 +580,8 @@ public class BackMonitor extends Service
 		/******************** 4G位置信息 ***********************/
 		updateinfo.setLaunTime(LaunTime);
 		updateinfo.setAppName(AppName);
-		updateinfo.setUid(add_uid);
-		updateinfo.setGid(add_uid);// gid与uid相同
+		updateinfo.setUid(String.valueOf(uid));
+		updateinfo.setGid(String.valueOf(uid));// gid与uid相同
 		updateinfo.setLocalIp(ExtraUtil.getlocalIP());// 获取本机IP地址
 		updateinfo.setBrand(android.os.Build.BRAND);
 		updateinfo.setType(android.os.Build.MODEL);
@@ -648,8 +616,8 @@ public class BackMonitor extends Service
 			updateinfo.setPidNumber("N/A");
 		} else
 		{
-			updateinfo.setPid(pid);
-			updateinfo.setPidNumber(String.valueOf(pidNum));
+			updateinfo.setPid(pidInfo[0]);
+			updateinfo.setPidNumber(String.valueOf(pidInfo[1]));
 		}
 
 		if (judge) // true 第一次异常参数
@@ -744,93 +712,8 @@ public class BackMonitor extends Service
 
 	}
 
-	/*************** 获取最顶层程序包名 **********************************/
-	private String getTaskPackname()
-	{
-		String currentApp = null;
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-		{
-			if (!UStats.getUsageStatsList(this).isEmpty())
-			{
-				@SuppressWarnings("ResourceType")
-				UsageStatsManager usm = (UsageStatsManager) this.getSystemService("usagestats");
-				long time = System.currentTimeMillis();
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000,
-						time);
-				if (appList != null && appList.size() > 0)
-				{
-					SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-					for (UsageStats usageStats : appList)
-					{
-						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-					}
-					if (mySortedMap != null && !mySortedMap.isEmpty())
-					{
-						currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-					}
-				}
-			}
-		} else
-		{
 
-			RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
-			currentApp = info1.topActivity.getPackageName();
-		}
-		// Log.i("TAG", "Current App in foreground is: " + currentApp);
-		return currentApp;
-	}
 
-	/*************** 获取当前应用名称 **********************************/
-	public String getAppName()
-	{
-		ApplicationInfo appinfo = null;
-		PackageManager pkgmanager = null;
-		// 包名
-		String appname = "";
-		pkgname = getTaskPackname();
-		// Log.i("AAA", "包名："+pkgname);
-		if (pkgname != null)
-		{
-			try
-			{
-				pkgmanager = (PackageManager) getApplicationContext().getPackageManager();
-				appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
-				uid = appinfo.uid;
-			} catch (PackageManager.NameNotFoundException e)
-
-			{
-				appinfo = null;
-				// TODO: handle exception
-			}
-
-			appname = (String) pkgmanager.getApplicationLabel(appinfo);
-			// Log.i("AAA", appname);
-		}
-		return appname;
-	}
-
-	public void getpid()
-	{
-		// 获取所有正在运行的app
-		List<RunningAppProcessInfo> appProcesses = am.getRunningAppProcesses();
-		// 遍历app，获取应用名称或者包名
-		for (RunningAppProcessInfo appProcess : appProcesses)
-		{
-			if (appProcess.uid == uid)// 根据uid获取pid
-			{
-				if (appProcess != appProcesses.get(appProcesses.size() - 1))
-				{
-					pid += String.valueOf(appProcess.pid) + ",";
-					pidNum++;
-					// Log.i("AAA", "pid:" + pid);
-				} else
-				{
-					pid += String.valueOf(appProcess.pid);
-					pidNum++;
-				}
-			}
-		}
-
-	}
+	
 
 }
