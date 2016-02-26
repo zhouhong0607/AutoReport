@@ -1,4 +1,4 @@
-package com.example.testservice;
+package com.autoreport.datastructure;
 
 /**
  * Created by Administrator on 2016/2/26.
@@ -45,7 +45,7 @@ public class Info implements Serializable
 	private String Flag;// 标志位
 	private int upload_Flag;// 上传标志位
 	//构造方法
-	Info()
+	public Info()
 	{
 		this.Flag = "0";
 		this.upload_Flag = 0;

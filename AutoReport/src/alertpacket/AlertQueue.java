@@ -1,6 +1,6 @@
 package alertpacket;
 
-import com.example.testservice.Info;
+import com.autoreport.datastructure.Info;
 
 public class AlertQueue
 {

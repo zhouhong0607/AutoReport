@@ -1,10 +1,17 @@
-package com.example.testservice;
+package com.autoreport.activity;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+
+import com.autoreport.app.R;
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
+import com.autoreport.datastructure.MyApp;
+import com.autoreport.service.BackMonitor;
+import com.autoreport.util.UStats;
 
 import android.app.Activity;
 import android.app.usage.UsageStats;
@@ -38,7 +45,7 @@ public class MainActivity extends Activity
 	IntentFilter filter1 = new IntentFilter();
 
 	// 绑定服务*******************
-	private TestService.UpdateBinder updatebinder;
+	private BackMonitor.UpdateBinder updatebinder;
 	private ServiceConnection connection = new ServiceConnection()
 	{
 
@@ -53,7 +60,7 @@ public class MainActivity extends Activity
 		public void onServiceConnected(ComponentName name, IBinder service)
 		{
 			// TODO Auto-generated method stub
-			updatebinder = (TestService.UpdateBinder) service;
+			updatebinder = (BackMonitor.UpdateBinder) service;
 			updatebinder.sendUpdateBro();// 建立连接时发送广播
 		}
 	};
@@ -99,7 +106,8 @@ public class MainActivity extends Activity
 			}
 		});
 
-		Intent i = new Intent(this, TestService.class);
+		//启动后台服务 BackMonitor
+		Intent i = new Intent(this, BackMonitor.class);
 		startService(i);
 
 		// this.finish();
@@ -137,13 +145,13 @@ public class MainActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-		Intent bindIntent = new Intent(this, TestService.class);// 每次调用onStart执行一次绑定
+		Intent bindIntent = new Intent(this, BackMonitor.class);// 每次调用onStart执行一次绑定
 		bindService(bindIntent, connection, BIND_AUTO_CREATE);
 		//读取数据库里面的数据
 		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
 		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
 		MyApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
-		
+		databaseOperator.CloseDatabase();
 		if (MyApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{
 			InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item, MyApp.infolist);

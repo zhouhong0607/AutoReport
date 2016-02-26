@@ -1,4 +1,4 @@
-package com.example.testservice;
+package com.autoreport.activity;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -22,6 +22,10 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+
+import com.autoreport.app.R;
+import com.autoreport.datastructure.Info;
+import com.autoreport.datastructure.MyApp;
 
 import android.app.Activity;
 import android.content.Intent;

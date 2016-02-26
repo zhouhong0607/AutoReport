@@ -1,4 +1,4 @@
-package com.example.testservice;
+package com.autoreport.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -9,6 +9,8 @@ import android.widget.Toast;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.autoreport.datastructure.Info;
 
 /**
  * Created by Administrator on 2016/2/26. 数据库操作类， 负责 添加 ，删除 ，更新 ，查询，数据
@@ -81,6 +83,7 @@ public class DatabaseOperator
 		{
 			db.endTransaction();// 结束事务
 		}
+		
 	}
 
 	/************
@@ -229,5 +232,10 @@ public class DatabaseOperator
 			db.endTransaction();// 结束事务
 		}
 		return queryResult;
+	}
+	
+	public void CloseDatabase()
+	{
+		this.db.close();
 	}
 }

@@ -1,6 +1,9 @@
-package com.example.testservice;
+package com.autoreport.activity;
 
 import java.util.List;
+
+import com.autoreport.app.R;
+import com.autoreport.datastructure.Info;
 
 import android.content.Context;
 import android.view.LayoutInflater;

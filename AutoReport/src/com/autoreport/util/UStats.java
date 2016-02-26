@@ -1,4 +1,4 @@
-package com.example.testservice;
+package com.autoreport.util;
 
 import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;

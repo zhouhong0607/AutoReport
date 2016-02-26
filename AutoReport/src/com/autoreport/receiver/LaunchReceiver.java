@@ -1,4 +1,7 @@
-package com.example.testservice;
+package com.autoreport.receiver;
+
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

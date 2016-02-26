@@ -1,4 +1,4 @@
-package com.example.testservice;
+package com.autoreport.service;
 
 import android.R.integer;
 import android.app.ActivityManager;
@@ -51,6 +51,15 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
+import com.autoreport.datastructure.AppList;
+import com.autoreport.datastructure.Info;
+import com.autoreport.datastructure.MyApp;
+import com.autoreport.datastructure.MyQueue;
+import com.autoreport.util.ExtraUtil;
+import com.autoreport.util.UStats;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
@@ -74,53 +83,32 @@ import android.net.TrafficStats;
 import android.util.Log;
 import android.widget.Toast;
 
-public class TestService extends Service
+public class BackMonitor extends Service
 {
-	// long max_rx = 0;
 	long tx1 = 0;
 	long rx1 = 0;
-	// public static final String MY_PKG_NAME = "com.UCMobile";// UC浏览器包名
-	// public static final String TAG = "测试";// 日志输出
-	// public static final long TXJudegeNumber = 5;// 发送判断标准，1KB
-	// public static final long RXJudegeNumber = 51200;// 接收判断标准，20KB
-
 	boolean Browserun = false;// 浏览器运行判断
 	boolean assit = false;// 辅助判断参数
 	boolean Browserquit = false;// 浏览器退出判断
-
 	MyQueue txqueue_laun = new MyQueue(30);// 构建发送接受队列，时间长度10秒
 	MyQueue rxqueue_laun = new MyQueue(30);// 0.1秒间隔 ，20秒的数据
-
 	MyQueue txqueue_exit = new MyQueue(10);// 构建发送接受队列，时间长度10秒
 	MyQueue rxqueue_exit = new MyQueue(10);// 0.1秒间隔 ，20秒的数据
-
 	int count = 0;// 应用运行时间记录
-	int record = 0;// 记录数据时间
 	int upload_time = 0;// 周期上传时间
-
 	String pkgname = "";
-
-	String data = "";
-	// 文件记录
-	String filePath = "/sdcard/Test/";
-	String drxfileName = "drx.txt";
-
 	ActivityManager am = null;
 	ConnectivityManager cm = null;
 	TelephonyManager tm = null;
-
 	// 信息提取
-	Info addInfo = new Info();// 每次添加的异常信息单元
-
 	String pid = "";// 多个pid加入到一个字符串中
 	int pidNum = 0;// pid计数,每次进入清零
+//	String add_pid;
+//	String add_pid_num;
 	int uid = 0;
 	String RSRP = "";
 	String RSRQ = "";
-	String RSSI = "";
-	String sigStr = "";
 	String RSSNR = "";// 新@@@@@@@@@
-	// String CQI = "";// 新@@@@@@@@@
 	String LaunTime;
 	String exitTime;
 	String excepTime1;// 第一次异常时间点
@@ -128,9 +116,7 @@ public class TestService extends Service
 	String AppName;
 	String add_uid;
 	String netType;
-	String add_pid;
-	String add_pid_num;
-
+	
 	boolean isAbnormal = false;// 异常标志
 	boolean isAbnormal2 = false;// 异常标志
 
@@ -143,58 +129,37 @@ public class TestService extends Service
 		am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 
 		/******************* 信号强度监听 **********************/
-
 		PhoneStateListener MyPhoneListener = new PhoneStateListener()
 		{
 			public void onSignalStrengthsChanged(SignalStrength signalStrength)
 			{
-
 				try
 				{
 					String singalInformation = signalStrength.toString();
-
-					// Log.i("BBB", singalInformation);
-
 					String parts[] = singalInformation.split(" ");
-
-					// for(int i=0;i<parts.length;i++)
-					// {
-					// Log.i("BBB","第"+i+"个:"+ parts[i]);
-					// }
-
-					// ASU 8, RSRP 9,RSRQ 10 snr 11 华为荣耀系列 7为AUS（需要提取） 8为RSRP
-					// 9为RSRQ 10为SNR
-
-					// sigStr = parts[8];
-					// RSSI = String.valueOf(-113 + 2 *
-					// Integer.parseInt(parts[8]));
-
+					// 手机品牌判断,根据不同品牌提取参数
 					if (android.os.Build.BRAND.toUpperCase().equals("HUAWEI"))
 					{
 						RSRP = parts[11];
 						RSRQ = parts[12];
 
-						if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
+						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
 							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[13])));
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
 					{
-
 						RSRP = parts[8];
 						RSRQ = parts[9];
-
-						if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
+						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
 						{
 							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[10])));
 						}
-
 					} else
 					{
 						RSRP = parts[9];
 						RSRQ = parts[10];
-
-						if (isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
+						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
 						{
 							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
 						}
@@ -205,14 +170,8 @@ public class TestService extends Service
 					// e.printStackTrace();
 					// Log.e("BBB", "信号强度监视有问题");
 				}
-				// Log.i("BBB", "RSSNR"+RSSNR);
-
-				// RSSI=String.valueOf(Integer.valueOf(RSRP)+17-Integer.valueOf(RSRQ));
-				// CQI = parts[12];// 新@@@@@@@@@
-
 			}
 		};
-
 		tm.listen(MyPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		/******************* 信号强度监听 **********************/
 
@@ -246,7 +205,7 @@ public class TestService extends Service
 									{
 										if (uploadList.get(i).getUpload_Flag() == 0)// 检测没上传过的
 										{
-											uploadList.get(i).setUploadTime(getTime());// 每次上传提取时间
+											uploadList.get(i).setUploadTime(ExtraUtil.getCurTime());// 每次上传提取时间
 											if (upload_data(uploadList.get(i)))
 											{
 												uploadList.get(i).setUpload_FlagOK();// 上传成功设置上传标志位为true
@@ -259,11 +218,13 @@ public class TestService extends Service
 												Log.i("AAA", "60秒上传失败");
 											}
 										}
-										//将改变的这条Info信息同步到数据库, 根据id更新
+										// 将改变的这条Info信息同步到数据库, 根据id更新
 										databaseOperator.updateFromInfo(uploadList.get(i), uploadList.get(i).getId());
-										
+
 									}
 								}
+
+								databaseOperator.CloseDatabase();// 关闭数据库
 							}
 						}
 					}).start();
@@ -275,7 +236,6 @@ public class TestService extends Service
 				if (getNetWorkType())// 有网络情况下再进行如下操作
 				{
 					// 对浏览器状态监视
-					// Log.i("AAA", AppList.FindAppName(getAppName()));
 					if (AppList.FindAppName(getAppName()) != null)// 查找当前应用是否在Applist
 					{
 						// 第一次进入应用获取pid与uid
@@ -286,13 +246,13 @@ public class TestService extends Service
 							pid = "";// 每次进入清零
 							pidNum = 0;// 每次进入清零
 
-							LaunTime = getTime();
+							LaunTime = ExtraUtil.getCurTime();
 							AppName = AppList.CurAppName;
 							add_uid = String.valueOf(uid);
 
 							getpid();// 根据uid获取pid
-							add_pid = pid;
-							add_pid_num = String.valueOf(pidNum);
+//							add_pid = pid;
+//							add_pid_num = String.valueOf(pidNum);
 
 							// handler.sendEmptyMessage(2);
 							Log.i("AAA", "应用启动");
@@ -305,7 +265,7 @@ public class TestService extends Service
 					{
 						Browserquit = true;
 						Log.i("AAA", "应用退出");
-						exitTime = getTime();
+						exitTime = ExtraUtil.getCurTime();
 						// handler.sendEmptyMessage(3);
 					} else
 					{
@@ -337,13 +297,8 @@ public class TestService extends Service
 
 						if (count < 31) // 30个数据
 						{
-							//
-							// if (max_rx < drx)
-							// max_rx = drx;
 							rxqueue_laun.insert(drx);
-							// Log.i("AAA", String.valueOf(drx));
 							txqueue_laun.insert(dtx);
-							record++;
 						}
 
 						rxqueue_exit.insert(drx);
@@ -361,16 +316,10 @@ public class TestService extends Service
 							{
 
 								Log.i("AAA", "可疑异常出现");
-
-								// new Thread(new Runnable()// 进行一次http二次测试
-								// {
-								// @Override
-								// public void run()
-								// {
 								Log.i("AAA", "开始http测试");
 								if (!upload_data(new Info()))// http测试不成功
 								{
-									excepTime1 = getTime();
+									excepTime1 = ExtraUtil.getCurTime();
 									Log.i("AAA", "第一次异常时间" + excepTime1);
 									isAbnormal = true;
 									Log.i("AAA", "异常出现");
@@ -379,8 +328,7 @@ public class TestService extends Service
 									Log.i("AAA", "不是异常");
 
 								}
-								// }
-								// }).start();
+				
 							} else
 							{
 								Log.i("AAA", "初次判决不是异常");
@@ -401,7 +349,7 @@ public class TestService extends Service
 
 							if (rxqueue_laun.get_maxValue() < 10000)// 异常判决
 							{
-								excepTime1 = getTime();
+								excepTime1 = ExtraUtil.getCurTime();
 								Log.i("AAA", "第一次异常时间" + excepTime1);
 								isAbnormal = true;
 								Log.i("AAA", "30秒内异常出现");
@@ -414,18 +362,12 @@ public class TestService extends Service
 
 						if (count > 35)// 进行第二次 测试
 						{
-							// new Thread(new Runnable()
-							// {
-							// @Override
-							// public void run()
-							// {
-
 							if (rxqueue_exit.get_maxValue() < 10000)
 							{
 								Log.i("AAA", "开始http测试");
 								if (!upload_data(new Info()))// http测试不成功
 								{
-									excepTime2 = getTime();
+									excepTime2 = ExtraUtil.getCurTime();
 									Log.i("AAA", "第二次异常时间" + excepTime1);
 									isAbnormal2 = true;
 									Log.i("AAA", "第二次异常出现");
@@ -435,64 +377,22 @@ public class TestService extends Service
 
 								}
 							}
-
-							// }
-							// }).start();
 							if (isAbnormal2)
 							{
 								getInfo(false);// 参数true 为 第二次 异常，
-								
+
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
 							getInfo(true);// 参数true为 第一次 异常，
-					
-							// MyApp.infolist.remove(MyApp.infolist.size() -
-							// 1);// 测试通过
-							// // ，移除这条非异常数据
 						}
 
-						/****************************** 文件操作 ***********************/
-						// if (MyApp.infolist.size() > 0)
-						// {
-						// // 记录到文件
-						// String sdrx = "\r\n" + "时间:" +
-						// MyApp.infolist.get(MyApp.infolist.size() -
-						// 1).gettime()
-						// + "\r\n" + "TX数据:" + txqueue.get_data() + "\r\n" +
-						// "TX期望:" + txqueue.expectation
-						// + "\r\n" + "TX方差:" + txqueue.variance + "\r\n" +
-						// "TX最大值:" + txqueue.get_maxValue()
-						// + "\r\n" + "RX数据:" + rxqueue.get_data() + "\r\n" +
-						// "RX期望:" + rxqueue.expectation
-						// + "\r\n" + "RX方差:" + rxqueue.variance + "\r\n" +
-						// "RX最大值:" + rxqueue.get_maxValue()
-						// + "\r\n" + "RSRP:" +
-						// MyApp.infolist.get(MyApp.infolist.size() -
-						// 1).getRSRP()
-						// + "\r\n" + "RSRQ:" +
-						// MyApp.infolist.get(MyApp.infolist.size() -
-						// 1).getRSRQ()
-						// + /*
-						// * "\r\n" + "CQI:" +
-						// * MyApp.infolist.get(MyApp.infolist.
-						// * size() - 1).getCQI() +
-						// */"\r\n" + "SNR:" +
-						// MyApp.infolist.get(MyApp.infolist.size() -
-						// 1).getSNR()
-						// + "\r\n"
-						// + "\r\n" + "网络类型:" +
-						// MyApp.infolist.get(MyApp.infolist.size() -
-						// 1).getNetType();
-						// writeTxtToFile(sdrx, filePath, drxfileName);
-						// }
-						/****************************** 文件操作 ***********************/
 						// 数据清零
 						rx1 = 0;
 						tx1 = 0;
 						count = 0;
-						record = 0;
+
 						rxqueue_laun.clear();
 						txqueue_laun.clear();
 						txqueue_exit.clear();
@@ -512,26 +412,22 @@ public class TestService extends Service
 					rx1 = 0;
 					tx1 = 0;
 					count = 0;
-					record = 0;
+
 					rxqueue_laun.clear();
 					txqueue_laun.clear();
 					txqueue_exit.clear();
 					rxqueue_exit.clear();
-					// max_rx = 0;
 					isAbnormal = false;
 					isAbnormal2 = false;
 					excepTime1 = "";
 					excepTime2 = "";
 				}
-
 			}
 		}, 0, 1000);
-
 	}
 
 	public boolean upload_data(Info info)
 	{
-
 		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
 		String urlStr = "http://www.mengqi.win/LoginServlet";
 
@@ -564,8 +460,6 @@ public class TestService extends Service
 		params.add(new BasicNameValuePair("LAC", info.getLAC_GSM()));
 		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id_GSM()));
 		params.add(new BasicNameValuePair("RSRP", info.getRSRP()));
-		// params.add(new BasicNameValuePair("RSSI", info.getRSSI()));
-
 		params.add(new BasicNameValuePair("PCI", info.getPCI()));
 		params.add(new BasicNameValuePair("CI", info.getCI()));
 		params.add(new BasicNameValuePair("ENODBID", info.getENODBID()));
@@ -612,9 +506,7 @@ public class TestService extends Service
 			// TODO: handle exception
 			Log.i("AAA", "响应超时");
 			return false;
-		}
-
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			// TODO: handle exception
 			e.printStackTrace();
@@ -623,9 +515,7 @@ public class TestService extends Service
 		}
 	}
 
-	/**
-	 * 返回用户手机运营商名称 * @param telephonyManager * @return
-	 */
+	/*************** 获取手机运营商名字 ************************/
 	public String getProvidersName(TelephonyManager telephonyManager)
 	{
 		String ProvidersName = null;
@@ -645,28 +535,14 @@ public class TestService extends Service
 		{
 			ProvidersName = "中国电信";
 		}
-		// try
-		// {
-		// ProvidersName = URLEncoder.encode("" + ProvidersName, "UTF-8");
-		// } catch (UnsupportedEncodingException e)
-		// {
-		// e.printStackTrace();
-		// // TODO Auto-generated catch block e.printStackTrace();
-		// }
 		return ProvidersName;
 	}
 
 	// 判决是否是LTE
 	public boolean getNetWorkType()// 移动网络返回true
 	{
-		// return true;
 		/*********** 对网络类型监视 ***************/
-
-		// Log.i("AAA", "状态" + tm.getSimState()); //5 是 准备状态
 		String OPname = getProvidersName(tm);
-
-		// Log.i("AAA", "状态" + OPname); //5 是 准备状态
-
 		if (OPname.equals("中国移动"))
 		{
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -702,31 +578,7 @@ public class TestService extends Service
 
 	}
 
-	public boolean isBigDecimal(String str)// 判断是否是小数
-	{
-		Boolean strResult = str.matches("-?[0-9]+.*[0-9]*");
-		if (strResult == true)
-		{
-			return true;
-		} else
-		{
-			return false;
-		}
-	}
-
-	public String getTime()
-	{
-		// 获取时间*****************
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date curDate = new Date(System.currentTimeMillis());// 获取当前时间
-
-		String str = formatter.format(curDate);
-
-		return str;
-		// 获取时间*****************
-	}
-
-	// 余下信息提取与加入到异常信息向量
+	/*********** 信息提取，记录到数据库 ***************/
 	public void getInfo(boolean judge)// 获取信息
 	{
 		Info updateinfo = new Info();
@@ -759,13 +611,10 @@ public class TestService extends Service
 
 		/******************** 4G位置信息 ***********************/
 		updateinfo.setLaunTime(LaunTime);
-
 		updateinfo.setAppName(AppName);
 		updateinfo.setUid(add_uid);
-
 		updateinfo.setGid(add_uid);// gid与uid相同
-
-		updateinfo.setLocalIp(getlocalIP());// 获取本机IP地址
+		updateinfo.setLocalIp(ExtraUtil.getlocalIP());// 获取本机IP地址
 		updateinfo.setBrand(android.os.Build.BRAND);
 		updateinfo.setType(android.os.Build.MODEL);
 		updateinfo.setVersion(android.os.Build.VERSION.RELEASE);
@@ -774,10 +623,6 @@ public class TestService extends Service
 		updateinfo.setCorporation(tm.getSimOperatorName());
 		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
 		updateinfo.setCell_Id_GSM(String.valueOf(location.getCid()));
-
-		// updateinfo.setRSSI(RSSI);
-
-		// addInfo.setCQI(CQI);
 		if (netType.equals("LTE"))
 		{
 			updateinfo.setRSRP(RSRP);
@@ -791,13 +636,9 @@ public class TestService extends Service
 			updateinfo.setRSSNR("N/A");
 
 		}
-		updateinfo.setMemRate(getMemRate());// 内存占用率
+		updateinfo.setMemRate(ExtraUtil.getMemRate());// 内存占用率
 		updateinfo.setNetType(netType);// 网络类型
-		// addInfo.setcpuName(getCpuName());
-		// addInfo.setcpuMaxFreq(getMaxCpuFreq());
-		// addInfo.setcpuMinFreq(getMinCpuFreq());
-		// addInfo.setcpuCurFreq(getCurCpuFreq());
-		updateinfo.setCpuRate(getCpuRate());
+		updateinfo.setCpuRate(ExtraUtil.getCpuRate());
 		updateinfo.setExitTime(exitTime);
 		updateinfo.setUseTime(String.valueOf(count));
 
@@ -807,8 +648,8 @@ public class TestService extends Service
 			updateinfo.setPidNumber("N/A");
 		} else
 		{
-			updateinfo.setPid(add_pid);
-			updateinfo.setPidNumber(add_pid_num);
+			updateinfo.setPid(pid);
+			updateinfo.setPidNumber(String.valueOf(pidNum));
 		}
 
 		if (judge) // true 第一次异常参数
@@ -824,59 +665,17 @@ public class TestService extends Service
 			updateinfo.setTxByte(txqueue_exit.get_data());// 设置发送字节数据
 			updateinfo.setRxByte(rxqueue_exit.get_data());// 接收字节量
 		}
-
-		updateinfo.setFlagOK();//设置为异常数据
-		
-		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
-		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
-		databaseOperator.insertToInfo(updateinfo);//将这条信息插入到数据库
-		
-
+		updateinfo.setFlagOK();// 设置为异常数据
+		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库“AutoReport”
+		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+		databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
+		databaseOperator.CloseDatabase();// 关闭数据库
 		Log.i("AAA", "异常信息加入成功");
 
 	}
 
-	/**
-	 * 获取手机内存占用率
-	 *
-	 * @return
-	 */
-	private String getMemRate()
-	{
-
-		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
-		am.getMemoryInfo(mi);
-		return String.valueOf((mi.totalMem - mi.availMem) * 100 / mi.totalMem) + "%";// 内存使用率
-	}
-
-	/**
-	 * 获取手机CPU占用率
-	 *
-	 * @return
-	 */
-	public static String getCpuRate()
-	{ // 获取系统总CPU使用时间
-		String[] cpuInfos = null;
-		try
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("/proc/stat")), 1000);
-			String load = reader.readLine();
-			reader.close();
-			cpuInfos = load.split(" ");
-		} catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
-
-		long usedCpu = Long.parseLong(cpuInfos[2]) + Long.parseLong(cpuInfos[3]) + Long.parseLong(cpuInfos[4]);
-		long totalCpu = Long.parseLong(cpuInfos[2]) + Long.parseLong(cpuInfos[3]) + Long.parseLong(cpuInfos[4])
-				+ Long.parseLong(cpuInfos[5]);
-
-		return String.valueOf(usedCpu * 100 / totalCpu) + "%";
-	}
-
-	// *********************binder
-	class UpdateBinder extends Binder
+	/********************* binder *****************/
+	public class UpdateBinder extends Binder
 	{
 		public void sendUpdateBro()// 一旦接收到活动的启动，发送更新广播
 		{
@@ -894,7 +693,8 @@ public class TestService extends Service
 		return myUpdateBinder;
 	}
 
-	// *********************binder
+	/********************* binder *****************/
+
 	Handler handler = new Handler()
 	{
 		@Override
@@ -944,13 +744,7 @@ public class TestService extends Service
 
 	}
 
-	/**
-	 * 获取最顶层程序包名
-	 *
-	 * @return
-	 */
-	// @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	// @SuppressLint("NewApi")
+	/*************** 获取最顶层程序包名 **********************************/
 	private String getTaskPackname()
 	{
 		String currentApp = null;
@@ -986,10 +780,9 @@ public class TestService extends Service
 		return currentApp;
 	}
 
-	// 获取当前应用名称
+	/*************** 获取当前应用名称 **********************************/
 	public String getAppName()
 	{
-
 		ApplicationInfo appinfo = null;
 		PackageManager pkgmanager = null;
 		// 包名
@@ -1036,108 +829,6 @@ public class TestService extends Service
 					pidNum++;
 				}
 			}
-		}
-
-	}
-
-	public String getlocalIP()
-	{
-		try
-		{
-			for (Enumeration<NetworkInterface> mEnumeration = NetworkInterface.getNetworkInterfaces(); mEnumeration
-					.hasMoreElements();)
-			{
-				NetworkInterface intf = mEnumeration.nextElement();
-				for (Enumeration<InetAddress> enumIPAddr = intf.getInetAddresses(); enumIPAddr.hasMoreElements();)
-				{
-					InetAddress inetAddress = enumIPAddr.nextElement();
-					// 如果不是回环地址
-					if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address)
-					{
-						// 直接返回本地IP地址
-						// Log.i("AAA", "提取IP成功");
-						return inetAddress.getHostAddress().toString();
-
-					}
-				}
-			}
-		} catch (SocketException ex)
-		{
-			Log.e("AAA", ex.toString());
-		}
-		return null;
-
-	}
-
-	/**
-	 * 文件读写
-	 *
-	 * @return
-	 */
-
-	// 数据记录dtx.text, drx.text
-	public void writeTxtToFile(String strcontent, String filePath, String fileName)
-	{
-		// 生成文件夹之后，再生成文件，不然会出错
-		makeFilePath(filePath, fileName);
-
-		String strFilePath = filePath + fileName;
-		// 每次写入时，都换行写
-		String strContent = strcontent + "\r\n";
-		try
-		{
-			File file = new File(strFilePath);
-			if (!file.exists())
-			{
-				Log.d("TestFile", "Create the file:" + strFilePath);
-				file.getParentFile().mkdirs();
-				file.createNewFile();
-			}
-
-			RandomAccessFile raf = new RandomAccessFile(file, "rwd");
-			raf.seek(file.length());
-			raf.write(strContent.getBytes());
-
-			raf.close();
-		} catch (Exception e)
-		{
-			Log.e("TestFile", "Error on write File:" + e);
-		}
-	}
-
-	// 生成文件
-	public File makeFilePath(String filePath, String fileName)
-	{
-		File file = null;
-		makeRootDirectory(filePath);
-		try
-		{
-			file = new File(filePath + fileName);
-			if (!file.exists())
-			{
-				file.createNewFile();
-			}
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return file;
-	}
-
-	// 生成文件夹
-	public static void makeRootDirectory(String filePath)
-	{
-		File file = null;
-		try
-		{
-			file = new File(filePath);
-			if (!file.exists())
-			{
-				file.mkdir();
-			}
-		} catch (Exception e)
-		{
-			Log.i("error:", e + "");
 		}
 
 	}

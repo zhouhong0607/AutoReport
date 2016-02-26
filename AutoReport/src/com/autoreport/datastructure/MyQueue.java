@@ -1,4 +1,4 @@
-package com.example.testservice;
+package com.autoreport.datastructure;
 
 public class MyQueue
 {
@@ -117,7 +117,7 @@ public class MyQueue
 		expectation = 0;
 	}
 
-	protected long get_maxValue()
+	public long get_maxValue()
 	{
 		int location = front;
 		for (int i = 0; i < nItems; i++)// 取出所有数据
@@ -129,7 +129,7 @@ public class MyQueue
 		return max_Value;
 	}
 
-	protected void calculate_expectation()// 计算期望
+	public void calculate_expectation()// 计算期望
 	{
 		long sum = 0;
 		int location = front;
@@ -153,7 +153,7 @@ public class MyQueue
 
 	}
 
-	protected void calculate_variance()// 计算方差
+	public void calculate_variance()// 计算方差
 	{
 		long sum = 0;
 		int location = front;
@@ -176,7 +176,7 @@ public class MyQueue
 		}
 	}
 
-	protected String get_data()
+	public String get_data()
 	{
 		String s = "";
 		long sum=0;
