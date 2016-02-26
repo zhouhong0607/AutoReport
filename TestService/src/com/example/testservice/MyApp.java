@@ -14,8 +14,5 @@ import android.util.Log;
 
 public class MyApp extends Application
 {
-//	public static  Vector<Info> infolist = new Vector<Info>();// 异常信息列表
-	public static List<Info> infolist=new ArrayList<Info>();
-	
-	
+	public static List<Info> infolist=new ArrayList<Info>();//用于ListView显示
 }

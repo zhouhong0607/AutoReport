@@ -28,7 +28,7 @@ public class InfoListAdapter extends ArrayAdapter<Info>
 		Info info=getItem(position);//获取当前Info实例
 		View view=LayoutInflater.from(getContext()).inflate(resourceId, null);
 		TextView info_list_view=(TextView)view.findViewById(R.id.item_view);
-		info_list_view.setText(info.gettime());//将时间戳显示出来
+		info_list_view.setText(info.getExcepTime());//按异常事件 的异常时间信息显示
 		return view;
 	}
 }

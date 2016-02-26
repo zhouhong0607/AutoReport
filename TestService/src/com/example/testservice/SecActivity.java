@@ -96,20 +96,20 @@ public class SecActivity extends Activity
 		// 25项信息
 		// 手机基本信息
 		mtextview1.append("手机基本信息:");
-		mtextview2.append("品牌:          " + info.getbrand() + "\n");
-		mtextview2.append("型号:          " + info.gettype() + "\n");
-		mtextview2.append("版本:           " + info.getversion() + "\n");
+		mtextview2.append("品牌:          " + info.getBrand() + "\n");
+		mtextview2.append("型号:          " + info.getType() + "\n");
+		mtextview2.append("版本:           " + info.getVersion() + "\n");
 		mtextview2.append("IMEI:          " + info.getIMEI() + "\n");
 		mtextview2.append("IMSI:          " + info.getIMSI() + "\n");
-		mtextview2.append("本机IP地址:  " + info.getlocalIp() + "\n");
+		mtextview2.append("本机IP地址:  " + info.getLocalIp() + "\n");
 		mtextview2.append("内存占用率:  " + info.getMemRate() + "\n");
-		mtextview2.append("CPU使用率:  " + info.getcpuRate() + "\n");
+		mtextview2.append("CPU使用率:  " + info.getCpuRate() + "\n");
 
 		// 无线环境信息
 
 		mtextview3.append("无线环境信息:");
 
-		mtextview4.append("运营商:  " + info.getcorporation() + "\n");
+		mtextview4.append("运营商:  " + info.getCorporation() + "\n");
 		mtextview4.append("网络类型:  " + info.getNetType() + "\n");
 		mtextview4.append("LAC_GSM:  " + info.getLAC_GSM() + "\n");
 		mtextview4.append("Cell-ID_GSM:  " + info.getCell_Id_GSM() + "\n");
@@ -125,22 +125,22 @@ public class SecActivity extends Activity
 		mtextview4.append("RSRP:  " + info.getRSRP() + "\n");
 		mtextview4.append("RSRQ:  " + info.getRSRQ() + "\n");
 //		mtextview4.append("RSSI:  " + info.getRSSI() + "\n");
-		mtextview4.append("SNR:  " + info.getSNR() + "\n");
+		mtextview4.append("SNR:  " + info.getRSSNR() + "\n");
 		// 应用业务信息
 
 		mtextview5.append("应用业务信息:");
 
-		mtextview6.append("启动时间:  " + info.gettime() + "\n");
+		mtextview6.append("启动时间:  " + info.getLaunTime() + "\n");
 		mtextview6.append("异常时间:  " + info.getExcepTime() + "\n");
 		mtextview6.append("上报时间:  " + info.getUploadTime() + "\n");
 		mtextview6.append("上报次数:  " + info.getUploadNum() + "\n");
-		mtextview6.append("退出时间:  " + info.getextime() + "\n");
-		mtextview6.append("运行时间:  " + info.getusetime() + "\n");
+		mtextview6.append("退出时间:  " + info.getExitTime() + "\n");
+		mtextview6.append("运行时间:  " + info.getUseTime() + "\n");
 		mtextview6.append("应用名称:  " + info.getAppName() + "\n");
-		mtextview6.append("UID:  " + info.getuid() + "\n");
-		mtextview6.append("PID:  " + info.getpid() + "\n");
-		mtextview6.append("进程数量:  " + info.getpidNumber() + "\n");
-		mtextview6.append("GID:  " + info.getgid() + "\n");
+		mtextview6.append("UID:  " + info.getUid() + "\n");
+		mtextview6.append("PID:  " + info.getPid() + "\n");
+		mtextview6.append("进程数量:  " + info.getPidNumber() + "\n");
+		mtextview6.append("GID:  " + info.getGid() + "\n");
 		mtextview6.append("发送字节量:  " + info.getTxByte() + "\n");
 		mtextview6.append("接收字节量:  " + info.getRxByte() + "\n");
 

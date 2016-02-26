@@ -1,69 +1,464 @@
 package com.example.testservice;
 
+/**
+ * Created by Administrator on 2016/2/26.
+ */
+
 import java.io.Serializable;
-
-import org.apache.http.entity.SerializableEntity;
-
 
 public class Info implements Serializable
 {
-	
-	//27项信息
-	private String launTime;//启动时刻
-	private String exitTime;//退出时刻
-	private String excepTime;//异常时刻
-	private int uploadNum;//失败上传的次数
-	private String uploadTime;//上报时刻
-	private String useTime;//使用时间
-	private String brand;//品牌
-	private String type;//型号
-	private String version;//版本
-	private String IMEI;//IMEI
-	private String IMSI;//IMSI
-//	private String number;//手机号
-	private String corporation;//运营商
-	private String LAC_GSM;//LAC号
-	private String Cell_Id_GSM;//cell-id号
-//	private String sigStrength;//信号强度   XXXXXXX
-	private String RSRP;//RSRP
-	private String RSRQ;//RSRQ
-	/******************2016/2/23删除参数*****************/
-//	private String RSSI;//RSRQ
-	/******************2016/2/23删除参数*****************/
-	
-	
-//	private String fullMemory;//总内存  XXXXXXX
-//	private String availMemory;//可用内存  XXXXXXX
-//	private String cpuName;//cpu名字  XXXXXXX
-//	private String cpuMaxFreq;//cpu最大频率  XXXXXXX
-//	private String cpuMinFreq;//cpu最小频率  XXXXXXX
-//	private String cpuCurFreq;//cpu当前频率  XXXXXXX
-	private String cpuRate;//cpu使用率   ！！！！！！！！！！！需要修改，全部占比
-	
-	//新加项目
-	private String localIp;//本机IP
-	private String AppName;//应用名称
-	private String uid;//uid
-	private String pid;//pid(多个)
-	private String gid;//进程组id
-	private String pidNumber;//进程数
-	private String MemRate;//内存占用率
-	private String TxByte;//发送字节量
-	private String RxByte;//接收字节量
-	private String NetType;//网络类型 (LTE)
-	private String RSSNR;//SNR
-//	private String CQI;//CQI
-	/******************2016/2/23新加入参数*****************/
+	private int id;
+	private String brand;// 品牌
+	private String type;// 型号
+	private String launTime;// 启动时刻
+	private String exitTime;// 退出时刻
+	private String excepTime;// 异常时刻
+	private int uploadNum;// 失败上传的次数
+	private String uploadTime;// 上报时刻
+	private String useTime;// 使用时间
+	private String version;// 版本
+	private String IMEI;// IMEI
+	private String IMSI;// IMSI
+	private String corporation;// 运营商
+	private String LAC_GSM;// LAC号
+	private String Cell_Id_GSM;// cell-id号
+	private String RSRP;// RSRP
+	private String RSRQ;// RSRQ
+	private String cpuRate;// cpu使用率 ！！！！！！！！！！！需要修改，全部占比
+	private String localIp;// 本机IP
+	private String AppName;// 应用名称
+	private String uid;// uid
+	private String pid;// pid(多个)
+	private String gid;// 进程组id
+	private String pidNumber;// 进程数
+	private String MemRate;// 内存占用率
+	private String TxByte;// 发送字节量
+	private String RxByte;// 接收字节量
+	private String NetType;// 网络类型 (LTE)
+	private String RSSNR;// SNR
 	private String PCI;
 	private String CI;
 	private String ENODBID;
 	private String CELLID;
 	private String TAC;
-
-	/******************2016/2/23新加入参数*****************/
+	private String Flag;// 标志位
+	private int upload_Flag;// 上传标志位
+	//构造方法
+	Info()
+	{
+		this.Flag = "0";
+		this.upload_Flag = 0;
+		this.uploadNum = 0;
+	}
 	
-	private String Flag;//标志位
-	private boolean upload_Flag;//上传标志位
+	
+	/**
+	 * @return the id
+	 */
+	public int getId()
+	{
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+	/**
+	 * @return the brand
+	 */
+	public String getBrand()
+	{
+		return brand;
+	}
+	/**
+	 * @param brand the brand to set
+	 */
+	public void setBrand(String brand)
+	{
+		this.brand = brand;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+	/**
+	 * @return the launTime
+	 */
+	public String getLaunTime()
+	{
+		return launTime;
+	}
+	/**
+	 * @param launTime the launTime to set
+	 */
+	public void setLaunTime(String launTime)
+	{
+		this.launTime = launTime;
+	}
+	/**
+	 * @return the exitTime
+	 */
+	public String getExitTime()
+	{
+		return exitTime;
+	}
+	/**
+	 * @param exitTime the exitTime to set
+	 */
+	public void setExitTime(String exitTime)
+	{
+		this.exitTime = exitTime;
+	}
+	/**
+	 * @return the excepTime
+	 */
+	public String getExcepTime()
+	{
+		return excepTime;
+	}
+	/**
+	 * @param excepTime the excepTime to set
+	 */
+	public void setExcepTime(String excepTime)
+	{
+		this.excepTime = excepTime;
+	}
+	/**
+	 * @return the uploadNum
+	 */
+	public int getUploadNum()
+	{
+		return uploadNum;
+	}
+	/**
+	 * @param uploadNum the uploadNum to set
+	 */
+	public void setUploadNum(int uploadNum)
+	{
+		this.uploadNum = uploadNum;
+	}
+	/**
+	 * @return the uploadTime
+	 */
+	public String getUploadTime()
+	{
+		return uploadTime;
+	}
+	/**
+	 * @param uploadTime the uploadTime to set
+	 */
+	public void setUploadTime(String uploadTime)
+	{
+		this.uploadTime = uploadTime;
+	}
+	/**
+	 * @return the useTime
+	 */
+	public String getUseTime()
+	{
+		return useTime;
+	}
+	/**
+	 * @param useTime the useTime to set
+	 */
+	public void setUseTime(String useTime)
+	{
+		this.useTime = useTime;
+	}
+	/**
+	 * @return the version
+	 */
+	public String getVersion()
+	{
+		return version;
+	}
+	/**
+	 * @param version the version to set
+	 */
+	public void setVersion(String version)
+	{
+		this.version = version;
+	}
+	/**
+	 * @return the iMEI
+	 */
+	public String getIMEI()
+	{
+		return IMEI;
+	}
+	/**
+	 * @param iMEI the iMEI to set
+	 */
+	public void setIMEI(String iMEI)
+	{
+		IMEI = iMEI;
+	}
+	/**
+	 * @return the iMSI
+	 */
+	public String getIMSI()
+	{
+		return IMSI;
+	}
+	/**
+	 * @param iMSI the iMSI to set
+	 */
+	public void setIMSI(String iMSI)
+	{
+		IMSI = iMSI;
+	}
+	/**
+	 * @return the corporation
+	 */
+	public String getCorporation()
+	{
+		return corporation;
+	}
+	/**
+	 * @param corporation the corporation to set
+	 */
+	public void setCorporation(String corporation)
+	{
+		this.corporation = corporation;
+	}
+	/**
+	 * @return the lAC_GSM
+	 */
+	public String getLAC_GSM()
+	{
+		return LAC_GSM;
+	}
+	/**
+	 * @param lAC_GSM the lAC_GSM to set
+	 */
+	public void setLAC_GSM(String lAC_GSM)
+	{
+		LAC_GSM = lAC_GSM;
+	}
+	/**
+	 * @return the cell_Id_GSM
+	 */
+	public String getCell_Id_GSM()
+	{
+		return Cell_Id_GSM;
+	}
+	/**
+	 * @param cell_Id_GSM the cell_Id_GSM to set
+	 */
+	public void setCell_Id_GSM(String cell_Id_GSM)
+	{
+		Cell_Id_GSM = cell_Id_GSM;
+	}
+	/**
+	 * @return the rSRP
+	 */
+	public String getRSRP()
+	{
+		return RSRP;
+	}
+	/**
+	 * @param rSRP the rSRP to set
+	 */
+	public void setRSRP(String rSRP)
+	{
+		RSRP = rSRP;
+	}
+	/**
+	 * @return the rSRQ
+	 */
+	public String getRSRQ()
+	{
+		return RSRQ;
+	}
+	/**
+	 * @param rSRQ the rSRQ to set
+	 */
+	public void setRSRQ(String rSRQ)
+	{
+		RSRQ = rSRQ;
+	}
+	/**
+	 * @return the cpuRate
+	 */
+	public String getCpuRate()
+	{
+		return cpuRate;
+	}
+	/**
+	 * @param cpuRate the cpuRate to set
+	 */
+	public void setCpuRate(String cpuRate)
+	{
+		this.cpuRate = cpuRate;
+	}
+	/**
+	 * @return the localIp
+	 */
+	public String getLocalIp()
+	{
+		return localIp;
+	}
+	/**
+	 * @param localIp the localIp to set
+	 */
+	public void setLocalIp(String localIp)
+	{
+		this.localIp = localIp;
+	}
+	/**
+	 * @return the appName
+	 */
+	public String getAppName()
+	{
+		return AppName;
+	}
+	/**
+	 * @param appName the appName to set
+	 */
+	public void setAppName(String appName)
+	{
+		AppName = appName;
+	}
+	/**
+	 * @return the uid
+	 */
+	public String getUid()
+	{
+		return uid;
+	}
+	/**
+	 * @param uid the uid to set
+	 */
+	public void setUid(String uid)
+	{
+		this.uid = uid;
+	}
+	/**
+	 * @return the pid
+	 */
+	public String getPid()
+	{
+		return pid;
+	}
+	/**
+	 * @param pid the pid to set
+	 */
+	public void setPid(String pid)
+	{
+		this.pid = pid;
+	}
+	/**
+	 * @return the gid
+	 */
+	public String getGid()
+	{
+		return gid;
+	}
+	/**
+	 * @param gid the gid to set
+	 */
+	public void setGid(String gid)
+	{
+		this.gid = gid;
+	}
+	/**
+	 * @return the pidNumber
+	 */
+	public String getPidNumber()
+	{
+		return pidNumber;
+	}
+	/**
+	 * @param pidNumber the pidNumber to set
+	 */
+	public void setPidNumber(String pidNumber)
+	{
+		this.pidNumber = pidNumber;
+	}
+	/**
+	 * @return the memRate
+	 */
+	public String getMemRate()
+	{
+		return MemRate;
+	}
+	/**
+	 * @param memRate the memRate to set
+	 */
+	public void setMemRate(String memRate)
+	{
+		MemRate = memRate;
+	}
+	/**
+	 * @return the txByte
+	 */
+	public String getTxByte()
+	{
+		return TxByte;
+	}
+	/**
+	 * @param txByte the txByte to set
+	 */
+	public void setTxByte(String txByte)
+	{
+		TxByte = txByte;
+	}
+	/**
+	 * @return the rxByte
+	 */
+	public String getRxByte()
+	{
+		return RxByte;
+	}
+	/**
+	 * @param rxByte the rxByte to set
+	 */
+	public void setRxByte(String rxByte)
+	{
+		RxByte = rxByte;
+	}
+	/**
+	 * @return the netType
+	 */
+	public String getNetType()
+	{
+		return NetType;
+	}
+	/**
+	 * @param netType the netType to set
+	 */
+	public void setNetType(String netType)
+	{
+		NetType = netType;
+	}
+	/**
+	 * @return the rSSNR
+	 */
+	public String getRSSNR()
+	{
+		return RSSNR;
+	}
+	/**
+	 * @param rSSNR the rSSNR to set
+	 */
+	public void setRSSNR(String rSSNR)
+	{
+		RSSNR = rSSNR;
+	}
 	/**
 	 * @return the pCI
 	 */
@@ -71,14 +466,6 @@ public class Info implements Serializable
 	{
 		return PCI;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @param pCI the pCI to set
 	 */
@@ -86,14 +473,6 @@ public class Info implements Serializable
 	{
 		PCI = pCI;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @return the cI
 	 */
@@ -101,14 +480,6 @@ public class Info implements Serializable
 	{
 		return CI;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @param cI the cI to set
 	 */
@@ -116,14 +487,6 @@ public class Info implements Serializable
 	{
 		CI = cI;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @return the eNODBID
 	 */
@@ -131,14 +494,6 @@ public class Info implements Serializable
 	{
 		return ENODBID;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @param eNODBID the eNODBID to set
 	 */
@@ -146,14 +501,6 @@ public class Info implements Serializable
 	{
 		ENODBID = eNODBID;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @return the cELLID
 	 */
@@ -161,14 +508,6 @@ public class Info implements Serializable
 	{
 		return CELLID;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @param cELLID the cELLID to set
 	 */
@@ -176,14 +515,6 @@ public class Info implements Serializable
 	{
 		CELLID = cELLID;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @return the tAC
 	 */
@@ -191,14 +522,6 @@ public class Info implements Serializable
 	{
 		return TAC;
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * @param tAC the tAC to set
 	 */
@@ -206,395 +529,49 @@ public class Info implements Serializable
 	{
 		TAC = tAC;
 	}
-
-	 Info()
+	/**
+	 * @return the flag
+	 */
+	public String getFlag()
 	{
-		this.Flag="0";
-		this.upload_Flag=false;
-		this.uploadNum=0;
+		return Flag;
+	}
+	/**
+	 * @param flag the flag to set
+	 */
+	public void setFlag(String flag)
+	{
+		Flag = flag;
+	}
+	/**
+	 * @return the upload_Flag
+	 */
+	public int getUpload_Flag()
+	{
+		return upload_Flag;
+	}
+	/**
+	 * @param upload_Flag the upload_Flag to set
+	 */
+	public void setUpload_Flag(int upload_Flag)
+	{
+		this.upload_Flag = upload_Flag;
+	}
+
+//  额外的方法////////////////////////////////////////	
+	
+	public void setUpload_FlagOK()
+	{
+		this.upload_Flag = 1;
 	}
 	
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	public int getUploadNum()
+	public void setFlagOK()
 	{
-		return uploadNum;
+		this.Flag = "1";
 	}
-
-
-
-
-
-
-
-
-	public void setUploadNum()
+	
+	public void setUploadNumAdd()
 	{
 		this.uploadNum ++;
 	}
-
-
-
-
-
-
-
-
-	public String getExcepTime()
-	{
-		return excepTime;
-	}
-
-
-
-
-
-
-
-
-	public void setExcepTime(String excepTime)
-	{
-		this.excepTime = excepTime;
-	}
-
-
-
-
-
-
-
-
-	public String getUploadTime()
-	{
-		return uploadTime;
-	}
-
-
-
-
-
-
-
-
-	public void setUploadTime(String uploadTime)
-	{
-		this.uploadTime = uploadTime;
-	}
-
-
-
-
-
-
-
-
-	//参数设置
-	public void settime(String s)
-	{
-		this.launTime=s;
-	}
-	public void setextime(String s)
-	{
-		this.exitTime=s;
-	}
-	public void setusetime(String s)
-	{
-		this.useTime=s;
-	}
-	public void setbrand(String s)
-	{
-		this.brand=s;
-	}
-	public void settype(String s)
-	{
-		this.type=s;
-	}
-	public void setversion(String s)
-	{
-		this.version=s;
-	}
-	public void setIMEI(String s)
-	{
-		this.IMEI=s;
-	}
-	public void setIMSI(String s)
-	{
-		this.IMSI=s;
-	}
-//	public void setnumber(String s)
-//	{
-//		this.number=s;
-//	}
-	public void setcorporation(String s)
-	{
-		this.corporation=s;
-	}
-	public void setLAC_GSM(String s)
-	{
-		this.LAC_GSM=s;
-	}
-	public void setCell_Id_GSM(String s)
-	{
-		this.Cell_Id_GSM=s;
-	}
-//	public void setsigStrength(String s)
-//	{
-//		this.sigStrength=s;
-//	}
-	public void setRSRP(String s)
-	{
-		this.RSRP=s;
-	}
-	public void setRSRQ(String s)
-	{
-		this.RSRQ=s;
-	}
-//	public void setRSSI(String s)
-//	{
-//		this.RSSI=s;
-//	}
-//	public void setfullMemory(String s)
-//	{
-//		this.fullMemory=s;
-//	}
-//	public void setavailMemory(String s)
-//	{
-//		this.availMemory=s;
-//	}
-//	public void setcpuName(String s)
-//	{
-//		this.cpuName=s;
-//	}
-//	public void setcpuMaxFreq(String s)
-//	{
-//		this.cpuMaxFreq=s;
-//	}
-//	public void setcpuMinFreq(String s)
-//	{
-//		this.cpuMinFreq=s;
-//	}
-//	public void setcpuCurFreq(String s)
-//	{
-//		this.cpuCurFreq=s;
-//	}
-	public void setcpuRate(String s)
-	{
-		this.cpuRate=s;
-	}
-	//新加项目
-		
-	
-		public void setlocalIp(String s)
-		{
-			this.localIp=s;
-		}
-		public void setAppName(String s)
-		{
-			this.AppName=s;
-		}
-		public void setuid(String s)
-		{
-			this.uid=s;
-		}
-		public void setpid(String s)
-		{
-			this.pid=s;
-		}
-		public void setgid(String s)
-		{
-			this.gid=s;
-		}
-		public void setpidNumber(String s)
-		{
-			this.pidNumber=s;
-		}
-		public void setMemRate(String s)
-		{
-			this.MemRate=s;
-		}
-		public void setTxByte(String s)
-		{
-			this.TxByte=s;
-		}
-		public void setRxByte(String s)
-		{
-			this.RxByte=s;
-		}
-		public void setNetType(String s)
-		{
-			this.NetType=s;
-		}
-		public void setSNR(String s)
-		{
-			this.RSSNR=s;
-		}
-		public void setFlag()
-		{
-			this.Flag="1";
-		}
-		public void setupFlag()
-		{
-			this.upload_Flag=true;
-		}
-		
-//		public void setCQI(String s)
-//		{
-//			this.CQI=s;
-//		}
-	//参数提取
-	public String gettime()
-	{
-		return this.launTime;
-	}
-	public String getextime()
-	{
-		return this.exitTime;
-	}
-	public String getusetime()
-	{
-		return this.useTime;
-	}
-	public String getbrand()
-	{
-		return this.brand;
-	}
-	public String gettype()
-	{
-		return this.type;
-	}
-	public String getversion()
-	{
-		return this.version;
-	}
-	public String getIMEI()
-	{
-		return this.IMEI;
-	}
-	public String getIMSI()
-	{
-		return this.IMSI;
-	}
-//	public String getnumber()
-//	{
-//		return this.number;
-//	}
-	public String getcorporation()
-	{
-		return this.corporation;
-	}
-	public String getLAC_GSM()
-	{
-		return this.LAC_GSM;
-	}
-	public String getCell_Id_GSM()
-	{
-		return this.Cell_Id_GSM;
-	}
-//	public String getsigStrength()
-//	{
-//		return this.sigStrength;
-//	}
-	public String getRSRP()
-	{
-		return this.RSRP;
-	}
-	public String getRSRQ()
-	{
-		return this.RSRQ;
-	}
-//	public String getRSSI()
-//	{
-//		return this.RSSI;
-//	}
-//	public String getfullMemory()
-//	{
-//		return this.fullMemory;
-//	}
-//	public String getavailMemory()
-//	{
-//		return this.availMemory;
-//	}
-//	public String getcpuName()
-//	{
-//		return this.cpuName;
-//	}
-//	public String getcpuMaxFreq()
-//	{
-//		return this.cpuMaxFreq;
-//	}
-//	public String getcpuMinFreq()
-//	{
-//		return this.cpuMinFreq;
-//	}
-//	public String getcpuCurFreq()
-//	{
-//		return this.cpuCurFreq;
-//	}
-	public String getcpuRate()
-	{
-		return this.cpuRate;
-	}
-	//新加项目
-		
-			public String getlocalIp()
-			{
-				return this.localIp;
-			}
-			public String getAppName()
-			{
-				return this.AppName;
-			}
-			public String getuid()
-			{
-				return this.uid;
-			}
-			public String getpid()
-			{
-				return this.pid;
-			}
-			public String getgid()
-			{
-				return this.gid;
-			}
-			public String getpidNumber()
-			{
-				return this.pidNumber;
-			}
-			public String getMemRate()
-			{
-				return this.MemRate;
-			}
-			public String getTxByte()
-			{
-				return this.TxByte;
-			}
-			public String getRxByte()
-			{
-				return this.RxByte;
-			}
-			public String getNetType()
-			{
-				return this.NetType;
-			}
-			public String getSNR()
-			{
-				return this.RSSNR;
-			}
-			public String getFlag()
-			{
-				return this.Flag;
-			}
-			public boolean getupFlag()
-			{
-				return this.upload_Flag;
-			}
-//			public String getCQI()
-//			{
-//				return this.CQI;
-//			}
 }

@@ -225,43 +225,51 @@ public class TestService extends Service
 				/******************** 自动上传 ****************************/
 				if (upload_time % 60 == 0)// 60秒上传一次
 				{
-					if (MyApp.infolist.size() != 0)// 有数据则上传
+					new Thread(new Runnable()
 					{
-						new Thread(new Runnable()
+						@Override
+						public void run()
 						{
+							// TODO Auto-generated method stub
 
-							@Override
-							public void run()
+							synchronized ("")
 							{
-								// TODO Auto-generated method stub
+								List<Info> uploadList = new ArrayList<Info>();
+								InfoDatabase infoDatabase = new InfoDatabase(getApplicationContext(), "AutoReprt.db",
+										null, 1);// 创建数据库 “AutoReport”
+								DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+								uploadList = databaseOperator.queryFromInfo();
 
-								synchronized ("")
+								if (uploadList.size() != 0)// 有数据则上传
 								{
-									for (int i = 0; i < MyApp.infolist.size(); i++)
+									for (int i = 0; i < uploadList.size(); i++)
 									{
-										if (!MyApp.infolist.get(i).getupFlag())// 检测没上传过的
+										if (uploadList.get(i).getUpload_Flag() == 0)// 检测没上传过的
 										{
-											MyApp.infolist.get(i).setUploadTime(getTime());// 每次上传提取时间
-											if (upload_data(MyApp.infolist.get(i)))
+											uploadList.get(i).setUploadTime(getTime());// 每次上传提取时间
+											if (upload_data(uploadList.get(i)))
 											{
-												MyApp.infolist.get(i).setupFlag();// 上传成功设置上传标志位为true
+												uploadList.get(i).setUpload_FlagOK();// 上传成功设置上传标志位为true
 												Log.i("AAA", "60秒上传成功");
 											} else
 											{
-												
-												MyApp.infolist.get(i).setUploadTime("");// 清空上传时间
-												MyApp.infolist.get(i).setUploadNum();// 上传失败记录次数+1
+
+												uploadList.get(i).setUploadTime("");// 清空上传时间
+												uploadList.get(i).setUploadNumAdd();// 上传失败记录次数+1
 												Log.i("AAA", "60秒上传失败");
 											}
 										}
+										//将改变的这条Info信息同步到数据库, 根据id更新
+										databaseOperator.updateFromInfo(uploadList.get(i), uploadList.get(i).getId());
+										
 									}
 								}
-
 							}
-						}).start();
+						}
+					}).start();
 
-					}
 				}
+
 				/******************** 自动上传 ****************************/
 
 				if (getNetWorkType())// 有网络情况下再进行如下操作
@@ -433,13 +441,13 @@ public class TestService extends Service
 							if (isAbnormal2)
 							{
 								getInfo(false);// 参数true 为 第二次 异常，
-								MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
+								
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
 							getInfo(true);// 参数true为 第一次 异常，
-							MyApp.infolist.get(MyApp.infolist.size() - 1).setFlag();
+					
 							// MyApp.infolist.remove(MyApp.infolist.size() -
 							// 1);// 测试通过
 							// // ，移除这条非异常数据
@@ -539,20 +547,20 @@ public class TestService extends Service
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
 		// 上传信息加入
-		params.add(new BasicNameValuePair("launtime", info.gettime()));
-		params.add(new BasicNameValuePair("exittime", info.getextime()));
-		params.add(new BasicNameValuePair("usetime", info.getusetime()));
+		params.add(new BasicNameValuePair("launtime", info.getLaunTime()));
+		params.add(new BasicNameValuePair("exittime", info.getExitTime()));
+		params.add(new BasicNameValuePair("usetime", info.getUseTime()));
 
 		params.add(new BasicNameValuePair("excepTime", info.getExcepTime()));
 		params.add(new BasicNameValuePair("uploadNum", String.valueOf(info.getUploadNum())));
 		params.add(new BasicNameValuePair("uploadTime", info.getUploadTime()));
 
-		params.add(new BasicNameValuePair("brand", info.getbrand()));
-		params.add(new BasicNameValuePair("type", info.gettype()));
-		params.add(new BasicNameValuePair("version", info.getversion()));
+		params.add(new BasicNameValuePair("brand", info.getBrand()));
+		params.add(new BasicNameValuePair("type", info.getType()));
+		params.add(new BasicNameValuePair("version", info.getVersion()));
 		params.add(new BasicNameValuePair("IMEI", info.getIMEI()));
 		params.add(new BasicNameValuePair("IMSI", info.getIMSI()));
-		params.add(new BasicNameValuePair("corporation", info.getcorporation()));
+		params.add(new BasicNameValuePair("corporation", info.getCorporation()));
 		params.add(new BasicNameValuePair("LAC", info.getLAC_GSM()));
 		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id_GSM()));
 		params.add(new BasicNameValuePair("RSRP", info.getRSRP()));
@@ -564,18 +572,18 @@ public class TestService extends Service
 		params.add(new BasicNameValuePair("CELLID", info.getCELLID()));
 		params.add(new BasicNameValuePair("TAC", info.getTAC()));
 		params.add(new BasicNameValuePair("RSRQ", info.getRSRQ()));
-		params.add(new BasicNameValuePair("cpuRate", info.getcpuRate()));
-		params.add(new BasicNameValuePair("localIp", info.getlocalIp()));
+		params.add(new BasicNameValuePair("cpuRate", info.getCpuRate()));
+		params.add(new BasicNameValuePair("localIp", info.getLocalIp()));
 		params.add(new BasicNameValuePair("AppName", info.getAppName()));
-		params.add(new BasicNameValuePair("uid", info.getuid()));
-		params.add(new BasicNameValuePair("pid", info.getpid()));
-		params.add(new BasicNameValuePair("gid", info.getgid()));
-		params.add(new BasicNameValuePair("pidNumber", info.getpidNumber()));
+		params.add(new BasicNameValuePair("uid", info.getUid()));
+		params.add(new BasicNameValuePair("pid", info.getPid()));
+		params.add(new BasicNameValuePair("gid", info.getGid()));
+		params.add(new BasicNameValuePair("pidNumber", info.getPidNumber()));
 		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
 		params.add(new BasicNameValuePair("TxByte", info.getTxByte()));
 		params.add(new BasicNameValuePair("RxByte", info.getRxByte()));
 		params.add(new BasicNameValuePair("NetType", info.getNetType()));
-		params.add(new BasicNameValuePair("RSSNR", info.getSNR()));
+		params.add(new BasicNameValuePair("RSSNR", info.getRSSNR()));
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
 		try
 		{
@@ -750,20 +758,20 @@ public class TestService extends Service
 		}
 
 		/******************** 4G位置信息 ***********************/
-		updateinfo.settime(LaunTime);
+		updateinfo.setLaunTime(LaunTime);
 
 		updateinfo.setAppName(AppName);
-		updateinfo.setuid(add_uid);
+		updateinfo.setUid(add_uid);
 
-		updateinfo.setgid(add_uid);// gid与uid相同
+		updateinfo.setGid(add_uid);// gid与uid相同
 
-		updateinfo.setlocalIp(getlocalIP());// 获取本机IP地址
-		updateinfo.setbrand(android.os.Build.BRAND);
-		updateinfo.settype(android.os.Build.MODEL);
-		updateinfo.setversion(android.os.Build.VERSION.RELEASE);
+		updateinfo.setLocalIp(getlocalIP());// 获取本机IP地址
+		updateinfo.setBrand(android.os.Build.BRAND);
+		updateinfo.setType(android.os.Build.MODEL);
+		updateinfo.setVersion(android.os.Build.VERSION.RELEASE);
 		updateinfo.setIMEI(tm.getDeviceId());
 		updateinfo.setIMSI(tm.getSubscriberId());
-		updateinfo.setcorporation(tm.getSimOperatorName());
+		updateinfo.setCorporation(tm.getSimOperatorName());
 		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
 		updateinfo.setCell_Id_GSM(String.valueOf(location.getCid()));
 
@@ -774,13 +782,13 @@ public class TestService extends Service
 		{
 			updateinfo.setRSRP(RSRP);
 			updateinfo.setRSRQ(RSRQ);
-			updateinfo.setSNR(RSSNR);
+			updateinfo.setRSSNR(RSSNR);
 
 		} else
 		{
 			updateinfo.setRSRP("N/A");
 			updateinfo.setRSRQ("N/A");
-			updateinfo.setSNR("N/A");
+			updateinfo.setRSSNR("N/A");
 
 		}
 		updateinfo.setMemRate(getMemRate());// 内存占用率
@@ -789,18 +797,18 @@ public class TestService extends Service
 		// addInfo.setcpuMaxFreq(getMaxCpuFreq());
 		// addInfo.setcpuMinFreq(getMinCpuFreq());
 		// addInfo.setcpuCurFreq(getCurCpuFreq());
-		updateinfo.setcpuRate(getCpuRate());
-		updateinfo.setextime(exitTime);
-		updateinfo.setusetime(String.valueOf(count));
+		updateinfo.setCpuRate(getCpuRate());
+		updateinfo.setExitTime(exitTime);
+		updateinfo.setUseTime(String.valueOf(count));
 
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			updateinfo.setpid("N/A");
-			updateinfo.setpidNumber("N/A");
+			updateinfo.setPid("N/A");
+			updateinfo.setPidNumber("N/A");
 		} else
 		{
-			updateinfo.setpid(add_pid);
-			updateinfo.setpidNumber(add_pid_num);
+			updateinfo.setPid(add_pid);
+			updateinfo.setPidNumber(add_pid_num);
 		}
 
 		if (judge) // true 第一次异常参数
@@ -817,7 +825,12 @@ public class TestService extends Service
 			updateinfo.setRxByte(rxqueue_exit.get_data());// 接收字节量
 		}
 
-		MyApp.infolist.add(updateinfo);
+		updateinfo.setFlagOK();//设置为异常数据
+		
+		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
+		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
+		databaseOperator.insertToInfo(updateinfo);//将这条信息插入到数据库
+		
 
 		Log.i("AAA", "异常信息加入成功");
 

@@ -139,7 +139,11 @@ public class MainActivity extends Activity
 		super.onResume();
 		Intent bindIntent = new Intent(this, TestService.class);// 每次调用onStart执行一次绑定
 		bindService(bindIntent, connection, BIND_AUTO_CREATE);
-
+		//读取数据库里面的数据
+		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
+		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
+		MyApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
+		
 		if (MyApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{
 			InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item, MyApp.infolist);
