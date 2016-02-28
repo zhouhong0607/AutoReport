@@ -238,12 +238,9 @@ public class ExtraUtil
 	
 	
 	/*************** 获取手机运营商名字Begin ************************/
-	public static final String getProvidersName(TelephonyManager telephonyManager)
+	public static final String getProvidersName(String IMSI)
 	{
 		String ProvidersName = null;
-		telephonyManager = (TelephonyManager) MyApp.getContext().getSystemService(Context.TELEPHONY_SERVICE);
-		String IMSI; // 返回唯一的用户ID;就是这张卡的编号神马的
-		IMSI = telephonyManager.getSubscriberId();
 		if (IMSI == null)
 			return "unkwon";
 		// IMSI号前面3位460是国家，紧接着后面2位00 02是中国移动，01是中国联通，03是中国电信。其中

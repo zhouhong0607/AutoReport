@@ -97,8 +97,8 @@ public class BackMonitor extends Service
 	int count = 0;// 应用运行时间记录
 	int upload_time = 0;// 周期上传时间
 	String pkgname = "";
-	ActivityManager am = null;
-	ConnectivityManager cm = null;
+	
+	
 	TelephonyManager tm = null;
 	// 信息提取
 	String[] pidInfo=new String[2]; 
@@ -122,9 +122,9 @@ public class BackMonitor extends Service
 	public void onCreate()
 	{
 		super.onCreate();
-		cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
 		tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-		am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
 
 		/******************* 信号强度监听 **********************/
 		PhoneStateListener MyPhoneListener = new PhoneStateListener()
@@ -510,9 +510,10 @@ public class BackMonitor extends Service
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 		/*********** 对网络类型监视 ***************/
-		String OPname = ExtraUtil.getProvidersName(tm);
+		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());//获得运营商,参数为IMSI
 		if (OPname.equals("中国移动"))
 		{
+		   ConnectivityManager	cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
 			if (networkInfo != null)
