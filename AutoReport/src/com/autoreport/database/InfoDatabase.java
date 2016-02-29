@@ -26,8 +26,8 @@ public class InfoDatabase extends SQLiteOpenHelper
 			+ " corporation text,"
 			+ " LAC_GSM text,"
 			+ " Cell_Id_GSM text,"
-			+ " RSRP text,"
-			+ " RSRQ text,"
+//			+ " RSRP text,"
+//			+ " RSRQ text,"
 			+ " cpuRate text,"
 			+ " localIp text,"
 			+ " AppName text,"
@@ -36,19 +36,45 @@ public class InfoDatabase extends SQLiteOpenHelper
 			+ " gid text,"
 			+ " pidNumber text,"
 			+ " MemRate text,"
-			+ " TxByte text,"
-			+ " RxByte text,"
-			+ " NetType text,"
-			+ " RSSNR text,"
-			+ " PCI text,"
-			+ " CI text,"
-			+ " ENODBID text,"
-			+ " CELLID text,"
-			+ " TAC text,"
+//			+ " TxByte text,"
+//			+ " RxByte text,"
+//			+ " NetType text,"
+//			+ " RSSNR text,"
+//			+ " PCI text,"
+//			+ " CI text,"
+//			+ " ENODBID text,"
+//			+ " CELLID text,"
+//			+ " TAC text,"
 			+ " Flag text,"
 			+ " upload_Flag integer)";// 建数据表info   ,boolean 类型用 integer代替
 
-
+	// 建数据表SignalInfo
+		public static final String CREATE_TABLE_SIGNALINFO = "create table SignalInfo(" + " id integer primary key autoincrement ,"
+				+ " infoId integer,"
+				
+				+ " RSRP text,"
+				+ " RSRQ text,"
+				+ " TxByte text,"
+				+ " RxByte text,"
+				+ " NetType text,"
+				+ " RSSNR text,"
+				+ " PCI text,"
+				+ " CI text,"
+				+ " ENODBID text,"
+				+ " CELLID text,"
+				+ " TAC text,"
+				+ " timeStamp text)";// 建数据表info   ,boolean 类型用 integer代替
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public InfoDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
 	{
 		super(context, name, factory, version);
@@ -59,7 +85,8 @@ public class InfoDatabase extends SQLiteOpenHelper
 	public void onCreate(SQLiteDatabase db)
 	{
 		db.execSQL(CREATE_TABLE_INFO);
-		Log.i("AAA", "数据表Info建立成功");
+		db.execSQL(CREATE_TABLE_SIGNALINFO);
+		Log.i("AAA", "数据表Info,SignalInfo建立成功");
 	}
 
 	@Override

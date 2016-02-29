@@ -8,7 +8,8 @@ import java.io.Serializable;
 
 public class Info implements Serializable
 {
-	private int id;
+	private int id;//主键
+	
 	private String brand;// 品牌
 	private String type;// 型号
 	private String launTime;// 启动时刻
@@ -23,8 +24,6 @@ public class Info implements Serializable
 	private String corporation;// 运营商
 	private String LAC_GSM;// LAC号
 	private String Cell_Id_GSM;// cell-id号
-	private String RSRP;// RSRP
-	private String RSRQ;// RSRQ
 	private String cpuRate;// cpu使用率 ！！！！！！！！！！！需要修改，全部占比
 	private String localIp;// 本机IP
 	private String AppName;// 应用名称
@@ -33,25 +32,26 @@ public class Info implements Serializable
 	private String gid;// 进程组id
 	private String pidNumber;// 进程数
 	private String MemRate;// 内存占用率
-	private String TxByte;// 发送字节量
-	private String RxByte;// 接收字节量
-	private String NetType;// 网络类型 (LTE)
-	private String RSSNR;// SNR
-	private String PCI;
-	private String CI;
-	private String ENODBID;
-	private String CELLID;
-	private String TAC;
 	private String Flag;// 标志位
 	private int upload_Flag;// 上传标志位
+	
+	private SignalQueue signalQueue;//信号队列
+	
+	
+	
 	//构造方法
-	public Info()
+	public Info(int s)
 	{
 		this.Flag = "0";
 		this.upload_Flag = 0;
 		this.uploadNum = 0;
+		signalQueue=new SignalQueue(s);
 	}
 	
+	public SignalQueue getSignalQueue()
+	{
+		return signalQueue;
+	}
 	
 	/**
 	 * @return the id
@@ -266,31 +266,7 @@ public class Info implements Serializable
 	/**
 	 * @return the rSRP
 	 */
-	public String getRSRP()
-	{
-		return RSRP;
-	}
-	/**
-	 * @param rSRP the rSRP to set
-	 */
-	public void setRSRP(String rSRP)
-	{
-		RSRP = rSRP;
-	}
-	/**
-	 * @return the rSRQ
-	 */
-	public String getRSRQ()
-	{
-		return RSRQ;
-	}
-	/**
-	 * @param rSRQ the rSRQ to set
-	 */
-	public void setRSRQ(String rSRQ)
-	{
-		RSRQ = rSRQ;
-	}
+	
 	/**
 	 * @return the cpuRate
 	 */
@@ -406,129 +382,7 @@ public class Info implements Serializable
 	/**
 	 * @return the txByte
 	 */
-	public String getTxByte()
-	{
-		return TxByte;
-	}
-	/**
-	 * @param txByte the txByte to set
-	 */
-	public void setTxByte(String txByte)
-	{
-		TxByte = txByte;
-	}
-	/**
-	 * @return the rxByte
-	 */
-	public String getRxByte()
-	{
-		return RxByte;
-	}
-	/**
-	 * @param rxByte the rxByte to set
-	 */
-	public void setRxByte(String rxByte)
-	{
-		RxByte = rxByte;
-	}
-	/**
-	 * @return the netType
-	 */
-	public String getNetType()
-	{
-		return NetType;
-	}
-	/**
-	 * @param netType the netType to set
-	 */
-	public void setNetType(String netType)
-	{
-		NetType = netType;
-	}
-	/**
-	 * @return the rSSNR
-	 */
-	public String getRSSNR()
-	{
-		return RSSNR;
-	}
-	/**
-	 * @param rSSNR the rSSNR to set
-	 */
-	public void setRSSNR(String rSSNR)
-	{
-		RSSNR = rSSNR;
-	}
-	/**
-	 * @return the pCI
-	 */
-	public String getPCI()
-	{
-		return PCI;
-	}
-	/**
-	 * @param pCI the pCI to set
-	 */
-	public void setPCI(String pCI)
-	{
-		PCI = pCI;
-	}
-	/**
-	 * @return the cI
-	 */
-	public String getCI()
-	{
-		return CI;
-	}
-	/**
-	 * @param cI the cI to set
-	 */
-	public void setCI(String cI)
-	{
-		CI = cI;
-	}
-	/**
-	 * @return the eNODBID
-	 */
-	public String getENODBID()
-	{
-		return ENODBID;
-	}
-	/**
-	 * @param eNODBID the eNODBID to set
-	 */
-	public void setENODBID(String eNODBID)
-	{
-		ENODBID = eNODBID;
-	}
-	/**
-	 * @return the cELLID
-	 */
-	public String getCELLID()
-	{
-		return CELLID;
-	}
-	/**
-	 * @param cELLID the cELLID to set
-	 */
-	public void setCELLID(String cELLID)
-	{
-		CELLID = cELLID;
-	}
-	/**
-	 * @return the tAC
-	 */
-	public String getTAC()
-	{
-		return TAC;
-	}
-	/**
-	 * @param tAC the tAC to set
-	 */
-	public void setTAC(String tAC)
-	{
-		TAC = tAC;
-	}
+	
 	/**
 	 * @return the flag
 	 */

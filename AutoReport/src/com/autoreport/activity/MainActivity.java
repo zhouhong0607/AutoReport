@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import com.autoreport.app.R;
 import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
-import com.autoreport.datastructure.MyApp;
+import com.autoreport.datastructure.AutoreportApp;
 import com.autoreport.service.BackMonitor;
 import com.autoreport.util.UStats;
 
@@ -131,10 +131,10 @@ public class MainActivity extends Activity
 		{
 			// Toast.makeText(getApplicationContext(), "收到广播",
 			// Toast.LENGTH_SHORT).show();
-			if (MyApp.infolist.size() != 0)// 有异常信息，显示到Listview
+			if (AutoreportApp.infolist.size() != 0)// 有异常信息，显示到Listview
 			{
 				InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item,
-						MyApp.infolist);
+						AutoreportApp.infolist);
 				listView.setAdapter(adapter);
 			}
 
@@ -150,11 +150,11 @@ public class MainActivity extends Activity
 		//读取数据库里面的数据
 		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
 		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
-		MyApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
+		AutoreportApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
 		databaseOperator.CloseDatabase();
-		if (MyApp.infolist.size() != 0)// 有异常信息，显示到Listview
+		if (AutoreportApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{
-			InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item, MyApp.infolist);
+			InfoListAdapter adapter = new InfoListAdapter(MainActivity.this, R.layout.info_list_item, AutoreportApp.infolist);
 			listView.setAdapter(adapter);
 		}
 	}

@@ -55,8 +55,8 @@ import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
 import com.autoreport.datastructure.AppList;
 import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.MyApp;
-import com.autoreport.datastructure.MyQueue;
+import com.autoreport.datastructure.AutoreportApp;
+import com.autoreport.datastructure.SignalQueue;
 import com.autoreport.util.ExtraUtil;
 import com.autoreport.util.UStats;
 
@@ -90,10 +90,10 @@ public class BackMonitor extends Service
 	boolean Browserun = false;// 浏览器运行判断
 	boolean assit = false;// 辅助判断参数
 	boolean Browserquit = false;// 浏览器退出判断
-	MyQueue txqueue_laun = new MyQueue(30);// 构建发送接受队列，时间长度10秒
-	MyQueue rxqueue_laun = new MyQueue(30);// 0.1秒间隔 ，20秒的数据
-	MyQueue txqueue_exit = new MyQueue(10);// 构建发送接受队列，时间长度10秒
-	MyQueue rxqueue_exit = new MyQueue(10);// 0.1秒间隔 ，20秒的数据
+	SignalQueue txqueue_laun = new SignalQueue(30);// 构建发送接受队列，时间长度10秒
+	SignalQueue rxqueue_laun = new SignalQueue(30);// 0.1秒间隔 ，20秒的数据
+	SignalQueue txqueue_exit = new SignalQueue(10);// 构建发送接受队列，时间长度10秒
+	SignalQueue rxqueue_exit = new SignalQueue(10);// 0.1秒间隔 ，20秒的数据
 	int count = 0;// 应用运行时间记录
 	int upload_time = 0;// 周期上传时间
 	String pkgname = "";

@@ -13,7 +13,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
-public class MyApp extends Application
+public class AutoreportApp extends Application
 {
 	public static List<Info> infolist=new ArrayList<Info>();//用于ListView显示
 	private static Context context=null;

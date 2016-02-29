@@ -25,7 +25,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.autoreport.app.R;
 import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.MyApp;
+import com.autoreport.datastructure.AutoreportApp;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -96,7 +96,7 @@ public class SecActivity extends Activity
 			}
 		});
 
-		Info info = MyApp.infolist.get(position);
+		Info info = AutoreportApp.infolist.get(position);
 		// 25项信息
 		// 手机基本信息
 		mtextview1.append("手机基本信息:");
