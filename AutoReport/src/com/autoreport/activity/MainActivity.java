@@ -10,6 +10,7 @@ import com.autoreport.app.R;
 import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
 import com.autoreport.datastructure.AutoreportApp;
+import com.autoreport.datastructure.Info;
 import com.autoreport.service.BackMonitor;
 import com.autoreport.util.UStats;
 
@@ -151,7 +152,7 @@ public class MainActivity extends Activity
 		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
 		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
 		AutoreportApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
-		AutoreportApp.signalInfolist=databaseOperator.queryFromSignalInfo();
+		
 		databaseOperator.CloseDatabase();
 		if (AutoreportApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{

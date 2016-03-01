@@ -24,7 +24,10 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 import com.autoreport.app.R;
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
 import com.autoreport.datastructure.Info;
+import com.autoreport.datastructure.SignalInfo;
 import com.autoreport.datastructure.AutoreportApp;
 
 import android.app.Activity;
@@ -136,25 +139,25 @@ public class SecActivity extends Activity
 		mtextview6.append("进程数量:  " + info.getPidNumber() + "\n");
 		mtextview6.append("GID:  " + info.getGid() + "\n");
 
+		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库																					// “AutoReport”
+		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+		List<SignalInfo> signalInfos = databaseOperator.queryFromSignalInfoById(info.getId());
+
+		databaseOperator.CloseDatabase();
+
 		String siglist = "";
-		if (AutoreportApp.signalInfolist.size() != 0)
+		if (signalInfos.size() != 0)
 		{
-			for (int i = 0; i < AutoreportApp.signalInfolist.size(); i++)
+			for (int i = 0; i < signalInfos.size(); i++)
 			{
-				if (AutoreportApp.signalInfolist.get(i).getInfoId().equals(info.getId()))
-				{
-					siglist += AutoreportApp.signalInfolist.get(i).getRsrp() + ","
-							+ AutoreportApp.signalInfolist.get(i).getRsrq() + ","
-							+ AutoreportApp.signalInfolist.get(i).getRssinr() + ","
-							+ AutoreportApp.signalInfolist.get(i).getTxByte() + ","
-							+ AutoreportApp.signalInfolist.get(i).getRxByte() + ","
-							+ AutoreportApp.signalInfolist.get(i).getPci() + ","
-							+ AutoreportApp.signalInfolist.get(i).getCi() + ","
-							+ AutoreportApp.signalInfolist.get(i).getEnodbId() + ","
-							+ AutoreportApp.signalInfolist.get(i).getCellId() + ","
-							+ AutoreportApp.signalInfolist.get(i).getTac() + ","
-							+ AutoreportApp.signalInfolist.get(i).getTimeStamp() + "," + "\n";
-				}
+
+				siglist += signalInfos.get(i).getRsrp() + "," + signalInfos.get(i).getRsrq() + ","
+						+ signalInfos.get(i).getRssinr() + "," + signalInfos.get(i).getTxByte() + ","
+						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getPci() + ","
+						+ signalInfos.get(i).getCi() + "," + signalInfos.get(i).getEnodbId() + ","
+						+ signalInfos.get(i).getCellId() + "," + signalInfos.get(i).getTac() + ","
+						+ signalInfos.get(i).getTimeStamp() + "," + "\n";
+
 			}
 
 		}

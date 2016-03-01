@@ -24,6 +24,7 @@ public class LaunchReceiver extends BroadcastReceiver
 																						// “AutoReport”
 		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
 		databaseOperator.deleteFromInfo();// 每次开机 删除数据库里面数据
+		databaseOperator.deleteFromSignalInfo();
 		// Toast.makeText(context, "数据删除成功", Toast.LENGTH_SHORT).show();
 		// 开机启动
 		// Intent intent1=new Intent(context,MainActivity.class);

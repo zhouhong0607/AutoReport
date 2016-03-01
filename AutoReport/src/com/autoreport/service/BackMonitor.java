@@ -508,8 +508,32 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("gid", info.getGid()));
 		params.add(new BasicNameValuePair("pidNumber", info.getPidNumber()));
 		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
-
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
+		
+		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库																					// “AutoReport”
+		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+		List<SignalInfo> signalInfos = databaseOperator.queryFromSignalInfoById(info.getId());
+		databaseOperator.CloseDatabase();
+
+		String siglist = "";
+		if (signalInfos.size() != 0)
+		{
+			for (int i = 0; i < signalInfos.size(); i++)
+			{
+
+				siglist += signalInfos.get(i).getRsrp() + "," + signalInfos.get(i).getRsrq() + ","
+						+ signalInfos.get(i).getRssinr() + "," + signalInfos.get(i).getTxByte() + ","
+						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getPci() + ","
+						+ signalInfos.get(i).getCi() + "," + signalInfos.get(i).getEnodbId() + ","
+						+ signalInfos.get(i).getCellId() + "," + signalInfos.get(i).getTac() + ","
+						+ signalInfos.get(i).getTimeStamp() + "," + "\n";
+
+			}
+
+		}
+
+		params.add(new BasicNameValuePair("signalInfo", siglist));
+		
 		try
 		{
 			request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));

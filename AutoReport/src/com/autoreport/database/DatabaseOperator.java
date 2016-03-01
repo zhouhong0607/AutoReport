@@ -295,14 +295,14 @@ public class DatabaseOperator
 		}
 	}
 
-	/*************查询数据，返回SignalInfo的list******************/
-	public List<SignalInfo> queryFromSignalInfo()
+	/*************查询数据，返回SignalInfo的list(返回对应infoid)******************/
+	public List<SignalInfo> queryFromSignalInfoById(String infoId )
 	{
 		List<SignalInfo> queryResult = new ArrayList<SignalInfo>();// 实例Info的容器
 		db.beginTransaction();// 开启事务
 		try
 		{
-			Cursor cursor = db.query("SignalInfo", null, null, null, null, null, null);// 查询数据
+			Cursor cursor = db.query("SignalInfo", null, "infoId=?", new String[]{infoId}, null, null, null);// 查询数据
 			if (cursor.moveToFirst())
 			{
 				do
