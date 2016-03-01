@@ -5,10 +5,11 @@ package com.autoreport.datastructure;
  */
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class Info implements Serializable
 {
-	private int id;//主键
+	private String id;//主键
 	
 	private String brand;// 品牌
 	private String type;// 型号
@@ -35,38 +36,55 @@ public class Info implements Serializable
 	private String Flag;// 标志位
 	private int upload_Flag;// 上传标志位
 	
-	private SignalQueue signalQueue;//信号队列
-	
+//	private SignalQueue signalQueue;//信号队列
+//	private int queLength;//队列长度
 	
 	
 	//构造方法
-	public Info(int s)
+	public Info( )
 	{
+		id=String.valueOf(UUID.randomUUID());//构造函数生成唯一外键
 		this.Flag = "0";
 		this.upload_Flag = 0;
 		this.uploadNum = 0;
-		signalQueue=new SignalQueue(s);
+		
 	}
 	
-	public SignalQueue getSignalQueue()
-	{
-		return signalQueue;
-	}
-	
-	/**
-	 * @return the id
-	 */
-	public int getId()
-	{
-		return id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(int id)
+	public void setId(String id)
 	{
 		this.id = id;
 	}
+
+	/**
+	 * @return the id
+	 */
+	public String getId()
+	{
+		return id;
+	}
+	
+//	public SignalQueue getSignalQueue()
+//	{
+//		return signalQueue;
+//	}
+//
+//	public void setSignalQueue(SignalQueue signalQueue)
+//	{
+//		this.signalQueue = signalQueue;
+//	}
+//	
+//
+//	public int getQueLength()
+//	{
+//		return queLength;
+//	}
+//
+//	public void setQueLength(int queLength)
+//	{
+//		this.queLength = queLength;
+//	}
+
+	
 	/**
 	 * @return the brand
 	 */

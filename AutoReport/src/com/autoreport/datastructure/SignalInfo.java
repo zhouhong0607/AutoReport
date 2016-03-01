@@ -3,7 +3,7 @@ package com.autoreport.datastructure;
 public class SignalInfo
 {
 	private int id;//主键
-	private int infoId;//外键
+	private String infoId;//外键
 	
 	
 	private String rsrp;//RSRP
@@ -27,11 +27,11 @@ public class SignalInfo
 	{
 		this.id = id;
 	}
-	public int getInfoId()
+	public String getInfoId()
 	{
 		return infoId;
 	}
-	public void setInfoId(int infoId)
+	public void setInfoId(String infoId)
 	{
 		this.infoId = infoId;
 	}

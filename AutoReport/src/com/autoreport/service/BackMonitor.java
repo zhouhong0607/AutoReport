@@ -55,6 +55,7 @@ import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
 import com.autoreport.datastructure.AppList;
 import com.autoreport.datastructure.Info;
+import com.autoreport.datastructure.SignalInfo;
 import com.autoreport.datastructure.AutoreportApp;
 import com.autoreport.datastructure.SignalQueue;
 import com.autoreport.util.ExtraUtil;
@@ -87,21 +88,23 @@ public class BackMonitor extends Service
 {
 	long tx1 = 0;
 	long rx1 = 0;
+	long drx = 0;
+	long dtx = 0;
+
 	boolean Browserun = false;// 浏览器运行判断
 	boolean assit = false;// 辅助判断参数
 	boolean Browserquit = false;// 浏览器退出判断
-	SignalQueue txqueue_laun = new SignalQueue(30);// 构建发送接受队列，时间长度10秒
-	SignalQueue rxqueue_laun = new SignalQueue(30);// 0.1秒间隔 ，20秒的数据
-	SignalQueue txqueue_exit = new SignalQueue(10);// 构建发送接受队列，时间长度10秒
-	SignalQueue rxqueue_exit = new SignalQueue(10);// 0.1秒间隔 ，20秒的数据
+	SignalQueue launQue = new SignalQueue(30);// 构建发送接受队列，时间长度10秒
+	// SignalQueue rxqueue_laun = new SignalQueue(30);// 0.1秒间隔 ，20秒的数据
+	SignalQueue exitQue = new SignalQueue(10);// 构建发送接受队列，时间长度10秒
+	// SignalQueue rxqueue_exit = new SignalQueue(10);// 0.1秒间隔 ，20秒的数据
 	int count = 0;// 应用运行时间记录
 	int upload_time = 0;// 周期上传时间
 	String pkgname = "";
-	
-	
+
 	TelephonyManager tm = null;
 	// 信息提取
-	String[] pidInfo=new String[2]; 
+	String[] pidInfo = new String[2];
 
 	int uid = 0;
 	String RSRP = "";
@@ -112,9 +115,9 @@ public class BackMonitor extends Service
 	String excepTime1;// 第一次异常时间点
 	String excepTime2;// 第二次异常时间点
 	String AppName;
-	
+
 	String netType;
-	
+
 	boolean isAbnormal = false;// 异常标志
 	boolean isAbnormal2 = false;// 异常标志
 
@@ -124,7 +127,6 @@ public class BackMonitor extends Service
 		super.onCreate();
 
 		tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-
 
 		/******************* 信号强度监听 **********************/
 		PhoneStateListener MyPhoneListener = new PhoneStateListener()
@@ -233,8 +235,7 @@ public class BackMonitor extends Service
 
 				if (getNetWorkType())// 有网络情况下再进行如下操作
 				{
-				
-					
+
 					// 对浏览器状态监视
 					if (AppList.FindAppName(ExtraUtil.getAppName(ExtraUtil.getCurPackname())) != null)// 查找当前应用是否在Applist
 					{
@@ -245,8 +246,8 @@ public class BackMonitor extends Service
 						{
 							LaunTime = ExtraUtil.getCurTime();
 							AppName = AppList.CurAppName;
-							uid=ExtraUtil.getUid(ExtraUtil.getCurPackname());
-							pidInfo=ExtraUtil.getPidInfo(uid);// 根据uid获取pid,由于pid提取依赖uid，所以uid提取应该在pid之前,返回的pidInfo是String[2],第一项是pid信息，第二项是pidNum
+							uid = ExtraUtil.getUid(ExtraUtil.getCurPackname());
+							pidInfo = ExtraUtil.getPidInfo(uid);// 根据uid获取pid,由于pid提取依赖uid，所以uid提取应该在pid之前,返回的pidInfo是String[2],第一项是pid信息，第二项是pidNum
 
 							// handler.sendEmptyMessage(2);
 							Log.i("AAA", "应用启动");
@@ -276,11 +277,11 @@ public class BackMonitor extends Service
 
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 接收RX
 						long rx = TrafficStats.getUidRxBytes(uid);
-						long drx = rx - rx1;
+						drx = rx - rx1;
 						rx1 = rx;
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 发送TX
 						long tx = TrafficStats.getUidTxBytes(uid);
-						long dtx = tx - tx1;
+						dtx = tx - tx1;
 						tx1 = tx;
 
 						if (count == 1)
@@ -289,24 +290,25 @@ public class BackMonitor extends Service
 							dtx = 0;
 						}
 
+						SignalInfo signalInfo = getSignalInfo();
+
 						if (count < 31) // 30个数据
 						{
-							rxqueue_laun.insert(drx);
-							txqueue_laun.insert(dtx);
+							launQue.insert(signalInfo);
+
 						}
 
-						rxqueue_exit.insert(drx);
-						txqueue_exit.insert(dtx);
+						exitQue.insert(signalInfo);
 
 						if (count == 30)// 30秒进行第一个 判断
 						{
-							rxqueue_laun.calculate_expectation();// 计算期望rx
-							rxqueue_laun.calculate_variance();// 计算方差tx
+							// rxqueue_laun.calculate_expectation();// 计算期望rx
+							// rxqueue_laun.calculate_variance();// 计算方差tx
+							//
+							// txqueue_laun.calculate_expectation();// 计算期望rx
+							// txqueue_laun.calculate_variance();// 计算方差tx
 
-							txqueue_laun.calculate_expectation();// 计算期望rx
-							txqueue_laun.calculate_variance();// 计算方差tx
-
-							if (rxqueue_laun.get_maxValue() < 10000)// 异常判决
+							if (launQue.get_maxValue() < 10000)// 异常判决
 							{
 
 								Log.i("AAA", "可疑异常出现");
@@ -322,7 +324,7 @@ public class BackMonitor extends Service
 									Log.i("AAA", "不是异常");
 
 								}
-				
+
 							} else
 							{
 								Log.i("AAA", "初次判决不是异常");
@@ -333,15 +335,15 @@ public class BackMonitor extends Service
 					{
 						if (count > 4 && count < 30)// 5~30秒退出的情况
 						{
-							rxqueue_laun.calculate_expectation();// 计算期望rx
-							rxqueue_laun.calculate_variance();// 计算方差tx
+							// rxqueue_laun.calculate_expectation();// 计算期望rx
+							// rxqueue_laun.calculate_variance();// 计算方差tx
+							//
+							// txqueue_laun.calculate_expectation();// 计算期望rx
+							// txqueue_laun.calculate_variance();// 计算方差tx
 
-							txqueue_laun.calculate_expectation();// 计算期望rx
-							txqueue_laun.calculate_variance();// 计算方差tx
+							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
 
-							Log.i("AAA", "30秒内最大值" + rxqueue_laun.get_maxValue());
-
-							if (rxqueue_laun.get_maxValue() < 10000)// 异常判决
+							if (launQue.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = ExtraUtil.getCurTime();
 								Log.i("AAA", "第一次异常时间" + excepTime1);
@@ -356,7 +358,7 @@ public class BackMonitor extends Service
 
 						if (count > 35)// 进行第二次 测试
 						{
-							if (rxqueue_exit.get_maxValue() < 10000)
+							if (exitQue.get_maxValue() < 10000)
 							{
 								Log.i("AAA", "开始http测试");
 								if (!upload_data(new Info()))// http测试不成功
@@ -373,26 +375,25 @@ public class BackMonitor extends Service
 							}
 							if (isAbnormal2)
 							{
-								getInfo(false);// 参数true 为 第二次 异常，
+								recordInfo(false);// 参数true 为 第二次 异常，
 
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
-							getInfo(true);// 参数true为 第一次 异常，
+							recordInfo(true);// 参数true为 第一次 异常，
 						}
 
 						// 数据清零
 						rx1 = 0;
 						tx1 = 0;
+
 						count = 0;
-						rxqueue_laun.clear();
-						txqueue_laun.clear();
-						txqueue_exit.clear();
-						rxqueue_exit.clear();
+						launQue.clear();
+						exitQue.clear();
+
 						isAbnormal = false;
 						isAbnormal2 = false;
-						
 
 					}
 
@@ -403,16 +404,64 @@ public class BackMonitor extends Service
 					rx1 = 0;
 					tx1 = 0;
 					count = 0;
-					rxqueue_laun.clear();
-					txqueue_laun.clear();
-					txqueue_exit.clear();
-					rxqueue_exit.clear();
+					launQue.clear();
+					exitQue.clear();
 					isAbnormal = false;
 					isAbnormal2 = false;
-				
+
 				}
 			}
 		}, 0, 1000);
+	}
+
+	private SignalInfo getSignalInfo()
+	{
+		SignalInfo signalInfo = new SignalInfo();
+
+		if (netType.equals("LTE"))
+		{
+			signalInfo.setRsrp(RSRP);
+			signalInfo.setRsrq(RSRQ);
+			signalInfo.setRssinr(RSSNR);
+
+		} else
+		{
+			signalInfo.setRsrp("N/A");
+			signalInfo.setRsrq("N/A");
+			signalInfo.setRssinr("N/A");
+
+		}
+
+		signalInfo.setTxByte(String.valueOf(dtx));
+		signalInfo.setRxByte(String.valueOf(drx));
+		signalInfo.setNetType(netType);
+
+		/******************** 4G位置信息 ***********************/
+		List<CellInfo> cellInfoList = tm.getAllCellInfo();
+
+		for (CellInfo cellInfo : cellInfoList)
+		{
+			// 获取所有Lte网络信息
+			if (cellInfo instanceof CellInfoLte)
+			{
+
+				if (cellInfo.isRegistered())
+				{
+					signalInfo.setPci(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci()));
+					signalInfo.setCi(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi()));
+					signalInfo.setEnodbId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
+					signalInfo.setCellId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
+					signalInfo.setTac(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
+					//
+				}
+
+			}
+
+		}
+
+		/******************** 4G位置信息 ***********************/
+		signalInfo.setTimeStamp(ExtraUtil.getCurTime());
+		return signalInfo;
 	}
 
 	public boolean upload_data(Info info)
@@ -448,13 +497,7 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("corporation", info.getCorporation()));
 		params.add(new BasicNameValuePair("LAC", info.getLAC_GSM()));
 		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id_GSM()));
-		params.add(new BasicNameValuePair("RSRP", info.getRSRP()));
-		params.add(new BasicNameValuePair("PCI", info.getPCI()));
-		params.add(new BasicNameValuePair("CI", info.getCI()));
-		params.add(new BasicNameValuePair("ENODBID", info.getENODBID()));
-		params.add(new BasicNameValuePair("CELLID", info.getCELLID()));
-		params.add(new BasicNameValuePair("TAC", info.getTAC()));
-		params.add(new BasicNameValuePair("RSRQ", info.getRSRQ()));
+
 		params.add(new BasicNameValuePair("cpuRate", info.getCpuRate()));
 		params.add(new BasicNameValuePair("localIp", info.getLocalIp()));
 		params.add(new BasicNameValuePair("AppName", info.getAppName()));
@@ -463,10 +506,7 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("gid", info.getGid()));
 		params.add(new BasicNameValuePair("pidNumber", info.getPidNumber()));
 		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
-		params.add(new BasicNameValuePair("TxByte", info.getTxByte()));
-		params.add(new BasicNameValuePair("RxByte", info.getRxByte()));
-		params.add(new BasicNameValuePair("NetType", info.getNetType()));
-		params.add(new BasicNameValuePair("RSSNR", info.getRSSNR()));
+
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
 		try
 		{
@@ -504,16 +544,14 @@ public class BackMonitor extends Service
 		}
 	}
 
-	
-
 	// 判决是否是LTE
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 		/*********** 对网络类型监视 ***************/
-		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());//获得运营商,参数为IMSI
+		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());// 获得运营商,参数为IMSI
 		if (OPname.equals("中国移动"))
 		{
-		   ConnectivityManager	cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
 			if (networkInfo != null)
@@ -548,37 +586,14 @@ public class BackMonitor extends Service
 	}
 
 	/*********** 信息提取，记录到数据库 ***************/
-	public void getInfo(boolean judge)// 获取信息
+	public void recordInfo(boolean judge)// 获取信息
 	{
+		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库“AutoReport”
+		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+
 		Info updateinfo = new Info();
 		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
-		/******************** 4G位置信息 ***********************/
-		List<CellInfo> cellInfoList = tm.getAllCellInfo();
 
-		int index = 0;
-		for (CellInfo cellInfo : cellInfoList)
-		{
-			// 获取所有Lte网络信息
-			if (cellInfo instanceof CellInfoLte)
-			{
-
-				if (cellInfo.isRegistered())
-				{
-
-					updateinfo.setPCI(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci()));
-					updateinfo.setCI(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi()));
-					updateinfo.setENODBID(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
-					updateinfo.setCELLID(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
-					updateinfo.setTAC(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
-					//
-				}
-
-			}
-
-			index++;
-		}
-
-		/******************** 4G位置信息 ***********************/
 		updateinfo.setLaunTime(LaunTime);
 		updateinfo.setAppName(AppName);
 		updateinfo.setUid(String.valueOf(uid));
@@ -592,21 +607,9 @@ public class BackMonitor extends Service
 		updateinfo.setCorporation(tm.getSimOperatorName());
 		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
 		updateinfo.setCell_Id_GSM(String.valueOf(location.getCid()));
-		if (netType.equals("LTE"))
-		{
-			updateinfo.setRSRP(RSRP);
-			updateinfo.setRSRQ(RSRQ);
-			updateinfo.setRSSNR(RSSNR);
 
-		} else
-		{
-			updateinfo.setRSRP("N/A");
-			updateinfo.setRSRQ("N/A");
-			updateinfo.setRSSNR("N/A");
-
-		}
 		updateinfo.setMemRate(ExtraUtil.getMemRate());// 内存占用率
-		updateinfo.setNetType(netType);// 网络类型
+
 		updateinfo.setCpuRate(ExtraUtil.getCpuRate());
 		updateinfo.setExitTime(exitTime);
 		updateinfo.setUseTime(String.valueOf(count));
@@ -621,24 +624,32 @@ public class BackMonitor extends Service
 			updateinfo.setPidNumber(String.valueOf(pidInfo[1]));
 		}
 
+		updateinfo.setFlagOK();// 设置为异常数据
+
 		if (judge) // true 第一次异常参数
 		{
 			Log.i("AAA", "第一次记录异常时间" + excepTime1);
 			updateinfo.setExcepTime(excepTime1);
-			updateinfo.setTxByte(txqueue_laun.get_data());// 设置发送字节数据
-			updateinfo.setRxByte(rxqueue_laun.get_data());// 接收字节量
+			databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
+
+			launQue.setInfoId(updateinfo.getId());// 设置外键
+			launQue.insertToDB(databaseOperator);// 将队列插入数据库
+
+			databaseOperator.CloseDatabase();// 关闭数据库
+
 		} else // false 第二次异常参数
 		{
 			Log.i("AAA", "第二次记录异常时间" + excepTime2);
 			updateinfo.setExcepTime(excepTime2);
-			updateinfo.setTxByte(txqueue_exit.get_data());// 设置发送字节数据
-			updateinfo.setRxByte(rxqueue_exit.get_data());// 接收字节量
+			databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
+
+			exitQue.setInfoId(updateinfo.getId());// 设置外键
+			exitQue.insertToDB(databaseOperator);// 将队列插入数据库
+
+			databaseOperator.CloseDatabase();// 关闭数据库
+
 		}
-		updateinfo.setFlagOK();// 设置为异常数据
-		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库“AutoReport”
-		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
-		databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
-		databaseOperator.CloseDatabase();// 关闭数据库
+
 		Log.i("AAA", "异常信息加入成功");
 
 	}
@@ -712,9 +723,5 @@ public class BackMonitor extends Service
 		}
 
 	}
-
-
-
-	
 
 }

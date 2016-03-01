@@ -1,5 +1,7 @@
 package com.autoreport.datastructure;
 
+import com.autoreport.database.DatabaseOperator;
+
 public class SignalQueue
 {
 
@@ -9,24 +11,25 @@ public class SignalQueue
 	long variance;// 方差
 	int front; // 队头指向队列第一个数据
 	int rear; // 队尾, 指向最后一个数据后一位
-	int nItems; // 元素的个数
+ public	int nItems; // 元素的个数
 	/******** 队列数据*************/
 	
-	public int[] queId;// 主键对列
-	public int[] queInfoId;// 外键队列
+	public SignalInfo[] queSignalInfo;
 	
-	public String[] queRsrp;// RSRP队列
-	public String[] queRsrq;// RSRQ队列
-	public String[] queTxByte;// 发送字节量队列
-	public String[] queRxByte;// 接收字节量队列
-	public String[] queNetType;//网络类型 队列
-	public String[] queRssinr;//信噪比 队列
-	public String[] quePci;//PCI 队列
-	public String[] queCi;//CI 队列
-	public String[] queEnodbId;//ENODBID 队列
-	public String[] queCellId;//CELLID 队列
-	public String[] queTac;//TAC 队列
-	public String[] queTimeStamp;//时间戳队列
+//	public int[] queId;// 主键对列
+//	public String[] queInfoId;// 外键队列
+//	public String[] queRsrp;// RSRP队列
+//	public String[] queRsrq;// RSRQ队列
+//	public String[] queTxByte;// 发送字节量队列
+//	public String[] queRxByte;// 接收字节量队列
+//	public String[] queNetType;//网络类型 队列
+//	public String[] queRssinr;//信噪比 队列
+//	public String[] quePci;//PCI 队列
+//	public String[] queCi;//CI 队列
+//	public String[] queEnodbId;//ENODBID 队列
+//	public String[] queCellId;//CELLID 队列
+//	public String[] queTac;//TAC 队列
+//	public String[] queTimeStamp;//时间戳队列
 	/******** 队列数据*************/
 	
 	// --------------------------------------------------------------
@@ -36,21 +39,24 @@ public class SignalQueue
 		maxSize = s;
 		/******** 声明长度*************/
 		
-		queId=new int[maxSize];
-		queInfoId=new int[maxSize];
+		queSignalInfo=new SignalInfo[maxSize];
 		
-		queRsrp = new String[maxSize];
-		queRsrq = new String[maxSize];
-		queTxByte = new String[maxSize];
-		queRxByte = new String[maxSize];
-		queNetType = new String[maxSize];
-		queRssinr = new String[maxSize];
-		quePci = new String[maxSize];
-		queCi = new String[maxSize];
-		queEnodbId = new String[maxSize];
-		queCellId = new String[maxSize];
-		queTac = new String[maxSize];
-		queTimeStamp = new String[maxSize];
+		
+//		queId=new int[maxSize];
+//		queInfoId=new String[maxSize];
+//		
+//		queRsrp = new String[maxSize];
+//		queRsrq = new String[maxSize];
+//		queTxByte = new String[maxSize];
+//		queRxByte = new String[maxSize];
+//		queNetType = new String[maxSize];
+//		queRssinr = new String[maxSize];
+//		quePci = new String[maxSize];
+//		queCi = new String[maxSize];
+//		queEnodbId = new String[maxSize];
+//		queCellId = new String[maxSize];
+//		queTac = new String[maxSize];
+//		queTimeStamp = new String[maxSize];
 		/******** 声明长度*************/
 		front = 0;
 		rear = 0;
@@ -69,41 +75,41 @@ public class SignalQueue
 			rear = (rear + 1) % maxSize;
 			/******** 队列满,采取循环方式替换数据*************/
 			
-			queId[rear++] = signalInfo.getId();  
-			queInfoId[rear++] = signalInfo.getInfoId();  
+			queSignalInfo[rear++].setId(signalInfo.getId()) ;  
+			queSignalInfo[rear++].setInfoId(signalInfo.getInfoId()); 
 			
-			queRsrp[rear++] = signalInfo.getRsrp();  
-			queRsrq[rear++] = signalInfo.getRsrq();  
-			queTxByte[rear++] = signalInfo.getTxByte();  
-			queRxByte[rear++] = signalInfo.getRxByte();  
-			queNetType[rear++] = signalInfo.getNetType();  
-			queRssinr[rear++] = signalInfo.getRssinr();  
-			quePci[rear++] = signalInfo.getPci();  
-			queCi[rear++] = signalInfo.getCi();  
-			queEnodbId[rear++] = signalInfo.getEnodbId();  
-			queCellId[rear++] = signalInfo.getCellId();  
-			queTac[rear++] = signalInfo.getTac();  
-			queTimeStamp[rear++] = signalInfo.getTimeStamp();  
+			queSignalInfo[rear++].setRsrp(signalInfo.getRsrp());
+			queSignalInfo[rear++].setRsrq(signalInfo.getRsrq());
+			queSignalInfo[rear++].setTxByte(signalInfo.getTxByte());
+			queSignalInfo[rear++].setRxByte(signalInfo.getRxByte());
+			queSignalInfo[rear++].setNetType(signalInfo.getNetType()) ;  
+			queSignalInfo[rear++].setRssinr(signalInfo.getRssinr());
+			queSignalInfo[rear++].setPci(signalInfo.getPci()); 
+			queSignalInfo[rear++].setCi(signalInfo.getCi()); 
+			queSignalInfo[rear++].setEnodbId(signalInfo.getEnodbId());
+			queSignalInfo[rear++].setCellId(signalInfo.getCellId());
+			queSignalInfo[rear++].setTac(signalInfo.getTac());  
+			queSignalInfo[rear++].setTimeStamp(signalInfo.getTimeStamp());
 			/******** 队列满,采取循环方式替换数据*************/
 		} else
 		{
 			/******** 队尾指针加1,把值j加入队尾*************/
 			
-			queId[rear++] = signalInfo.getId();  
-			queInfoId[rear++] = signalInfo.getInfoId();  
+			queSignalInfo[rear++].setId(signalInfo.getId()) ;  
+			queSignalInfo[rear++].setInfoId(signalInfo.getInfoId()); 
 			
-			queRsrp[rear++] = signalInfo.getRsrp();  
-			queRsrq[rear++] = signalInfo.getRsrq();  
-			queTxByte[rear++] = signalInfo.getTxByte();  
-			queRxByte[rear++] = signalInfo.getRxByte();  
-			queNetType[rear++] = signalInfo.getNetType();  
-			queRssinr[rear++] = signalInfo.getRssinr();  
-			quePci[rear++] = signalInfo.getPci();  
-			queCi[rear++] = signalInfo.getCi();  
-			queEnodbId[rear++] = signalInfo.getEnodbId();  
-			queCellId[rear++] = signalInfo.getCellId();  
-			queTac[rear++] = signalInfo.getTac();  
-			queTimeStamp[rear++] = signalInfo.getTimeStamp();  
+			queSignalInfo[rear++].setRsrp(signalInfo.getRsrp());
+			queSignalInfo[rear++].setRsrq(signalInfo.getRsrq());
+			queSignalInfo[rear++].setTxByte(signalInfo.getTxByte());
+			queSignalInfo[rear++].setRxByte(signalInfo.getRxByte());
+			queSignalInfo[rear++].setNetType(signalInfo.getNetType()) ;  
+			queSignalInfo[rear++].setRssinr(signalInfo.getRssinr());
+			queSignalInfo[rear++].setPci(signalInfo.getPci()); 
+			queSignalInfo[rear++].setCi(signalInfo.getCi()); 
+			queSignalInfo[rear++].setEnodbId(signalInfo.getEnodbId());
+			queSignalInfo[rear++].setCellId(signalInfo.getCellId());
+			queSignalInfo[rear++].setTac(signalInfo.getTac());  
+			queSignalInfo[rear++].setTimeStamp(signalInfo.getTimeStamp());
 			/******** 队尾指针加1,把值j加入队尾*************/
 			nItems++;
 		}
@@ -177,13 +183,35 @@ public class SignalQueue
 		int location = front;
 		for (int i = 0; i < nItems; i++)// 取出所有数据
 		{
-			if (Long.parseLong(queRxByte[location]) > max_Value)
-				max_Value = Long.parseLong(queRxByte[location]);
+			if (Long.parseLong(queSignalInfo[location].getRxByte()) > max_Value)
+				max_Value = Long.parseLong(queSignalInfo[location].getRxByte());
 			location = (location + 1) % maxSize;
 		}
 		return max_Value;
 	}
 
+//设置所有数据的外键
+	public void setInfoId(String infoId)//获得接收流量最大值
+	{
+		int location = front;
+		for (int i = 0; i < nItems; i++)// 取出所有数据
+		{
+			queSignalInfo[location].setInfoId(infoId);
+			location = (location + 1) % maxSize;
+		}
+		
+	}
+//将队列中数据插入数据库
+	public void insertToDB(DatabaseOperator databaseOperator)
+	{
+		int location = front;
+		for (int i = 0; i < nItems; i++)// 取出所有数据
+		{
+			databaseOperator.insertToSignalInfo(queSignalInfo[location]);
+			location = (location + 1) % maxSize;
+		}
+		
+	}
 	
 	
 //	public void calculate_expectation()// 计算期望

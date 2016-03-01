@@ -12,7 +12,7 @@ import android.widget.Toast;
 public class InfoDatabase extends SQLiteOpenHelper
 {
 	// 建数据表Info
-	public static final String CREATE_TABLE_INFO = "create table Info(" + " id integer primary key autoincrement ,"
+	public static final String CREATE_TABLE_INFO = "create table Info(" + " id text primary key  ,"
 			+ " brand text," + "type text,"
 			+ " launTime text,"
 			+ " exitTime text,"
@@ -36,6 +36,7 @@ public class InfoDatabase extends SQLiteOpenHelper
 			+ " gid text,"
 			+ " pidNumber text,"
 			+ " MemRate text,"
+//			+ " queLength integer,"
 //			+ " TxByte text,"
 //			+ " RxByte text,"
 //			+ " NetType text,"
@@ -50,7 +51,7 @@ public class InfoDatabase extends SQLiteOpenHelper
 
 	// 建数据表SignalInfo
 		public static final String CREATE_TABLE_SIGNALINFO = "create table SignalInfo(" + " id integer primary key autoincrement ,"
-				+ " infoId integer,"
+				+ " infoId text,"
 				
 				+ " RSRP text,"
 				+ " RSRQ text,"
