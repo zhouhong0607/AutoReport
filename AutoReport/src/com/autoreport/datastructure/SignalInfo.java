@@ -8,16 +8,22 @@ public class SignalInfo
 	
 	private String rsrp;//RSRP
 	private String rsrq;//RSRQ
+	private String rssinr;//信噪比
 	private String txByte;//发送字节量
 	private String rxByte;//接收字节量
 	private String netType;//网络类型
-	private String rssinr;//信噪比
+	
 	private String pci;//PCI
 	private String ci;//ECI
 	private String enodbId;//EnodbID
 	private String cellId;//Cell-id
 	private String tac;//TAC
 	private String timeStamp;//时间戳
+	
+	public SignalInfo()
+	{
+		
+	}
 	
 	public int getId()
 	{

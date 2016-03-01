@@ -53,17 +53,17 @@ public class InfoDatabase extends SQLiteOpenHelper
 		public static final String CREATE_TABLE_SIGNALINFO = "create table SignalInfo(" + " id integer primary key autoincrement ,"
 				+ " infoId text,"
 				
-				+ " RSRP text,"
-				+ " RSRQ text,"
-				+ " TxByte text,"
-				+ " RxByte text,"
-				+ " NetType text,"
-				+ " RSSNR text,"
-				+ " PCI text,"
-				+ " CI text,"
-				+ " ENODBID text,"
-				+ " CELLID text,"
-				+ " TAC text,"
+				+ " rsrp text,"
+				+ " rsrq text,"
+				+ " txByte text,"
+				+ " rxByte text,"
+				+ " netType text,"
+				+ " rssinr text,"
+				+ " pci text,"
+				+ " ci text,"
+				+ " enodbId text,"
+				+ " cellId text,"
+				+ " tac text,"
 				+ " timeStamp text)";// 建数据表info   ,boolean 类型用 integer代替
 	
 	

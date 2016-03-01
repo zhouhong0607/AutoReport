@@ -50,7 +50,7 @@ public class DatabaseOperator
 			values.put("corporation", info.getCorporation());
 			values.put("LAC_GSM", info.getLAC_GSM());
 			values.put("Cell_Id_GSM", info.getCell_Id_GSM());
-			
+			values.put("MemRate", info.getMemRate());
 			values.put("cpuRate", info.getCpuRate());
 			values.put("localIp", info.getLocalIp());
 			values.put("AppName", info.getAppName());
@@ -118,7 +118,7 @@ public class DatabaseOperator
 			values.put("corporation", info.getCorporation());
 			values.put("LAC_GSM", info.getLAC_GSM());
 			values.put("Cell_Id_GSM", info.getCell_Id_GSM());
-			
+			values.put("MemRate", info.getMemRate());
 			values.put("cpuRate", info.getCpuRate());
 			values.put("localIp", info.getLocalIp());
 			values.put("AppName", info.getAppName());
@@ -227,7 +227,7 @@ public class DatabaseOperator
 			values.put("timeStamp", signalInfo.getTimeStamp());
 		
 			// 插入数据到表Info
-			db.insert("Info", null, values);
+			db.insert("SignalInfo", null, values);
 			db.setTransactionSuccessful();// 事务成功
 		} catch (Exception e)
 		{
@@ -247,7 +247,7 @@ public class DatabaseOperator
 		try
 		{
 		
-			db.delete("Info", null, null);// 删除所有数据
+			db.delete("SignalInfo", null, null);// 删除所有数据
 			db.setTransactionSuccessful();// 事务成功
 		} catch (Exception e)
 		{
@@ -283,7 +283,7 @@ public class DatabaseOperator
 			// 更新数据
 			String[] s = new String[1];
 			s[0] = String.valueOf(id);
-			db.update("Info", values, "id=?", s);
+			db.update("SignalInfo", values, "id=?", s);
 			db.setTransactionSuccessful();// 事务成功
 		} catch (Exception e)
 		{
@@ -302,7 +302,7 @@ public class DatabaseOperator
 		db.beginTransaction();// 开启事务
 		try
 		{
-			Cursor cursor = db.query("Info", null, null, null, null, null, null);// 查询数据
+			Cursor cursor = db.query("SignalInfo", null, null, null, null, null, null);// 查询数据
 			if (cursor.moveToFirst())
 			{
 				do

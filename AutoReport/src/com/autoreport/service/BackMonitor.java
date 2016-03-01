@@ -418,6 +418,8 @@ public class BackMonitor extends Service
 	{
 		SignalInfo signalInfo = new SignalInfo();
 
+		
+		
 		if (netType.equals("LTE"))
 		{
 			signalInfo.setRsrp(RSRP);

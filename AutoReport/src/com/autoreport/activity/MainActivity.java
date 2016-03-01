@@ -151,6 +151,7 @@ public class MainActivity extends Activity
 		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
 		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
 		AutoreportApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
+		AutoreportApp.signalInfolist=databaseOperator.queryFromSignalInfo();
 		databaseOperator.CloseDatabase();
 		if (AutoreportApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{

@@ -11,53 +11,59 @@ public class SignalQueue
 	long variance;// 方差
 	int front; // 队头指向队列第一个数据
 	int rear; // 队尾, 指向最后一个数据后一位
- public	int nItems; // 元素的个数
-	/******** 队列数据*************/
-	
+	public int nItems; // 元素的个数
+	/******** 队列数据 *************/
+
+
 	public SignalInfo[] queSignalInfo;
+
 	
-//	public int[] queId;// 主键对列
-//	public String[] queInfoId;// 外键队列
-//	public String[] queRsrp;// RSRP队列
-//	public String[] queRsrq;// RSRQ队列
-//	public String[] queTxByte;// 发送字节量队列
-//	public String[] queRxByte;// 接收字节量队列
-//	public String[] queNetType;//网络类型 队列
-//	public String[] queRssinr;//信噪比 队列
-//	public String[] quePci;//PCI 队列
-//	public String[] queCi;//CI 队列
-//	public String[] queEnodbId;//ENODBID 队列
-//	public String[] queCellId;//CELLID 队列
-//	public String[] queTac;//TAC 队列
-//	public String[] queTimeStamp;//时间戳队列
-	/******** 队列数据*************/
-	
+	// public int[] queId;// 主键对列
+	// public String[] queInfoId;// 外键队列
+	// public String[] queRsrp;// RSRP队列
+	// public String[] queRsrq;// RSRQ队列
+	// public String[] queTxByte;// 发送字节量队列
+	// public String[] queRxByte;// 接收字节量队列
+	// public String[] queNetType;//网络类型 队列
+	// public String[] queRssinr;//信噪比 队列
+	// public String[] quePci;//PCI 队列
+	// public String[] queCi;//CI 队列
+	// public String[] queEnodbId;//ENODBID 队列
+	// public String[] queCellId;//CELLID 队列
+	// public String[] queTac;//TAC 队列
+	// public String[] queTimeStamp;//时间戳队列
+	/******** 队列数据 *************/
+
 	// --------------------------------------------------------------
 
 	public SignalQueue(int s)
 	{
 		maxSize = s;
-		/******** 声明长度*************/
+		queSignalInfo=new SignalInfo[maxSize];//实例对象数组，并且对数组内元素实例化
+		/******** 声明长度 *************/
+		for (int i = 0; i < maxSize; i++)
+		{
+			queSignalInfo[i] = new SignalInfo();
+		}
 		
-		queSignalInfo=new SignalInfo[maxSize];
 		
-		
-//		queId=new int[maxSize];
-//		queInfoId=new String[maxSize];
-//		
-//		queRsrp = new String[maxSize];
-//		queRsrq = new String[maxSize];
-//		queTxByte = new String[maxSize];
-//		queRxByte = new String[maxSize];
-//		queNetType = new String[maxSize];
-//		queRssinr = new String[maxSize];
-//		quePci = new String[maxSize];
-//		queCi = new String[maxSize];
-//		queEnodbId = new String[maxSize];
-//		queCellId = new String[maxSize];
-//		queTac = new String[maxSize];
-//		queTimeStamp = new String[maxSize];
-		/******** 声明长度*************/
+	
+		// queId=new int[maxSize];
+		// queInfoId=new String[maxSize];
+		//
+		// queRsrp = new String[maxSize];
+		// queRsrq = new String[maxSize];
+		// queTxByte = new String[maxSize];
+		// queRxByte = new String[maxSize];
+		// queNetType = new String[maxSize];
+		// queRssinr = new String[maxSize];
+		// quePci = new String[maxSize];
+		// queCi = new String[maxSize];
+		// queEnodbId = new String[maxSize];
+		// queCellId = new String[maxSize];
+		// queTac = new String[maxSize];
+		// queTimeStamp = new String[maxSize];
+		/******** 声明长度 *************/
 		front = 0;
 		rear = 0;
 		nItems = 0;
@@ -69,48 +75,50 @@ public class SignalQueue
 	// --------------------------------------------------------------
 	public void insert(SignalInfo signalInfo) // 进队列
 	{
-		if (nItems == maxSize) // 
+		if (nItems == maxSize) //
 		{
 			front = (front + 1) % maxSize;
+			
+			/******** 队列满,采取循环方式替换数据 *************/
+
+			// queSignalInfo[rear++].setId(signalInfo.getId()) ;
+			// queSignalInfo[rear++].setInfoId(signalInfo.getInfoId());
+
+			queSignalInfo[rear].setRsrp(signalInfo.getRsrp());
+			queSignalInfo[rear].setRsrq(signalInfo.getRsrq());
+			queSignalInfo[rear].setTxByte(signalInfo.getTxByte());
+			queSignalInfo[rear].setRxByte(signalInfo.getRxByte());
+			queSignalInfo[rear].setNetType(signalInfo.getNetType());
+			queSignalInfo[rear].setRssinr(signalInfo.getRssinr());
+			queSignalInfo[rear].setPci(signalInfo.getPci());
+			queSignalInfo[rear].setCi(signalInfo.getCi());
+			queSignalInfo[rear].setEnodbId(signalInfo.getEnodbId());
+			queSignalInfo[rear].setCellId(signalInfo.getCellId());
+			queSignalInfo[rear].setTac(signalInfo.getTac());
+			queSignalInfo[rear].setTimeStamp(signalInfo.getTimeStamp());
 			rear = (rear + 1) % maxSize;
-			/******** 队列满,采取循环方式替换数据*************/
-			
-			queSignalInfo[rear++].setId(signalInfo.getId()) ;  
-			queSignalInfo[rear++].setInfoId(signalInfo.getInfoId()); 
-			
-			queSignalInfo[rear++].setRsrp(signalInfo.getRsrp());
-			queSignalInfo[rear++].setRsrq(signalInfo.getRsrq());
-			queSignalInfo[rear++].setTxByte(signalInfo.getTxByte());
-			queSignalInfo[rear++].setRxByte(signalInfo.getRxByte());
-			queSignalInfo[rear++].setNetType(signalInfo.getNetType()) ;  
-			queSignalInfo[rear++].setRssinr(signalInfo.getRssinr());
-			queSignalInfo[rear++].setPci(signalInfo.getPci()); 
-			queSignalInfo[rear++].setCi(signalInfo.getCi()); 
-			queSignalInfo[rear++].setEnodbId(signalInfo.getEnodbId());
-			queSignalInfo[rear++].setCellId(signalInfo.getCellId());
-			queSignalInfo[rear++].setTac(signalInfo.getTac());  
-			queSignalInfo[rear++].setTimeStamp(signalInfo.getTimeStamp());
-			/******** 队列满,采取循环方式替换数据*************/
+			/******** 队列满,采取循环方式替换数据 *************/
 		} else
 		{
-			/******** 队尾指针加1,把值j加入队尾*************/
-			
-			queSignalInfo[rear++].setId(signalInfo.getId()) ;  
-			queSignalInfo[rear++].setInfoId(signalInfo.getInfoId()); 
-			
-			queSignalInfo[rear++].setRsrp(signalInfo.getRsrp());
-			queSignalInfo[rear++].setRsrq(signalInfo.getRsrq());
-			queSignalInfo[rear++].setTxByte(signalInfo.getTxByte());
-			queSignalInfo[rear++].setRxByte(signalInfo.getRxByte());
-			queSignalInfo[rear++].setNetType(signalInfo.getNetType()) ;  
-			queSignalInfo[rear++].setRssinr(signalInfo.getRssinr());
-			queSignalInfo[rear++].setPci(signalInfo.getPci()); 
-			queSignalInfo[rear++].setCi(signalInfo.getCi()); 
-			queSignalInfo[rear++].setEnodbId(signalInfo.getEnodbId());
-			queSignalInfo[rear++].setCellId(signalInfo.getCellId());
-			queSignalInfo[rear++].setTac(signalInfo.getTac());  
-			queSignalInfo[rear++].setTimeStamp(signalInfo.getTimeStamp());
-			/******** 队尾指针加1,把值j加入队尾*************/
+			/******** 队尾指针加1,把值j加入队尾 *************/
+
+			// queSignalInfo[rear++].setId(signalInfo.getId()) ;
+			// queSignalInfo[rear++].setInfoId(signalInfo.getInfoId());
+
+			queSignalInfo[rear].setRsrp(signalInfo.getRsrp());
+			queSignalInfo[rear].setRsrq(signalInfo.getRsrq());
+			queSignalInfo[rear].setTxByte(signalInfo.getTxByte());
+			queSignalInfo[rear].setRxByte(signalInfo.getRxByte());
+			queSignalInfo[rear].setNetType(signalInfo.getNetType());
+			queSignalInfo[rear].setRssinr(signalInfo.getRssinr());
+			queSignalInfo[rear].setPci(signalInfo.getPci());
+			queSignalInfo[rear].setCi(signalInfo.getCi());
+			queSignalInfo[rear].setEnodbId(signalInfo.getEnodbId());
+			queSignalInfo[rear].setCellId(signalInfo.getCellId());
+			queSignalInfo[rear].setTac(signalInfo.getTac());
+			queSignalInfo[rear].setTimeStamp(signalInfo.getTimeStamp());
+			rear = (rear + 1) % maxSize;
+			/******** 队尾指针加1,把值j加入队尾 *************/
 			nItems++;
 		}
 	}
@@ -178,7 +186,7 @@ public class SignalQueue
 		expectation = 0;
 	}
 
-	public long get_maxValue()//获得接收流量最大值
+	public long get_maxValue()// 获得接收流量最大值
 	{
 		int location = front;
 		for (int i = 0; i < nItems; i++)// 取出所有数据
@@ -190,8 +198,8 @@ public class SignalQueue
 		return max_Value;
 	}
 
-//设置所有数据的外键
-	public void setInfoId(String infoId)//获得接收流量最大值
+	// 设置所有数据的外键
+	public void setInfoId(String infoId)// 获得接收流量最大值
 	{
 		int location = front;
 		for (int i = 0; i < nItems; i++)// 取出所有数据
@@ -199,9 +207,10 @@ public class SignalQueue
 			queSignalInfo[location].setInfoId(infoId);
 			location = (location + 1) % maxSize;
 		}
-		
+
 	}
-//将队列中数据插入数据库
+
+	// 将队列中数据插入数据库
 	public void insertToDB(DatabaseOperator databaseOperator)
 	{
 		int location = front;
@@ -210,77 +219,76 @@ public class SignalQueue
 			databaseOperator.insertToSignalInfo(queSignalInfo[location]);
 			location = (location + 1) % maxSize;
 		}
-		
+
 	}
-	
-	
-//	public void calculate_expectation()// 计算期望
-//	{
-//		long sum = 0;
-//		int location = front;
-//		int record = 0;
-//		for (int i = 0; i < nItems; i++)// 取出所有数据
-//		{
-//			if (queArray[location] != 0)// 剔除非零数据
-//			{
-//				sum += queArray[location];
-//				record++;
-//			}
-//			location = (location + 1) % maxSize;
-//		}
-//		if (record == 0)
-//		{
-//			expectation = 0;
-//		} else
-//		{
-//			expectation = sum / record;
-//		}
-//
-//	}
-//
-//	public void calculate_variance()// 计算方差
-//	{
-//		long sum = 0;
-//		int location = front;
-//		int record = 0;
-//		for (int i = 0; i < nItems; i++)// 取出所有数据
-//		{
-//			if (queArray[location] != 0)// 取出非零数据计算
-//			{
-//				sum += Math.pow(queArray[location] - expectation, 2);
-//				record++;
-//			}
-//			location = (location + 1) % maxSize;
-//		}
-//		if (record == 0)
-//		{
-//			variance = 0;
-//		} else
-//		{
-//			variance = sum / record;
-//		}
-//	}
-//
-//	public String get_data()
-//	{
-//		String s = "";
-//		long sum=0;
-//		int location = front;
-//
-//		for (int i = 0; i < nItems; i++)// 取出所有数据
-//		{
-//			sum+=queArray[location];
-//			if(i!=nItems-1)
-//			{
-//			s += String.valueOf(queArray[location]) + ",";
-//			}else {
-//				s+=String.valueOf(queArray[location]);
-//			}
-//			location = (location + 1) % maxSize;
-//		}
-//		return "("+sum+")"+s;
-//
-//	}
+
+	// public void calculate_expectation()// 计算期望
+	// {
+	// long sum = 0;
+	// int location = front;
+	// int record = 0;
+	// for (int i = 0; i < nItems; i++)// 取出所有数据
+	// {
+	// if (queArray[location] != 0)// 剔除非零数据
+	// {
+	// sum += queArray[location];
+	// record++;
+	// }
+	// location = (location + 1) % maxSize;
+	// }
+	// if (record == 0)
+	// {
+	// expectation = 0;
+	// } else
+	// {
+	// expectation = sum / record;
+	// }
+	//
+	// }
+	//
+	// public void calculate_variance()// 计算方差
+	// {
+	// long sum = 0;
+	// int location = front;
+	// int record = 0;
+	// for (int i = 0; i < nItems; i++)// 取出所有数据
+	// {
+	// if (queArray[location] != 0)// 取出非零数据计算
+	// {
+	// sum += Math.pow(queArray[location] - expectation, 2);
+	// record++;
+	// }
+	// location = (location + 1) % maxSize;
+	// }
+	// if (record == 0)
+	// {
+	// variance = 0;
+	// } else
+	// {
+	// variance = sum / record;
+	// }
+	// }
+	//
+	// public String get_data()
+	// {
+	// String s = "";
+	// long sum=0;
+	// int location = front;
+	//
+	// for (int i = 0; i < nItems; i++)// 取出所有数据
+	// {
+	// sum+=queArray[location];
+	// if(i!=nItems-1)
+	// {
+	// s += String.valueOf(queArray[location]) + ",";
+	// }else {
+	// s+=String.valueOf(queArray[location]);
+	// }
+	// location = (location + 1) % maxSize;
+	// }
+	// return "("+sum+")"+s;
+	//
+	// }
 
 	// protected boolean judge(long min)// 做出判断小于min定为异常
 	// {

@@ -16,6 +16,7 @@ import android.util.Log;
 public class AutoreportApp extends Application
 {
 	public static List<Info> infolist=new ArrayList<Info>();//用于ListView显示
+	public static List<SignalInfo> signalInfolist=new ArrayList<SignalInfo>();//用于ListView显示
 	private static Context context=null;
 	@Override
 	public void onCreate()
