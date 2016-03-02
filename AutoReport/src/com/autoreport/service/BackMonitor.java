@@ -486,11 +486,9 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("launtime", info.getLaunTime()));
 		params.add(new BasicNameValuePair("exittime", info.getExitTime()));
 		params.add(new BasicNameValuePair("usetime", info.getUseTime()));
-
 		params.add(new BasicNameValuePair("excepTime", info.getExcepTime()));
 		params.add(new BasicNameValuePair("uploadNum", String.valueOf(info.getUploadNum())));
 		params.add(new BasicNameValuePair("uploadTime", info.getUploadTime()));
-
 		params.add(new BasicNameValuePair("brand", info.getBrand()));
 		params.add(new BasicNameValuePair("type", info.getType()));
 		params.add(new BasicNameValuePair("version", info.getVersion()));
@@ -499,7 +497,6 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("corporation", info.getCorporation()));
 		params.add(new BasicNameValuePair("LAC", info.getLAC_GSM()));
 		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id_GSM()));
-
 		params.add(new BasicNameValuePair("cpuRate", info.getCpuRate()));
 		params.add(new BasicNameValuePair("localIp", info.getLocalIp()));
 		params.add(new BasicNameValuePair("AppName", info.getAppName()));
@@ -520,14 +517,12 @@ public class BackMonitor extends Service
 		{
 			for (int i = 0; i < signalInfos.size(); i++)
 			{
-
 				siglist += signalInfos.get(i).getRsrp() + "," + signalInfos.get(i).getRsrq() + ","
 						+ signalInfos.get(i).getRssinr() + "," + signalInfos.get(i).getTxByte() + ","
 						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getPci() + ","
 						+ signalInfos.get(i).getCi() + "," + signalInfos.get(i).getEnodbId() + ","
 						+ signalInfos.get(i).getCellId() + "," + signalInfos.get(i).getTac() + ","
 						+ signalInfos.get(i).getTimeStamp() + "," + "\n";
-
 			}
 
 		}

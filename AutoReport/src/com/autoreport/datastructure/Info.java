@@ -9,6 +9,11 @@ import java.util.UUID;
 
 public class Info implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4017674411859976594L;
+
 	private String id;//主键
 	
 	private String brand;// 品牌

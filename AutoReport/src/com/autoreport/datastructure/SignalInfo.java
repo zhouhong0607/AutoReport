@@ -1,7 +1,13 @@
 package com.autoreport.datastructure;
 
-public class SignalInfo
+import java.io.Serializable;
+
+public class SignalInfo implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 103895836915207511L;
 	private int id;//主键
 	private String infoId;//外键
 	
