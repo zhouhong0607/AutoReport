@@ -158,8 +158,10 @@ public class SecActivity extends Activity
 						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getNetType() + ","
 						+ signalInfos.get(i).getPci() + "," + signalInfos.get(i).getCi() + ","
 						+ signalInfos.get(i).getEnodbId() + "," + signalInfos.get(i).getCellId() + ","
-						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + "," + "\n";
-
+						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp()+"|" ;
+//				if((i+1)!=signalInfos.size())
+//				siglist+= "|";
+				
 			}
 
 		}
