@@ -519,7 +519,8 @@ public class BackMonitor extends Service
 			{
 				siglist += signalInfos.get(i).getRsrp() + "," + signalInfos.get(i).getRsrq() + ","
 						+ signalInfos.get(i).getRssinr() + "," + signalInfos.get(i).getTxByte() + ","
-						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getPci() + ","
+						+ signalInfos.get(i).getRxByte() + ","+ signalInfos.get(i).getNetType() + ","
++ signalInfos.get(i).getPci() + ","
 						+ signalInfos.get(i).getCi() + "," + signalInfos.get(i).getEnodbId() + ","
 						+ signalInfos.get(i).getCellId() + "," + signalInfos.get(i).getTac() + ","
 						+ signalInfos.get(i).getTimeStamp() + "," + "\n";
