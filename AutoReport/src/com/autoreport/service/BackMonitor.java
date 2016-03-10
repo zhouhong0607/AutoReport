@@ -466,8 +466,8 @@ public class BackMonitor extends Service
 
 	public boolean upload_data(Info info)
 	{
-		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
-		String urlStr = "http://www.mengqi.win/LoginServlet";
+		 String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
+//		String urlStr = "http://www.mengqi.win/LoginServlet";
 
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
@@ -570,6 +570,9 @@ public class BackMonitor extends Service
 	// 判决是否是LTE
 	public boolean getNetWorkType()// 移动网络返回true
 	{
+		
+		
+//		return true;
 		/*********** 对网络类型监视 ***************/
 		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());// 获得运营商,参数为IMSI
 		if (OPname.equals("中国移动"))
