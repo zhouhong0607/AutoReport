@@ -182,7 +182,7 @@ public class BackMonitor extends Service
 			{
 				upload_time++;
 				/******************** 自动上传 ****************************/
-				if (upload_time % 60 == 0)// 60秒上传一次
+				if (upload_time % 60 == 0&&isConnected())// 60秒上传一次
 				{
 					new Thread(new Runnable()
 					{
@@ -447,12 +447,23 @@ public class BackMonitor extends Service
 
 				if (cellInfo.isRegistered())
 				{
+					
+					if(netType.equals("LTE"))
+					{
 					signalInfo.setPci(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci()));
 					signalInfo.setCi(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi()));
 					signalInfo.setEnodbId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
 					signalInfo.setCellId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
 					signalInfo.setTac(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
 					//
+					}else
+					{
+						signalInfo.setPci("N/A");
+						signalInfo.setCi("N/A");
+						signalInfo.setEnodbId("N/A");
+						signalInfo.setCellId("N/A");
+						signalInfo.setTac("N/A");
+					}
 				}
 
 			}
@@ -466,7 +477,7 @@ public class BackMonitor extends Service
 
 	public boolean upload_data(Info info)
 	{
-		 String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
+		String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
 //		String urlStr = "http://www.mengqi.win/LoginServlet";
 
 		HttpPost request = new HttpPost(urlStr);
@@ -567,6 +578,19 @@ public class BackMonitor extends Service
 		}
 	}
 
+	
+	private boolean isConnected()
+	{
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+		if(networkInfo!=null&&networkInfo.isConnected())
+		{
+			return true;
+		} 
+		return false;	
+		
+	}
+	
 	// 判决是否是LTE
 	public boolean getNetWorkType()// 移动网络返回true
 	{
@@ -632,7 +656,7 @@ public class BackMonitor extends Service
 		updateinfo.setIMSI(tm.getSubscriberId());
 		updateinfo.setCorporation(tm.getSimOperatorName());
 		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
-		updateinfo.setCell_Id_GSM(String.valueOf(location.getCid()));
+		updateinfo.setCell_Id_GSM(location.getCid()>65535?"N/A":String.valueOf(location.getCid()));
 
 		updateinfo.setMemRate(ExtraUtil.getMemRate());// 内存占用率
 
