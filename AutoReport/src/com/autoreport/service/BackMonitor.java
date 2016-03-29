@@ -570,7 +570,7 @@ public class BackMonitor extends Service
 		{
 			// TODO: handle exception
 			Log.i("AAA", "响应超时");
-			return false;
+			return true;
 		} catch (Exception e)
 		{
 			// TODO: handle exception
