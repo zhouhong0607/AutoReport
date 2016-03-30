@@ -564,11 +564,13 @@ public class BackMonitor extends Service
 			}
 		} catch (ConnectTimeoutException e)
 		{
+			e.printStackTrace();
 			Log.i("AAA", "连接超时");
 			return false;
 		} catch (SocketTimeoutException e)
 		{
 			// TODO: handle exception
+			e.printStackTrace();
 			Log.i("AAA", "响应超时");
 			return true;
 		} catch (Exception e)
