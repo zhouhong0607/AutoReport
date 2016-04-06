@@ -488,7 +488,7 @@ public class BackMonitor extends Service
 		int timeoutConnection = 1000;// 800
 		HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
 		// // 设置响应超时
-		int timeoutSocket = 1000; // 500临界点
+		int timeoutSocket = 3000; // 500临界点
 		HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -560,7 +560,7 @@ public class BackMonitor extends Service
 			} else
 			{
 				Log.i("AAA", "上传失败");
-				return true;
+				return false;
 			}
 		} catch (ConnectTimeoutException e)
 		{
