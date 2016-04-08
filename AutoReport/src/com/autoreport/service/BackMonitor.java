@@ -123,6 +123,9 @@ public class BackMonitor extends Service
 	boolean isAbnormal = false;// 异常标志
 	boolean isAbnormal2 = false;// 异常标志
 
+	boolean excepTing = false;// 动态异常标志
+	int excepCount = 0;// 动态异常计数
+
 	@Override
 	public void onCreate()
 	{
@@ -292,6 +295,35 @@ public class BackMonitor extends Service
 							dtx = 0;
 						}
 
+						if (dtx > 0 && drx == 0)
+						{
+							excepTing = true;
+						}
+
+						if (excepTing)
+						{
+							if (dtx == 0 && drx == 0)
+							{
+								excepCount++;
+								if (excepCount == 5)
+								{
+									excep();
+									handler.sendEmptyMessage(1);
+									excepTing = false;
+								}
+							} else if (drx > 0)
+							{
+								excepTing = false;
+							} else if (dtx > 0 && drx == 0)
+							{
+								excepCount=0;
+							}
+
+						} else
+						{
+							excepCount = 0;
+						}
+
 						SignalInfo signalInfo = getSignalInfo();
 
 						if (count < 31) // 30个数据
@@ -416,6 +448,11 @@ public class BackMonitor extends Service
 		}, 0, 1000);
 	}
 
+	private void excep()
+	{
+		Log.i("AAA", "运行时异常");
+	}
+
 	private SignalInfo getSignalInfo()
 	{
 		SignalInfo signalInfo = new SignalInfo();
@@ -479,8 +516,8 @@ public class BackMonitor extends Service
 
 	public boolean upload_data(Info info)
 	{
-//		String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
-		 String urlStr = "http://www.mengqi.win/LoginServlet";
+		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
+		String urlStr = "http://www.mengqi.win/LoginServlet";
 
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
@@ -551,7 +588,7 @@ public class BackMonitor extends Service
 
 			HttpResponse response = httpclient.execute(request);
 
-			if (response.getStatusLine().getStatusCode()==HttpStatus.SC_OK)//   EntityUtils.toString(response.getEntity()).equals("上传成功")
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)// EntityUtils.toString(response.getEntity()).equals("上传成功")
 			{
 
 				Log.i("AAA", "上传成功");
