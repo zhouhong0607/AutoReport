@@ -112,13 +112,13 @@ public class BackMonitor extends Service
 	String RSRP = "";
 	String RSRQ = "";
 	String RSSNR = "";// 新@@@@@@@@@
-	String LaunTime;
-	String exitTime;
-	String excepTime1;// 第一次异常时间点
-	String excepTime2;// 第二次异常时间点
-	String AppName;
+	String LaunTime="";
+	String exitTime="";
+	String excepTime1="";// 第一次异常时间点
+	String excepTime2="";// 第二次异常时间点
+	String AppName="";
 
-	String netType;
+	String netType="";
 
 	boolean isAbnormal = false;// 异常标志
 	boolean isAbnormal2 = false;// 异常标志
@@ -294,35 +294,7 @@ public class BackMonitor extends Service
 							drx = 0;
 							dtx = 0;
 						}
-
-						if (dtx > 0 && drx == 0)
-						{
-							excepTing = true;
-						}
-
-						if (excepTing)
-						{
-							if (dtx == 0 && drx == 0)
-							{
-								excepCount++;
-								if (excepCount == 5)
-								{
-									excep();
-									handler.sendEmptyMessage(1);
-									excepTing = false;
-								}
-							} else if (drx > 0)
-							{
-								excepTing = false;
-							} else if (dtx > 0 && drx == 0)
-							{
-								excepCount=0;
-							}
-
-						} else
-						{
-							excepCount = 0;
-						}
+						
 
 						SignalInfo signalInfo = getSignalInfo();
 
@@ -392,7 +364,7 @@ public class BackMonitor extends Service
 
 						if (count > 35)// 进行第二次 测试
 						{
-							if (exitQue.get_maxValue() < 10000)
+							if (exitQue.get_maxValue() < 10000||exitQue.judege())
 							{
 								Log.i("AAA", "开始http测试");
 								if (!upload_data(new Info()))// http测试不成功
@@ -635,8 +607,8 @@ public class BackMonitor extends Service
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 
-		// return true;
-		/*********** 对网络类型监视 ***************/
+//		 return true;
+//		/*********** 对网络类型监视 ***************/
 		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());// 获得运营商,参数为IMSI
 		if (OPname.equals("中国移动"))
 		{

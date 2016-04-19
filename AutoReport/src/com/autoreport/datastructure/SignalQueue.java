@@ -2,6 +2,8 @@ package com.autoreport.datastructure;
 
 import com.autoreport.database.DatabaseOperator;
 
+import android.util.Log;
+
 public class SignalQueue
 {
 
@@ -198,6 +200,57 @@ public class SignalQueue
 		return max_Value;
 	}
 
+	public boolean judege()
+	{
+		/*****************************************************/
+		int excepCount=0;
+		boolean excepTing=false;
+		boolean isExcep=false;
+		
+		for(SignalInfo sInfo:queSignalInfo)
+		{
+			long dtx=Long.parseLong(sInfo.getTxByte());
+			long drx=Long.parseLong(sInfo.getRxByte());
+			if (dtx > 0 && drx == 0)
+			{
+				excepTing = true;
+			}
+				
+			if (excepTing)
+			{
+				if (dtx == 0 && drx == 0)
+				{
+					excepCount++;
+					if (excepCount == 5)
+					{
+						isExcep=true;
+						Log.i("AAA", "Excep");
+//						excepTing = false;
+						break;
+					}
+				} else if (drx > 0)
+				{
+					excepTing = false;
+				} else if (dtx > 0 && drx == 0)
+				{
+					excepCount = 0;
+				}
+
+			} else
+			{
+				excepCount = 0;
+			}
+				
+		}
+		
+		return isExcep;
+
+		
+
+		/*****************************************************/
+	}
+	
+	
 	// 设置所有数据的外键
 	public void setInfoId(String infoId)// 获得接收流量最大值
 	{
