@@ -489,7 +489,7 @@ public class BackMonitor extends Service
 	public boolean upload_data(Info info)
 	{
 		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
-		String urlStr = "http://www.mengqi.win/LoginServlet";
+		String urlStr = "http://www.mengqi.win/InternalTesting/LoginServlet";
 
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
