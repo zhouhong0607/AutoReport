@@ -199,7 +199,23 @@ public class SignalQueue
 		}
 		return max_Value;
 	}
-
+/**
+ * 取得队列流量和
+ * @return
+ */
+	public long get_sum()// 获得接收流量最大值
+	{
+		int location = front;
+		long sum=0;
+		for (int i = 0; i < nItems; i++)// 取出所有数据
+		{
+			sum+=Long.parseLong(queSignalInfo[location].getRxByte())+Long.parseLong(queSignalInfo[location].getTxByte());
+			location = (location + 1) % maxSize;
+		}
+		return sum;
+	}
+	
+	
 	public boolean judege()
 	{
 		/*****************************************************/

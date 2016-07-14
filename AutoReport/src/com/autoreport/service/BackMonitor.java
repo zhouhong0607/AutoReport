@@ -150,7 +150,7 @@ public class BackMonitor extends Service
 
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
-							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[13])));
+							RSSNR = String.format("%d", Math.log10(Double.valueOf(parts[13])));
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
 					{
@@ -158,7 +158,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[9];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
 						{
-							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[10])));
+							RSSNR = String.format("%d", Math.log10(Double.valueOf(parts[10])));
 						}
 					} else
 					{
@@ -166,7 +166,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[10];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
 						{
-							RSSNR = String.format("%.5f", Math.log10(Double.valueOf(parts[11])));
+							RSSNR = String.format("%d", Math.log10(Double.valueOf(parts[11])));
 						}
 					}
 
@@ -314,7 +314,7 @@ public class BackMonitor extends Service
 							// txqueue_laun.calculate_expectation();// 计算期望rx
 							// txqueue_laun.calculate_variance();// 计算方差tx
 
-							if (launQue.get_maxValue() < 10000)// 异常判决
+							if (launQue.get_sum()>0&&launQue.get_maxValue() < 10000)// 异常判决
 							{
 
 								Log.i("AAA", "可疑异常出现");
@@ -349,7 +349,7 @@ public class BackMonitor extends Service
 
 							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
 
-							if (launQue.get_maxValue() < 10000)// 异常判决
+							if (launQue.get_sum()>0&&launQue.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = ExtraUtil.getCurTime();
 								Log.i("AAA", "第一次异常时间" + excepTime1);
@@ -364,7 +364,7 @@ public class BackMonitor extends Service
 
 						if (count > 35)// 进行第二次 测试
 						{
-							if (exitQue.get_maxValue() < 10000||exitQue.judege())
+							if (exitQue.get_sum()>0&&(exitQue.get_maxValue() < 10000||exitQue.judege()))
 							{
 								Log.i("AAA", "开始http测试");
 								if (!upload_data(new Info()))// http测试不成功
@@ -382,7 +382,6 @@ public class BackMonitor extends Service
 							if (isAbnormal2)
 							{
 								recordInfo(false);// 参数true 为 第二次 异常，
-
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
@@ -494,7 +493,7 @@ public class BackMonitor extends Service
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
 		// 设置请求超时
-		int timeoutConnection = 1000;// 800
+		int timeoutConnection = 2000;// 800
 		HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
 		// // 设置响应超时
 		int timeoutSocket = 3000; // 500临界点

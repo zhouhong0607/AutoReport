@@ -2,6 +2,7 @@ package analysis;
 
 public class Util
 {
+	
 	/**
 	 * 计算UE 期望
 	 * @param value
@@ -61,13 +62,62 @@ public class Util
 		}
 	}
 	/**
+	 * 计算上行信噪比对应区间
+	 * @param value
+	 * @return
+	 */
+	public static int getSinrUlIndex(double value)
+	{
+		if(value<-10)
+		{
+			return 0;
+		}else if (value>25)
+		{
+			return 17;
+		}else
+		{
+			return (int)(10.0+value)+1;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	/**
 	 * 计算Rsrp加权期望
 	 * @param value
 	 * @return
 	 */
 	public static double calRsrpExp(double[] value)
 	{
+		double sum=0;//分母
+		double wSum=0;//分子
+		wSum+=value[0]*120.0;
+		sum+=value[0];
+		wSum+=value[1]*117.5;
+		sum+=value[1];
 		
+		double cur=114.5;
+		for(int i=2;i<=36;i++)
+		{
+			wSum+=value[i]*cur;
+			sum+=value[i];
+			cur-=1;
+		}
+		cur=79.0;
+		for(int i=37;i<=46;i++)
+		{
+			wSum+=value[i]*cur;
+			sum+=value[i];
+			cur-=2;
+		}
+		wSum+=value[47]*60;
+		sum+=value[47];
+		double result;
+		result=-(wSum/sum);
+		return result;
 	}
 	/**
 	 * 计算Rsrq加权期望
@@ -76,7 +126,22 @@ public class Util
 	 */
 	public static double calRsrqExp(double[] value)
 	{
-		
+		double sum=0;//分母
+		double wSum=0;//分子
+		wSum+=value[0]*19.5;
+		sum+=value[0];
+		double cur=18.75;
+		for(int i=1;i<=16;i++)
+		{
+			wSum+=value[i]*cur;
+			sum+=value[i];
+			cur-=1;
+		}
+		wSum+=value[17]*3;
+		sum+=value[17];
+		double result;
+		result=-(wSum/sum);
+		return result;
 	}
 	/**
 	 * 计算PRB加权期望
@@ -85,7 +150,22 @@ public class Util
 	 */
 	public static double calPrbExp(double[] value)
 	{
+		double sum=0;//分母
+		double wSum=0;//分子
+		wSum+=0;
+		sum+=value[0];
 		
+		double cur=5;
+		for(int i=1;i<=10;i++)
+		{
+			wSum+=value[i]*cur;
+			sum+=value[i];
+			cur+=10;
+		}
+		
+		double result;
+		result=wSum/sum;
+		return result;
 	}
 	/**
 	 * 计算PLR加权期望（上行、下行）
@@ -96,7 +176,55 @@ public class Util
 	 */
 	public static double calPlrExp(double[] value6,double[] value8,double[] value9)
 	{
+		double sum=0;//分母
+		double wSum=0;//分子
 		
+		sum+=value6[0]+value8[0]+value9[0];
+		wSum+=sum*0.001;
+		
+		sum+=value6[1]+value8[1]+value9[1];
+		wSum+=sum*0.0035;
+		
+		sum+=value6[2]+value8[2]+value9[2];
+		wSum+=sum*0.0075;
+		
+		double cur=0.015;
+		for(int i=3;i<=11;i++)
+		{
+			sum+=value6[i]+value8[i]+value9[i];
+			wSum+=sum*cur;
+			
+			cur+=0.01;
+		}
+		cur=0.11;
+		for(int i=12;i<=16;i++)
+		{
+			sum+=value6[i]+value8[i]+value9[i];
+			wSum+=sum*cur;
+			
+			cur+=0.02;
+		}
+		
+		cur=0.225;
+		for(int i=17;i<=22;i++)
+		{
+			sum+=value6[i]+value8[i]+value9[i];
+			wSum+=sum*cur;
+			
+			cur+=0.05;
+		}
+		
+		cur=0.55;
+		for(int i=23;i<=27;i++)
+		{
+			sum+=value6[i]+value8[i]+value9[i];
+			wSum+=sum*cur;
+			
+			cur+=0.1;
+		}
+		double result;
+		result=wSum/sum;
+		return result;
 	}
 	/**
 	 * 计算上行信噪比加权期望
@@ -105,6 +233,21 @@ public class Util
 	 */
 	public static double calUlSinrExp(double[] value)
 	{
-		
+		double sum=0;//分母
+		double wSum=0;//分子
+		wSum+=value[0]*(-10.0);
+		sum+=value[0];
+		double cur=-9.5;
+		for(int i=1;i<=35;i++)
+		{
+			wSum+=value[i]*cur;
+			sum+=value[i];
+			cur+=1;
+		}
+		wSum+=value[36]*25;
+		sum+=value[36];
+		double result;
+		result=wSum/sum;
+		return result;
 	}
 }
