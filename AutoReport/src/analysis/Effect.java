@@ -251,83 +251,63 @@ public class Effect
 	{
 		this.eUlSinr = eUlSinr;
 	}
-
-
-
-
-
-
-
-
-
 	public static int getPowDrsrp()
 	{
 		return POW_DRSRP;
 	}
-
-
-
-
-
-
-
-
-
 	public static int getPowErsrp()
 	{
 		return POW_ERSRP;
 	}
-
-
-
-
-
-
-
-
-
 	public static int getPowDrsrq()
 	{
 		return POW_DRSRQ;
 	}
-
-
-
-
-
-
-
-
-
 	public static int getPowErsrq()
 	{
 		return POW_ERSRQ;
 	}
-
-
-
-
-
-
-
-
-
 	public static int getPowEprb()
 	{
 		return POW_EPRB;
 	}
-
-
-
-
-
-
-
-
-
 	public static int getPowEulsinr()
 	{
 		return POW_EULSINR;
 	}
-
+	
+	public String toString()
+	{
+		StringBuilder sBuilder=new StringBuilder();
+		sBuilder.append("RSRP影响程度:"+eRsrp+"\n");
+		sBuilder.append("RSRQ影响程度:"+eRsrq+"\n");
+		sBuilder.append("UE PDSCH信道占用PRB数影响程度:"+ePrb+"\n");
+		sBuilder.append("下行丢包率影响程度:"+eDlPlr+"\n");
+		sBuilder.append("上行丢包率影响程度:"+eUlPlr+"\n");
+		sBuilder.append("上行信干噪比影响程度:"+eUlSinr+"\n");
+		sBuilder.append("上行信道影响程度:"+eUl+"\n");
+		sBuilder.append("下行信道影响程度:"+eDl+"\n");
+		sBuilder.append("综合无线环境影响程度:"+e+"\n");
+		return sBuilder.toString();
+	}
+	
+	/**
+	 * 测试
+	 * @param args
+	 * @throws Exception
+	 */
+	
+	public static void main(String[] args) throws Exception
+	{
+		String rsrp="-95 -87 -102 -99 -88 -89 -73 -65 -102 -101";
+		String rsrq="-15 -12 -9 -10 -16 -14 -12 -11 -8 -6";
+		UeData ueData=new UeData(rsrp, rsrq);
+		MrData mrData=new MrData();
+		Effect effect=new Effect(ueData, mrData);
+		System.out.println(ueData.toString());
+		System.out.println(mrData.toString());
+		System.out.println(effect.toString());
+		
+		
+	}
 }

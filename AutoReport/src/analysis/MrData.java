@@ -26,8 +26,29 @@ public class MrData
 	private	int indexExpRsrq;
 	private	int indexExpSinrUl;
 	
-	private double sumMrRsrp;//Rsrp的样本数量合 ， 请在 数据初始化中计算
+	private double sumMrRsrp;//Rsrp的样本数量合 
 	private double sumMrRsrq;//Rsrq同上
+	
+	
+	public String toString()
+	{
+		StringBuilder sBuilder=new StringBuilder();
+		sBuilder.append("MR_RSRP加权期望:"+expMrRsrp+"\n");
+		sBuilder.append("MR_RSRP加权期望区间:"+indexExpRsrp+"\n");
+		sBuilder.append("MR_RSRQ加权期望:"+expMrRsrq+"\n");
+		sBuilder.append("MR_RSRQ加权期望区间:"+indexExpRsrq+"\n");
+		
+		sBuilder.append("MR_PRB加权期望:"+expMrPrbNum+"\n");
+		sBuilder.append("上行MR_PLR加权期望:"+expMrPlrUl+"\n");
+		sBuilder.append("下行MR_PLR加权期望:"+expMrPlrDl+"\n");
+		
+		sBuilder.append("MR_SinrUl加权期望:"+expMrSinrUl+"\n");
+		sBuilder.append("MR_SinrUl加权期望区间:"+indexExpSinrUl+"\n");
+		
+		return sBuilder.toString();
+		
+	}
+	
 	
 	
 	public MrData()
@@ -36,9 +57,28 @@ public class MrData
 		 * 数据初始化
 		 */
 	
+		
+		
+		
+		
+		
+		
 		/**
 		 * 数据初始化
 		 */
+		
+		
+		for(Double d:mrRsrp)
+		{
+			sumMrRsrp+=d;
+		}
+		for(Double d:mrRsrq)
+		{
+			sumMrRsrq+=d;
+		}
+		
+		
+		
 		expMrRsrp=Util.calRsrpExp(mrRsrp);
 		indexExpRsrp=Util.getRsrpIndex(expMrRsrp);
 		expMrRsrq=Util.calRsrqExp(mrRsrq);
