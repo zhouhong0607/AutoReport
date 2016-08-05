@@ -50,7 +50,7 @@ public class Util
 	 */
 	public static int getRsrqIndex(double value)
 	{
-		if(value<19.5)
+		if(value<-19.5)
 		{
 			return 0;
 		}else if (value>-3.5)
@@ -178,29 +178,34 @@ public class Util
 	{
 		double sum=0;//分母
 		double wSum=0;//分子
+		double curSum=0;
+		curSum=value6[0]+value8[0]+value9[0];
+		sum+=curSum;
+		wSum+=curSum*0.001;
 		
-		sum+=value6[0]+value8[0]+value9[0];
-		wSum+=sum*0.001;
+		curSum=value6[1]+value8[1]+value9[1];
+		sum+=curSum;
+		wSum+=curSum*0.0035;
 		
-		sum+=value6[1]+value8[1]+value9[1];
-		wSum+=sum*0.0035;
-		
-		sum+=value6[2]+value8[2]+value9[2];
-		wSum+=sum*0.0075;
+		curSum=value6[2]+value8[2]+value9[2];
+		sum+=curSum;
+		wSum+=curSum*0.0075;
 		
 		double cur=0.015;
 		for(int i=3;i<=11;i++)
 		{
-			sum+=value6[i]+value8[i]+value9[i];
-			wSum+=sum*cur;
+			curSum=value6[i]+value8[i]+value9[i];
+			sum+=curSum;
+			wSum+=curSum*cur;
 			
 			cur+=0.01;
 		}
 		cur=0.11;
 		for(int i=12;i<=16;i++)
 		{
-			sum+=value6[i]+value8[i]+value9[i];
-			wSum+=sum*cur;
+			curSum=value6[i]+value8[i]+value9[i];
+			sum+=curSum;
+			wSum+=curSum*cur;
 			
 			cur+=0.02;
 		}
@@ -208,8 +213,9 @@ public class Util
 		cur=0.225;
 		for(int i=17;i<=22;i++)
 		{
-			sum+=value6[i]+value8[i]+value9[i];
-			wSum+=sum*cur;
+			curSum=value6[i]+value8[i]+value9[i];
+			sum+=curSum;
+			wSum+=curSum*cur;
 			
 			cur+=0.05;
 		}
@@ -217,8 +223,9 @@ public class Util
 		cur=0.55;
 		for(int i=23;i<=27;i++)
 		{
-			sum+=value6[i]+value8[i]+value9[i];
-			wSum+=sum*cur;
+			curSum=value6[i]+value8[i]+value9[i];
+			sum+=curSum;
+			wSum+=curSum*cur;
 			
 			cur+=0.1;
 		}

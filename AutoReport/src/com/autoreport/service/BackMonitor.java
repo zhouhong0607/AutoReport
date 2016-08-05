@@ -449,6 +449,16 @@ public class BackMonitor extends Service
 		/******************** 4G位置信息 ***********************/
 		List<CellInfo> cellInfoList = tm.getAllCellInfo();
 
+		if(cellInfoList==null||cellInfoList.size()==0)
+		{
+			GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
+			signalInfo.setCi(String.valueOf(location.getCid()));
+			signalInfo.setEnodbId(String.valueOf((location.getCid() / 256)));
+			signalInfo.setCellId(String.valueOf((location.getCid() % 256)));
+			signalInfo.setTac(String.valueOf(location.getLac()));
+		}
+		
+		
 		for (CellInfo cellInfo : cellInfoList)
 		{
 			// 获取所有Lte网络信息
@@ -665,7 +675,7 @@ public class BackMonitor extends Service
 		updateinfo.setIMEI(tm.getDeviceId());
 		updateinfo.setIMSI(tm.getSubscriberId());
 		updateinfo.setCorporation(tm.getSimOperatorName());
-		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
+		updateinfo.setLAC_GSM(String.valueOf(location.getLac())); 
 		updateinfo.setCell_Id_GSM(location.getCid() > 65535 ? "N/A" : String.valueOf(location.getCid()));
 
 		updateinfo.setMemRate(ExtraUtil.getMemRate());// 内存占用率
