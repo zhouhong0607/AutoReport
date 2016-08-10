@@ -150,7 +150,9 @@ public class BackMonitor extends Service
 
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
-							RSSNR = String.format("%d", Math.log10(Double.valueOf(parts[13])));
+							
+							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[13])));
+							
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
 					{
@@ -158,7 +160,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[9];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
 						{
-							RSSNR = String.format("%d", Math.log10(Double.valueOf(parts[10])));
+							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[10])));
 						}
 					} else
 					{
@@ -166,14 +168,15 @@ public class BackMonitor extends Service
 						RSRQ = parts[10];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
 						{
-							RSSNR = String.format("%d", Math.log10(Double.valueOf(parts[11])));
+							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[11])));
 						}
 					}
 
 				} catch (Exception e)
 				{
 					// e.printStackTrace();
-					// Log.e("BBB", "信号强度监视有问题");
+					 Log.e("BBB", "信号强度监视有问题");
+					
 				}
 			}
 		};
@@ -498,8 +501,10 @@ public class BackMonitor extends Service
 	public boolean upload_data(Info info)
 	{
 		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
-		String urlStr = "http://www.mengqi.win/InternalTesting/LoginServlet";
-
+//		String urlStr = "http://www.mengqi.win/InternalTesting/LoginServlet";
+		String urlStr = "http://10.1.0.254:8080/AMonitor/app/common/uploaddata";
+		
+		
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
 		// 设置请求超时
@@ -616,41 +621,41 @@ public class BackMonitor extends Service
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 
-//		 return true;
+		 return true;
 //		/*********** 对网络类型监视 ***************/
-		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());// 获得运营商,参数为IMSI
-		if (OPname.equals("中国移动"))
-		{
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-			if (networkInfo != null)
-			{
-				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-				{
-					netType = networkInfo.getSubtypeName();
-					// Log.i("AAA", "网络类型" + netType);
-					return true;
-				} else
-				{
-					// Log.i("AAA", "不是移动数据，WIFI");
-					netType = null;
-					return false;
-				}
-
-			} else
-			{
-				// Log.i("AAA", "没有网络");
-
-				netType = null;
-				return false;
-				// return false;
-			}
-		} else
-		{
-			// Log.i("AAA", "不是CMCC," + OPname);
-			return false;
-		}
+//		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());// 获得运营商,参数为IMSI
+//		if (OPname.equals("中国移动"))
+//		{
+//			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+//			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+//
+//			if (networkInfo != null)
+//			{
+//				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+//				{
+//					netType = networkInfo.getSubtypeName();
+//					// Log.i("AAA", "网络类型" + netType);
+//					return true;
+//				} else
+//				{
+//					// Log.i("AAA", "不是移动数据，WIFI");
+//					netType = null;
+//					return false;
+//				}
+//
+//			} else
+//			{
+//				// Log.i("AAA", "没有网络");
+//
+//				netType = null;
+//				return false;
+//				// return false;
+//			}
+//		} else
+//		{
+//			// Log.i("AAA", "不是CMCC," + OPname);
+//			return false;
+//		}
 		/*********** 对网络类型监视 ***************/
 
 	}

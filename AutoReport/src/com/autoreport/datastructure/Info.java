@@ -51,7 +51,7 @@ public class Info implements Serializable
 		id=String.valueOf(UUID.randomUUID());//构造函数生成唯一外键
 		this.Flag = "0";
 		this.upload_Flag = 0;
-		this.uploadNum = 0;
+		this.uploadNum = 1;
 		
 	}
 	

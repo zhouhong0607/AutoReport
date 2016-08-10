@@ -78,39 +78,39 @@ public class SecActivity extends Activity
 		// 25项信息
 		// 手机基本信息
 		mtextview1.append("手机基本信息:");
-		mtextview2.append("品牌:          " + info.getBrand() + "\n");
-		mtextview2.append("型号:          " + info.getType() + "\n");
-		mtextview2.append("版本:           " + info.getVersion() + "\n");
-		mtextview2.append("IMEI:          " + info.getIMEI() + "\n");
-		mtextview2.append("IMSI:          " + info.getIMSI() + "\n");
-		mtextview2.append("本机IP地址:  " + info.getLocalIp() + "\n");
-		mtextview2.append("内存占用率:  " + info.getMemRate() + "\n");
-		mtextview2.append("CPU使用率:  " + info.getCpuRate() + "\n");
+		mtextview2.append("手机品牌:            " + info.getBrand() + "\n");
+		mtextview2.append("手机型号:            " + info.getType() + "\n");
+		mtextview2.append("Android版本:      " + info.getVersion() + "\n");
+		mtextview2.append("本机IP地址:        " + info.getLocalIp() + "\n");
+		mtextview2.append("IMEI:                    " + info.getIMEI() + "\n");
+		mtextview2.append("IMSI:                    " + info.getIMSI() + "\n");
+		mtextview2.append("内存占用率:        " + info.getMemRate() + "\n");
+		mtextview2.append("CPU使用率:         " + info.getCpuRate() + "\n");
+		mtextview2.append("运营商:                " + info.getCorporation() + "\n");
 
 		// 应用业务信息
 
-		mtextview3.append("应用业务信息:");
+		mtextview3.append("应用进程信息:");
+		mtextview4.append("应用进程名称:   " + info.getAppName() + "\n");
+		mtextview4.append("异常时间:           " + info.getExcepTime() + "\n");
+		mtextview4.append("上报次数:           " + info.getUploadNum() + "\n");
+		mtextview4.append("启动时间:           " + info.getLaunTime() + "\n");
+		mtextview4.append("退出时间:           " + info.getExitTime() + "\n");
+		mtextview4.append("UID:                     " + info.getUid() + "\n");
+		mtextview4.append("PID:                     " + info.getPid() + "\n");
+		mtextview4.append("进程数:               " + info.getPidNumber() + "\n");
+		mtextview4.append("GID:                     " + info.getGid() + "\n");
 
-		mtextview4.append("启动时间:  " + info.getLaunTime() + "\n");
-		mtextview4.append("异常时间:  " + info.getExcepTime() + "\n");
-		mtextview4.append("上报时间:  " + info.getUploadTime() + "\n");
-		mtextview4.append("上报次数:  " + info.getUploadNum() + "\n");
-		mtextview4.append("退出时间:  " + info.getExitTime() + "\n");
-		mtextview4.append("运行时间:  " + info.getUseTime() + "\n");
-		mtextview4.append("应用名称:  " + info.getAppName() + "\n");
-		mtextview4.append("UID:  " + info.getUid() + "\n");
-		mtextview4.append("PID:  " + info.getPid() + "\n");
-		mtextview4.append("进程数量:  " + info.getPidNumber() + "\n");
-		mtextview4.append("GID:  " + info.getGid() + "\n");
+		// mtextview4.append("上报时间: " + info.getUploadTime() + "\n");
+		// mtextview4.append("运行时间: " + info.getUseTime() + "\n");
 
 		// 无线环境信息
 
-		mtextview5.append("无线环境信息:");
-
-		mtextview6.append("运营商:  " + info.getCorporation() + "\n");
-
-		mtextview6.append("LAC_GSM:  " + info.getLAC_GSM() + "\n");
-		mtextview6.append("Cell-ID_GSM:  " + info.getCell_Id_GSM() + "\n\n");
+		mtextview5.append("业务流量与无线环境信息:\n");
+		mtextview5.append("(时间戳，发送字节量，接收字节量，RSRP，RSRQ，SINR，PCI，CI，Enodeb_id，cell_id，TAC，网络类型)");
+		// mtextview6.append("运营商: " + info.getCorporation() + "\n");
+		// mtextview6.append("LAC_GSM: " + info.getLAC_GSM() + "\n");
+		// mtextview6.append("Cell-ID_GSM: " + info.getCell_Id_GSM() + "\n\n");
 
 		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
 																					// //
@@ -125,14 +125,12 @@ public class SecActivity extends Activity
 		{
 			for (int i = 0; i < signalInfos.size(); i++)
 			{
-
 				siglist += signalInfos.get(i).getTimeStamp() + ", " + signalInfos.get(i).getTxByte() + ", "
 						+ signalInfos.get(i).getRxByte() + ", " + signalInfos.get(i).getRsrp() + ", "
-						+ signalInfos.get(i).getRssinr() + ", " + signalInfos.get(i).getRsrq() + ", "
-						+ signalInfos.get(i).getPci() + ", " + signalInfos.get(i).getCellId() + ", "
-						+ signalInfos.get(i).getEnodbId() + ", " + signalInfos.get(i).getCi() + ", "
+						+ signalInfos.get(i).getRsrq() + ", " + signalInfos.get(i).getRssinr() + ", "
+						+ signalInfos.get(i).getPci() + ", " + signalInfos.get(i).getCi() + ", "
+						+ signalInfos.get(i).getEnodbId() + ", " + signalInfos.get(i).getCellId() + ", "
 						+ signalInfos.get(i).getTac() + ", " + signalInfos.get(i).getNetType()
-
 						+ "\n\n";
 				// if((i+1)!=signalInfos.size())
 				// siglist+= "|";
