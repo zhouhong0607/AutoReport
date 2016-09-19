@@ -52,8 +52,9 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="com.autoreport.activity.MainActivity"
+        
+         <activity
+            android:name="com.autoreport.activity.SplashActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,9 +62,47 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="com.autoreport.activity.InfoListAcitivity"
+            android:label="@string/app_name" >
+        </activity>
+        
+        <activity
+            android:name="com.autoreport.activity.GridActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
+        
         <activity android:name="com.autoreport.activity.SecActivity" >
         </activity>
 
+         <activity
+            android:name="com.autoreport.activity.TabInfoActivity"
+            android:label="@string/app_name" >
+           
+        </activity>
+         <activity
+            android:name="com.autoreport.activity.TabPhoneActivity"
+            android:label="@string/app_name" >
+           
+        </activity>
+         <activity
+            android:name="com.autoreport.activity.TabAppActivity"
+            android:label="@string/app_name" >
+           
+        </activity>
+         <activity
+            android:name="com.autoreport.activity.TabWirelessActivity"
+            android:label="@string/app_name" >
+           
+        </activity>
+         <activity
+            android:name="com.autoreport.activity.TabFlowActivity"
+            android:label="@string/app_name" >
+           
+        </activity>
+        
         <service
             android:name="com.autoreport.service.BackMonitor"
             android:enabled="true"
