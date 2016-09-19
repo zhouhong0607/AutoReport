@@ -5,10 +5,12 @@ import java.util.HashMap;
 
 import com.autoreport.app.R;
 import com.autoreport.service.BackMonitor;
+import com.autoreport.util.UStats;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -30,6 +32,29 @@ public class GridActivity extends Activity
 		super.onCreate(savedInstanceState);
 //		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.grid);
+		
+		//检查安卓版本，设置权限
+		try
+		{
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+		{
+			
+			if (UStats.getUsageStatsList(this).isEmpty())
+			{
+				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+				startActivity(intent);
+			}
+		}
+		}catch(Exception e)
+		{
+			Toast.makeText(getApplicationContext(), "权限不能获取", Toast.LENGTH_LONG).show();
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
 		GridView gridview = (GridView) findViewById(R.id.GridView);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
 

@@ -8,12 +8,12 @@
     <TextView
         android:id="@+id/phone_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" 
+        android:layout_height="wrap_content" 
        />
 
     <TextView
         android:id="@+id/phone_info"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

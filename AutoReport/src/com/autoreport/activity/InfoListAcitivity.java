@@ -77,22 +77,22 @@ public class InfoListAcitivity extends Activity
 		setContentView(R.layout.info_list);
 
 		// Check if permission enabled
-		try
-		{
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-		{
-			
-			if (UStats.getUsageStatsList(this).isEmpty())
-			{
-				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-				startActivity(intent);
-			}
-		}
-		}catch(Exception e)
-		{
-			Toast.makeText(getApplicationContext(), "权限不能获取", Toast.LENGTH_LONG).show();
-			e.printStackTrace();
-		}
+//		try
+//		{
+//		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+//		{
+//			
+//			if (UStats.getUsageStatsList(this).isEmpty())
+//			{
+//				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+//				startActivity(intent);
+//			}
+//		}
+//		}catch(Exception e)
+//		{
+//			Toast.makeText(getApplicationContext(), "权限不能获取", Toast.LENGTH_LONG).show();
+//			e.printStackTrace();
+//		}
 		// 注册广播
 		filter1.addAction("UPDATE_ACTION");
 		registerReceiver(mBroadcast, filter1);
