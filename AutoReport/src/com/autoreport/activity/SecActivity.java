@@ -1,5 +1,7 @@
 package com.autoreport.activity;
-
+/**
+ * 显示详细信息（弃用）
+ */
 import java.util.List;
 
 import com.autoreport.app.R;
