@@ -51,6 +51,7 @@ public class DatabaseOperator
 			values.put("LAC_GSM", info.getLAC_GSM());
 			values.put("Cell_Id_GSM", info.getCell_Id_GSM());
 			values.put("MemRate", info.getMemRate());
+			values.put("excepType", info.getExcepType());
 			values.put("cpuRate", info.getCpuRate());
 			values.put("localIp", info.getLocalIp());
 			values.put("AppName", info.getAppName());
@@ -58,6 +59,9 @@ public class DatabaseOperator
 			values.put("pid", info.getPid());
 			values.put("gid", info.getGid());
 			values.put("pidNumber", info.getPidNumber());
+			
+			values.put("maxIndex", info.getMaxIndex());
+			values.put("noRxIndex", info.getNoRxIndex());
 //			values.put("queLength", info.getQueLength());
 			
 			values.put("Flag", info.getFlag());
@@ -128,6 +132,11 @@ public class DatabaseOperator
 			values.put("pidNumber", info.getPidNumber());
 //			values.put("queLength", info.getQueLength());
 			
+			values.put("excepType", info.getExcepType());
+			values.put("maxIndex", info.getMaxIndex());
+			values.put("noRxindex", info.getNoRxIndex());
+			
+			
 			values.put("Flag", info.getFlag());
 			values.put("upload_Flag", info.getUpload_Flag());
 			// 更新数据
@@ -183,6 +192,11 @@ public class DatabaseOperator
 					querydata.setPidNumber(cursor.getString(cursor.getColumnIndex("pidNumber")));
 					querydata.setMemRate(cursor.getString(cursor.getColumnIndex("MemRate")));
 //					querydata.setQueLength(cursor.getInt(cursor.getColumnIndex("queLength")));
+					
+					querydata.setExcepType(cursor.getString(cursor.getColumnIndex("excepType")));
+					querydata.setMaxIndex(cursor.getInt(cursor.getColumnIndex("maxIndex")));
+					querydata.setNoRxIndex(cursor.getInt(cursor.getColumnIndex("noRxIndex")));
+					
 					
 					querydata.setFlag(cursor.getString(cursor.getColumnIndex("Flag")));
 					querydata.setUpload_Flag(cursor.getInt(cursor.getColumnIndex("upload_Flag")));

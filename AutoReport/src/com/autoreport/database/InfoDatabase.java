@@ -19,7 +19,7 @@ public class InfoDatabase extends SQLiteOpenHelper
 			// + " RSRP text,"
 			// + " RSRQ text,"
 			+ " cpuRate text," + " localIp text," + " AppName text," + " uid text," + " pid text," + " gid text,"
-			+ " pidNumber text," + " MemRate text,"
+			+ " pidNumber text," + " MemRate text,"+" excepType text,"+" maxIndex integer,"+" noRxIndex integer,"
 			// + " queLength integer,"
 			// + " TxByte text,"
 			// + " RxByte text,"
@@ -30,7 +30,7 @@ public class InfoDatabase extends SQLiteOpenHelper
 			// + " ENODBID text,"
 			// + " CELLID text,"
 			// + " TAC text,"
-			+ " Flag text," + " upload_Flag integer)";// 建数据表info ,boolean 类型用
+			+ " Flag text," +   " upload_Flag integer)";// 建数据表info ,boolean 类型用
 														// integer代替
 
 	// 建数据表SignalInfo

@@ -101,6 +101,8 @@ public class SecActivity extends Activity
 		mtextview4.append("进程数:               " + info.getPidNumber() + "\n");
 		mtextview4.append("GID:                     " + info.getGid() + "\n");
 
+		mtextview4.append("判决依据:                     " + info.getExcepType() + "\n");
+		
 		// mtextview4.append("上报时间: " + info.getUploadTime() + "\n");
 		// mtextview4.append("运行时间: " + info.getUseTime() + "\n");
 
@@ -120,9 +122,30 @@ public class SecActivity extends Activity
 
 		databaseOperator.CloseDatabase();
 
+		
+		
+		
+		
+		
 		String siglist = "";
 		if (signalInfos.size() != 0)
 		{
+			//标注流量最大值和未通过通信测试点
+			int maxIndex=info.getMaxIndex();
+			int noRxIndex=info.getNoRxIndex();
+			if(maxIndex>=0) 
+			{
+				String value=signalInfos.get(maxIndex).getRxByte();
+				signalInfos.get(maxIndex).setRxByte(value+"(最大值)");
+				
+			}
+			if(noRxIndex>=0)
+			{
+				String value=signalInfos.get(noRxIndex).getRxByte();
+				signalInfos.get(noRxIndex).setRxByte(value+"(未通过通信测试)");
+			}
+			
+			
 			for (int i = 0; i < signalInfos.size(); i++)
 			{
 				siglist += signalInfos.get(i).getTimeStamp() + ", " + signalInfos.get(i).getTxByte() + ", "

@@ -94,6 +94,10 @@ import android.widget.Toast;
 
 public class BackMonitor extends Service
 {
+	private static final String EXP_TYPE1 = "下行流量峰值过低";
+	private static final String EXP_TYPE2 = "下行流量峰值过低且响应超时";
+	private static final String EXP_TYPE3 = "未通过通信测试且响应超时";
+
 	long tx1 = 0;
 	long rx1 = 0;
 	long drx = 0;
@@ -135,6 +139,10 @@ public class BackMonitor extends Service
 	String longitude = "";// 经度
 	String latitude = "";// 纬度
 	String addr = "";// 地址
+
+	int excepType;//异常类型  取值 1 2 3；
+//	int maxIndex=-1;//下行流量最大值索引
+//	int noRxIndex=-1;//未通过通信测试索引
 
 	public LocationClient mLocationClient;
 	public BDLocationListener myListener;
@@ -370,6 +378,8 @@ public class BackMonitor extends Service
 
 							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
 
+							
+							
 							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = ExtraUtil.getCurTime();
@@ -402,11 +412,19 @@ public class BackMonitor extends Service
 							}
 							if (isAbnormal2)
 							{
+								if(exitQue.judege())
+								{
+									excepType=3;
+								}else
+								{
+									excepType=2;
+								}
 								recordInfo(false);// 参数true 为 第二次 异常，
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
+							excepType=1;
 							recordInfo(true);// 参数true为 第一次 异常，
 						}
 
@@ -580,6 +598,9 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("pidNumber", info.getPidNumber()));
 		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
+		params.add(new BasicNameValuePair("excepType", info.getExcepType()));
+		params.add(new BasicNameValuePair("maxIndex", String.valueOf(info.getMaxIndex())));
+		params.add(new BasicNameValuePair("noRxIndex", String.valueOf(info.getNoRxIndex())));
 
 		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
 																					// //
@@ -743,11 +764,32 @@ public class BackMonitor extends Service
 		}
 
 		updateinfo.setFlagOK();// 设置为异常数据
+		// 设置异常类型
+		switch (excepType)
+		{
+		case 1:
+			updateinfo.setExcepType(EXP_TYPE1);
+			break;
+		case 2:
+			updateinfo.setExcepType(EXP_TYPE2); 
+			break;
+		case 3:
+			updateinfo.setExcepType(EXP_TYPE3);
+			break;
+
+		default:
+			updateinfo.setExcepType("Nothing");
+			break;
+		}
 
 		if (judge) // true 第一次异常参数
 		{
 			Log.i("AAA", "第一次记录异常时间" + excepTime1);
 			updateinfo.setExcepTime(excepTime1);
+			//设置流量最大值索引和未通过通信测试索引   默认-1
+			updateinfo.setMaxIndex(launQue.getMaxIndex());
+			updateinfo.setNoRxIndex(launQue.getNoRxIndex());
+			
 			databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
 
 			launQue.setInfoId(updateinfo.getId());// 设置外键
@@ -759,6 +801,10 @@ public class BackMonitor extends Service
 		{
 			Log.i("AAA", "第二次记录异常时间" + excepTime2);
 			updateinfo.setExcepTime(excepTime2);
+			//设置流量最大值索引和未通过通信测试索引   默认-1
+			updateinfo.setMaxIndex(exitQue.getMaxIndex());
+			updateinfo.setNoRxIndex(exitQue.getNoRxIndex());
+			
 			databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
 
 			exitQue.setInfoId(updateinfo.getId());// 设置外键

@@ -15,7 +15,6 @@ public class Info implements Serializable
 	private static final long serialVersionUID = 4017674411859976594L;
 
 	private String id;//主键
-	
 	private String brand;// 品牌
 	private String type;// 型号
 	private String launTime;// 启动时刻
@@ -41,9 +40,12 @@ public class Info implements Serializable
 	private String Flag;// 标志位
 	private int upload_Flag;// 上传标志位
 	
+	private String excepType;//异常类型 
+	
 //	private SignalQueue signalQueue;//信号队列
 //	private int queLength;//队列长度
-	
+	private int maxIndex;//流量最大值索引
+	private int noRxIndex;//未通过通信测试索引
 	
 	//构造方法
 	public Info( )
@@ -55,6 +57,26 @@ public class Info implements Serializable
 		
 	}
 	
+	public int getMaxIndex()
+	{
+		return maxIndex;
+	}
+
+	public void setMaxIndex(int maxIndex)
+	{
+		this.maxIndex = maxIndex;
+	}
+
+	public int getNoRxIndex()
+	{
+		return noRxIndex;
+	}
+
+	public void setNoRxIndex(int noRxIndex)
+	{
+		this.noRxIndex = noRxIndex;
+	}
+
 	public void setId(String id)
 	{
 		this.id = id;
@@ -67,6 +89,9 @@ public class Info implements Serializable
 	{
 		return id;
 	}
+	
+	
+	
 	
 //	public SignalQueue getSignalQueue()
 //	{
@@ -90,6 +115,16 @@ public class Info implements Serializable
 //	}
 
 	
+	public String getExcepType()
+	{
+		return excepType;
+	}
+
+	public void setExcepType(String expType)
+	{
+		this.excepType = expType;
+	}
+
 	/**
 	 * @return the brand
 	 */

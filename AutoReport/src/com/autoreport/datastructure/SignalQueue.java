@@ -9,6 +9,11 @@ public class SignalQueue
 
 	int maxSize; // 队列长度，由构造函数初始化
 	long max_Value;// 流量最大值
+	
+	int maxIndex;//下行流量最大值索引
+	int noRxIndex;//未通过通信测试索引
+	
+	
 	long expectation;// 期望
 	long variance;// 方差
 	int front; // 队头指向队列第一个数据
@@ -72,6 +77,9 @@ public class SignalQueue
 		max_Value = 0;
 		variance = 0;
 		expectation = 0;
+		
+		maxIndex=-1;
+		noRxIndex=-1;
 	}
 
 	// --------------------------------------------------------------
@@ -204,8 +212,12 @@ public class SignalQueue
 		for (int i = 0; i < nItems; i++)// 取出所有数据
 		{
 			if (Long.parseLong(queSignalInfo[location].getRxByte()) > max_Value)
+			{
 				max_Value = Long.parseLong(queSignalInfo[location].getRxByte());
+				maxIndex=i;
+			}
 			location = (location + 1) % maxSize;
+			
 		}
 		return max_Value;
 	}
@@ -213,13 +225,14 @@ public class SignalQueue
  * 取得队列流量和
  * @return
  */
-	public long get_sum()// 获得接收流量最大值
+	public long get_sum()// 获得接收流量和
 	{
 		int location = front;
 		long sum=0;
 		for (int i = 0; i < nItems; i++)// 取出所有数据
 		{
-			sum+=Long.parseLong(queSignalInfo[location].getRxByte())+Long.parseLong(queSignalInfo[location].getTxByte());
+//			sum+=Long.parseLong(queSignalInfo[location].getRxByte())+Long.parseLong(queSignalInfo[location].getTxByte());
+			sum+=Long.parseLong(queSignalInfo[location].getRxByte());
 			location = (location + 1) % maxSize;
 		}
 		return sum;
@@ -232,7 +245,7 @@ public class SignalQueue
 		int excepCount=0;
 		boolean excepTing=false;
 		boolean isExcep=false;
-		
+		int index=0;
 		for(SignalInfo sInfo:queSignalInfo)
 		{
 			long dtx=Long.parseLong(sInfo.getTxByte());
@@ -250,10 +263,11 @@ public class SignalQueue
 					if (excepCount == 5)
 					{
 						isExcep=true;
+						noRxIndex=index;
 						Log.i("AAA", "Excep");
 //						excepTing = false;
 						break;
-					}
+					} 
 				} else if (drx > 0)
 				{
 					excepTing = false;
@@ -266,7 +280,7 @@ public class SignalQueue
 			{
 				excepCount = 0;
 			}
-				
+				index++;
 		}
 		
 		return isExcep;
@@ -299,6 +313,26 @@ public class SignalQueue
 			location = (location + 1) % maxSize;
 		}
 
+	}
+
+	public int getMaxIndex()
+	{
+		return maxIndex;
+	}
+
+	public void setMaxIndex(int maxIndex)
+	{
+		this.maxIndex = maxIndex;
+	}
+
+	public int getNoRxIndex()
+	{
+		return noRxIndex;
+	}
+
+	public void setNoRxIndex(int noRxIndex)
+	{
+		this.noRxIndex = noRxIndex;
 	}
 
 	// public void calculate_expectation()// 计算期望
