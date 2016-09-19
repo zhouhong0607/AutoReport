@@ -107,7 +107,7 @@ public class SecActivity extends Activity
 		// 无线环境信息
 
 		mtextview5.append("业务流量与无线环境信息:\n");
-		mtextview5.append("(时间戳，发送字节量，接收字节量，RSRP，RSRQ，SINR，PCI，CI，Enodeb_id，cell_id，TAC，网络类型)");
+		mtextview5.append("(时间戳，发送字节量，接收字节量，RSRP，RSRQ，SINR，PCI，CI，Enodeb_id，cell_id，TAC，网络类型，经度，纬度，地址)");
 		// mtextview6.append("运营商: " + info.getCorporation() + "\n");
 		// mtextview6.append("LAC_GSM: " + info.getLAC_GSM() + "\n");
 		// mtextview6.append("Cell-ID_GSM: " + info.getCell_Id_GSM() + "\n\n");
@@ -130,8 +130,9 @@ public class SecActivity extends Activity
 						+ signalInfos.get(i).getRsrq() + ", " + signalInfos.get(i).getRssinr() + ", "
 						+ signalInfos.get(i).getPci() + ", " + signalInfos.get(i).getCi() + ", "
 						+ signalInfos.get(i).getEnodbId() + ", " + signalInfos.get(i).getCellId() + ", "
-						+ signalInfos.get(i).getTac() + ", " + signalInfos.get(i).getNetType()
-						+ "\n\n";
+						+ signalInfos.get(i).getTac() + ", " + signalInfos.get(i).getNetType() + ", "
+						+ signalInfos.get(i).getLongitude() + ", " + signalInfos.get(i).getLatitude() + ", "
+						+ signalInfos.get(i).getAddr() + "\n\n";
 				// if((i+1)!=signalInfos.size())
 				// siglist+= "|";
 

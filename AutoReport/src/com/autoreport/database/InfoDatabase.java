@@ -12,74 +12,43 @@ import android.widget.Toast;
 public class InfoDatabase extends SQLiteOpenHelper
 {
 	// 建数据表Info
-	public static final String CREATE_TABLE_INFO = "create table Info(" + " id text primary key  ,"
-			+ " brand text," + "type text,"
-			+ " launTime text,"
-			+ " exitTime text,"
-			+ " excepTime text,"
-			+ " uploadNum integer,"
-			+ " uploadTime text,"
-			+ " useTime text,"
-			+ " version text,"
-			+ " IMEI text,"
-			+ " IMSI text,"
-			+ " corporation text,"
-			+ " LAC_GSM text,"
-			+ " Cell_Id_GSM text,"
-//			+ " RSRP text,"
-//			+ " RSRQ text,"
-			+ " cpuRate text,"
-			+ " localIp text,"
-			+ " AppName text,"
-			+ " uid text,"
-			+ " pid text,"
-			+ " gid text,"
-			+ " pidNumber text,"
-			+ " MemRate text,"
-//			+ " queLength integer,"
-//			+ " TxByte text,"
-//			+ " RxByte text,"
-//			+ " NetType text,"
-//			+ " RSSNR text,"
-//			+ " PCI text,"
-//			+ " CI text,"
-//			+ " ENODBID text,"
-//			+ " CELLID text,"
-//			+ " TAC text,"
-			+ " Flag text,"
-			+ " upload_Flag integer)";// 建数据表info   ,boolean 类型用 integer代替
+	public static final String CREATE_TABLE_INFO = "create table Info(" + " id text primary key  ," + " brand text,"
+			+ "type text," + " launTime text," + " exitTime text," + " excepTime text," + " uploadNum integer,"
+			+ " uploadTime text," + " useTime text," + " version text," + " IMEI text," + " IMSI text,"
+			+ " corporation text," + " LAC_GSM text," + " Cell_Id_GSM text,"
+			// + " RSRP text,"
+			// + " RSRQ text,"
+			+ " cpuRate text," + " localIp text," + " AppName text," + " uid text," + " pid text," + " gid text,"
+			+ " pidNumber text," + " MemRate text,"
+			// + " queLength integer,"
+			// + " TxByte text,"
+			// + " RxByte text,"
+			// + " NetType text,"
+			// + " RSSNR text,"
+			// + " PCI text,"
+			// + " CI text,"
+			// + " ENODBID text,"
+			// + " CELLID text,"
+			// + " TAC text,"
+			+ " Flag text," + " upload_Flag integer)";// 建数据表info ,boolean 类型用
+														// integer代替
 
 	// 建数据表SignalInfo
-		public static final String CREATE_TABLE_SIGNALINFO = "create table SignalInfo(" + " id integer primary key autoincrement ,"
-				+ " infoId text,"
-				
-				+ " rsrp text,"
-				+ " rsrq text,"
-				+ " txByte text,"
-				+ " rxByte text,"
-				+ " netType text,"
-				+ " rssinr text,"
-				+ " pci text,"
-				+ " ci text,"
-				+ " enodbId text,"
-				+ " cellId text,"
-				+ " tac text,"
-				+ " timeStamp text)";// 建数据表info   ,boolean 类型用 integer代替
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public static final String CREATE_TABLE_SIGNALINFO = "create table SignalInfo("
+			+ " id integer primary key autoincrement ," + " infoId text,"
+
+			+ " rsrp text," + " rsrq text," + " txByte text," + " rxByte text," + " netType text," + " rssinr text,"
+			+ " pci text," + " ci text," + " enodbId text," + " cellId text," + " tac text,"
+
+			+ " longitude text," + " latitude text," + " addr text," + " timeStamp text)";// 建数据表info
+																							// ,boolean
+																							// 类型用
+																							// integer代替
+
 	public InfoDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
 	{
 		super(context, name, factory, version);
-		
+
 	}
 
 	@Override

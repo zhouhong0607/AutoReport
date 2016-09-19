@@ -97,6 +97,11 @@ public class SignalQueue
 			queSignalInfo[rear].setEnodbId(signalInfo.getEnodbId());
 			queSignalInfo[rear].setCellId(signalInfo.getCellId());
 			queSignalInfo[rear].setTac(signalInfo.getTac());
+			
+			queSignalInfo[rear].setLongitude(signalInfo.getLongitude());
+			queSignalInfo[rear].setLatitude(signalInfo.getLatitude());
+			queSignalInfo[rear].setAddr(signalInfo.getAddr());
+			
 			queSignalInfo[rear].setTimeStamp(signalInfo.getTimeStamp());
 			rear = (rear + 1) % maxSize;
 			/******** 队列满,采取循环方式替换数据 *************/
@@ -118,6 +123,11 @@ public class SignalQueue
 			queSignalInfo[rear].setEnodbId(signalInfo.getEnodbId());
 			queSignalInfo[rear].setCellId(signalInfo.getCellId());
 			queSignalInfo[rear].setTac(signalInfo.getTac());
+			
+			queSignalInfo[rear].setLongitude(signalInfo.getLongitude());
+			queSignalInfo[rear].setLatitude(signalInfo.getLatitude());
+			queSignalInfo[rear].setAddr(signalInfo.getAddr());
+			
 			queSignalInfo[rear].setTimeStamp(signalInfo.getTimeStamp());
 			rear = (rear + 1) % maxSize;
 			/******** 队尾指针加1,把值j加入队尾 *************/

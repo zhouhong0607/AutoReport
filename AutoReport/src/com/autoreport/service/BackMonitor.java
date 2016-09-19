@@ -61,6 +61,12 @@ import com.autoreport.datastructure.AutoreportApp;
 import com.autoreport.datastructure.SignalQueue;
 import com.autoreport.util.ExtraUtil;
 import com.autoreport.util.UStats;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.Poi;
+import com.baidu.location.LocationClientOption.LocationMode;
 
 import android.content.Context;
 import android.content.Entity;
@@ -112,13 +118,13 @@ public class BackMonitor extends Service
 	String RSRP = "";
 	String RSRQ = "";
 	String RSSNR = "";// 新@@@@@@@@@
-	String LaunTime="";
-	String exitTime="";
-	String excepTime1="";// 第一次异常时间点
-	String excepTime2="";// 第二次异常时间点
-	String AppName="";
+	String LaunTime = "";
+	String exitTime = "";
+	String excepTime1 = "";// 第一次异常时间点
+	String excepTime2 = "";// 第二次异常时间点
+	String AppName = "";
 
-	String netType="";
+	String netType = "";
 
 	boolean isAbnormal = false;// 异常标志
 	boolean isAbnormal2 = false;// 异常标志
@@ -126,12 +132,25 @@ public class BackMonitor extends Service
 	boolean excepTing = false;// 动态异常标志
 	int excepCount = 0;// 动态异常计数
 
+	String longitude = "";// 经度
+	String latitude = "";// 纬度
+	String addr = "";// 地址
+
+	public LocationClient mLocationClient;
+	public BDLocationListener myListener;
+
 	@Override
 	public void onCreate()
 	{
 		super.onCreate();
 
 		tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+
+		mLocationClient = new LocationClient(getApplicationContext());
+		initLocation();
+		myListener = new MyLocationListener();
+		mLocationClient.registerLocationListener(myListener);
+		mLocationClient.start();
 
 		/******************* 信号强度监听 **********************/
 		PhoneStateListener MyPhoneListener = new PhoneStateListener()
@@ -150,9 +169,9 @@ public class BackMonitor extends Service
 
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
-							
+
 							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[13])));
-							
+
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
 					{
@@ -175,8 +194,8 @@ public class BackMonitor extends Service
 				} catch (Exception e)
 				{
 					// e.printStackTrace();
-					 Log.e("BBB", "信号强度监视有问题");
-					
+					Log.e("BBB", "信号强度监视有问题");
+
 				}
 			}
 		};
@@ -297,7 +316,6 @@ public class BackMonitor extends Service
 							drx = 0;
 							dtx = 0;
 						}
-						
 
 						SignalInfo signalInfo = getSignalInfo();
 
@@ -317,7 +335,7 @@ public class BackMonitor extends Service
 							// txqueue_laun.calculate_expectation();// 计算期望rx
 							// txqueue_laun.calculate_variance();// 计算方差tx
 
-							if (launQue.get_sum()>0&&launQue.get_maxValue() < 10000)// 异常判决
+							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
 							{
 
 								Log.i("AAA", "可疑异常出现");
@@ -352,7 +370,7 @@ public class BackMonitor extends Service
 
 							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
 
-							if (launQue.get_sum()>0&&launQue.get_maxValue() < 10000)// 异常判决
+							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = ExtraUtil.getCurTime();
 								Log.i("AAA", "第一次异常时间" + excepTime1);
@@ -367,7 +385,7 @@ public class BackMonitor extends Service
 
 						if (count > 35)// 进行第二次 测试
 						{
-							if (exitQue.get_sum()>0&&(exitQue.get_maxValue() < 10000||exitQue.judege()))
+							if (exitQue.get_sum() > 0 && (exitQue.get_maxValue() < 10000 || exitQue.judege()))
 							{
 								Log.i("AAA", "开始http测试");
 								if (!upload_data(new Info()))// http测试不成功
@@ -422,6 +440,24 @@ public class BackMonitor extends Service
 		}, 0, 1000);
 	}
 
+	private void initLocation()
+	{
+		LocationClientOption option = new LocationClientOption();
+		option.setLocationMode(LocationMode.Hight_Accuracy);// 可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+		option.setCoorType("bd09ll");// 可选，默认gcj02，设置返回的定位结果坐标系
+		int span = 1000;
+		option.setScanSpan(span);// 可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+		option.setIsNeedAddress(true);// 可选，设置是否需要地址信息，默认不需要
+		option.setOpenGps(true);// 可选，默认false,设置是否使用gps
+		option.setLocationNotify(true);// 可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+		option.setIsNeedLocationDescribe(true);// 可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+		option.setIsNeedLocationPoiList(true);// 可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+		option.setIgnoreKillProcess(false);// 可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+		option.SetIgnoreCacheException(false);// 可选，默认false，设置是否收集CRASH信息，默认收集
+		option.setEnableSimulateGps(false);// 可选，默认false，设置是否需要过滤gps仿真结果，默认需要
+		mLocationClient.setLocOption(option);
+	}
+
 	private void excep()
 	{
 		Log.i("AAA", "运行时异常");
@@ -452,7 +488,7 @@ public class BackMonitor extends Service
 		/******************** 4G位置信息 ***********************/
 		List<CellInfo> cellInfoList = tm.getAllCellInfo();
 
-		if(cellInfoList==null||cellInfoList.size()==0)
+		if (cellInfoList == null || cellInfoList.size() == 0)
 		{
 			GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
 			signalInfo.setCi(String.valueOf(location.getCid()));
@@ -460,8 +496,7 @@ public class BackMonitor extends Service
 			signalInfo.setCellId(String.valueOf((location.getCid() % 256)));
 			signalInfo.setTac(String.valueOf(location.getLac()));
 		}
-		
-		
+
 		for (CellInfo cellInfo : cellInfoList)
 		{
 			// 获取所有Lte网络信息
@@ -495,16 +530,21 @@ public class BackMonitor extends Service
 
 		/******************** 4G位置信息 ***********************/
 		signalInfo.setTimeStamp(ExtraUtil.getCurTime());
+
+		// 设置经纬度信息
+		signalInfo.setLongitude(longitude);
+		signalInfo.setLatitude(latitude);
+		signalInfo.setAddr(addr);
+
 		return signalInfo;
 	}
 
 	public boolean upload_data(Info info)
 	{
 		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
-//		String urlStr = "http://www.mengqi.win/InternalTesting/LoginServlet";
+		// String urlStr = "http://www.mengqi.win/InternalTesting/LoginServlet";
 		String urlStr = "http://10.1.0.254:8080/AMonitor/app/common/uploaddata";
-		
-		
+
 		HttpPost request = new HttpPost(urlStr);
 		BasicHttpParams httpParams = new BasicHttpParams();
 		// 设置请求超时
@@ -558,7 +598,9 @@ public class BackMonitor extends Service
 						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getNetType() + ","
 						+ signalInfos.get(i).getPci() + "," + signalInfos.get(i).getCi() + ","
 						+ signalInfos.get(i).getEnodbId() + "," + signalInfos.get(i).getCellId() + ","
-						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + "|";
+						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + ","
+						+ signalInfos.get(i).getLongitude() + "," + signalInfos.get(i).getLatitude() + ","
+						+ signalInfos.get(i).getAddr() + "|";
 				// if((i+1)!=signalInfos.size())
 				// siglist+= "|";
 			}
@@ -621,41 +663,42 @@ public class BackMonitor extends Service
 	public boolean getNetWorkType()// 移动网络返回true
 	{
 
-		 return true;
-//		/*********** 对网络类型监视 ***************/
-//		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());// 获得运营商,参数为IMSI
-//		if (OPname.equals("中国移动"))
-//		{
-//			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-//			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-//
-//			if (networkInfo != null)
-//			{
-//				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-//				{
-//					netType = networkInfo.getSubtypeName();
-//					// Log.i("AAA", "网络类型" + netType);
-//					return true;
-//				} else
-//				{
-//					// Log.i("AAA", "不是移动数据，WIFI");
-//					netType = null;
-//					return false;
-//				}
-//
-//			} else
-//			{
-//				// Log.i("AAA", "没有网络");
-//
-//				netType = null;
-//				return false;
-//				// return false;
-//			}
-//		} else
-//		{
-//			// Log.i("AAA", "不是CMCC," + OPname);
-//			return false;
-//		}
+		// return true;
+		// /*********** 对网络类型监视 ***************/
+		String OPname = ExtraUtil.getProvidersName(tm.getSubscriberId());
+		// 获得运营商,参数为IMSI
+		if (OPname.equals("中国移动"))
+		{
+			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+			if (networkInfo != null)
+			{
+				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+				{
+					netType = networkInfo.getSubtypeName();
+					// Log.i("AAA", "网络类型" + netType);
+					return true;
+				} else
+				{
+					// Log.i("AAA", "不是移动数据，WIFI");
+					netType = null;
+					return false;
+				}
+
+			} else
+			{
+				// Log.i("AAA", "没有网络");
+
+				netType = null;
+				return false;
+				// return false;
+			}
+		} else
+		{
+			// Log.i("AAA", "不是CMCC," + OPname);
+			return false;
+		}
 		/*********** 对网络类型监视 ***************/
 
 	}
@@ -680,7 +723,7 @@ public class BackMonitor extends Service
 		updateinfo.setIMEI(tm.getDeviceId());
 		updateinfo.setIMSI(tm.getSubscriberId());
 		updateinfo.setCorporation(tm.getSimOperatorName());
-		updateinfo.setLAC_GSM(String.valueOf(location.getLac())); 
+		updateinfo.setLAC_GSM(String.valueOf(location.getLac()));
 		updateinfo.setCell_Id_GSM(location.getCid() > 65535 ? "N/A" : String.valueOf(location.getCid()));
 
 		updateinfo.setMemRate(ExtraUtil.getMemRate());// 内存占用率
@@ -795,6 +838,95 @@ public class BackMonitor extends Service
 
 		default:
 			break;
+		}
+
+	}
+
+	// 位置监听
+	public class MyLocationListener implements BDLocationListener
+	{
+
+		@Override
+		public void onReceiveLocation(BDLocation location)
+		{
+			// Receive Location
+			StringBuffer sb = new StringBuffer(256);
+			sb.append("time : ");
+			sb.append(location.getTime());
+			sb.append("\nerror code : ");
+			sb.append(location.getLocType());
+			sb.append("\nlatitude : ");
+			sb.append(location.getLatitude());
+			sb.append("\nlontitude : ");
+			sb.append(location.getLongitude());
+			sb.append("\nradius : ");
+			sb.append(location.getRadius());
+
+			// 经纬度
+			longitude = String.valueOf(location.getLongitude());
+			latitude = String.valueOf(location.getLatitude());
+
+			if (location.getLocType() == BDLocation.TypeGpsLocation)
+			{// GPS定位结果
+				sb.append("\nspeed : ");
+				sb.append(location.getSpeed());// 单位：公里每小时
+				sb.append("\nsatellite : ");
+				sb.append(location.getSatelliteNumber());
+				sb.append("\nheight : ");
+				sb.append(location.getAltitude());// 单位：米
+				sb.append("\ndirection : ");
+				sb.append(location.getDirection());// 单位度
+				sb.append("\naddr : ");
+				sb.append(location.getAddrStr());
+				// 位置
+				addr = location.getAddrStr();
+
+				sb.append("\ndescribe : ");
+				sb.append("gps定位成功");
+
+			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation)
+			{// 网络定位结果
+				sb.append("\naddr : ");
+				sb.append(location.getAddrStr());
+
+				addr = location.getAddrStr();
+				// 运营商信息
+				sb.append("\noperationers : ");
+				sb.append(location.getOperators());
+				sb.append("\ndescribe : ");
+				sb.append("网络定位成功");
+			} else if (location.getLocType() == BDLocation.TypeOffLineLocation)
+			{// 离线定位结果
+				sb.append("\ndescribe : ");
+				sb.append("离线定位成功，离线定位结果也是有效的");
+			} else if (location.getLocType() == BDLocation.TypeServerError)
+			{
+				sb.append("\ndescribe : ");
+				sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+			} else if (location.getLocType() == BDLocation.TypeNetWorkException)
+			{
+				sb.append("\ndescribe : ");
+				sb.append("网络不同导致定位失败，请检查网络是否通畅");
+			} else if (location.getLocType() == BDLocation.TypeCriteriaException)
+			{
+				sb.append("\ndescribe : ");
+				sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+			}
+			sb.append("\nlocationdescribe : ");
+			sb.append(location.getLocationDescribe());// 位置语义化信息
+			List<Poi> list = location.getPoiList();// POI数据
+			if (list != null)
+			{
+				sb.append("\npoilist size = : ");
+				sb.append(list.size());
+				for (Poi p : list)
+				{
+					sb.append("\npoi= : ");
+					sb.append(p.getId() + " " + p.getName() + " " + p.getRank());
+				}
+			}
+
+			// Log.i("AAA", sb.toString());
 		}
 
 	}

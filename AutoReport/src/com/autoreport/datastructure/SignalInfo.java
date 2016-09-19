@@ -26,6 +26,40 @@ public class SignalInfo implements Serializable
 	private String tac;//TAC
 	private String timeStamp;//时间戳
 	
+	private String longitude;//经度
+	private String latitude;//纬度
+	private String addr;//地址
+	
+	public String getLongitude()
+	{
+		return longitude;
+	}
+
+	public void setLongitude(String longitude)
+	{
+		this.longitude = longitude;
+	}
+
+	public String getLatitude()
+	{
+		return latitude;
+	}
+
+	public void setLatitude(String latitude)
+	{
+		this.latitude = latitude;
+	}
+
+	public String getAddr()
+	{
+		return addr;
+	}
+
+	public void setAddr(String addr)
+	{
+		this.addr = addr;
+	}
+
 	public SignalInfo()
 	{
 		

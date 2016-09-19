@@ -224,7 +224,15 @@ public class DatabaseOperator
 			values.put("enodbId", signalInfo.getEnodbId());
 			values.put("cellId", signalInfo.getCellId());
 			values.put("tac", signalInfo.getTac());
+			
+			values.put("longitude", signalInfo.getLongitude());
+			values.put("latitude", signalInfo.getLatitude());
+			values.put("addr", signalInfo.getAddr());
 			values.put("timeStamp", signalInfo.getTimeStamp());
+			
+		
+			
+			
 		
 			// 插入数据到表Info
 			db.insert("SignalInfo", null, values);
@@ -279,6 +287,12 @@ public class DatabaseOperator
 			values.put("enodbId", signalInfo.getEnodbId());
 			values.put("cellId", signalInfo.getCellId());
 			values.put("tac", signalInfo.getTac());
+			
+			values.put("longitude", signalInfo.getLongitude());
+			values.put("latitude", signalInfo.getLatitude());
+			values.put("addr", signalInfo.getAddr());
+			
+			
 			values.put("timeStamp", signalInfo.getTimeStamp());
 			// 更新数据
 			String[] s = new String[1];
@@ -321,6 +335,11 @@ public class DatabaseOperator
 					querydata.setEnodbId(cursor.getString(cursor.getColumnIndex("enodbId")));
 					querydata.setCellId(cursor.getString(cursor.getColumnIndex("cellId")));
 					querydata.setTac(cursor.getString(cursor.getColumnIndex("tac")));
+					
+					querydata.setLongitude(cursor.getString(cursor.getColumnIndex("longitude")));
+					querydata.setLatitude(cursor.getString(cursor.getColumnIndex("latitude")));
+					querydata.setAddr(cursor.getString(cursor.getColumnIndex("addr")));
+					
 					querydata.setTimeStamp(cursor.getString(cursor.getColumnIndex("timeStamp")));
 					
 					queryResult.add(querydata);
