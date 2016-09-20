@@ -1,13 +1,21 @@
 package com.autoreport.activity;
 
+import java.util.List;
+
 import com.autoreport.adapter.LinkedHorizontalScrollView;
 import com.autoreport.adapter.LvInfoAdapter;
 import com.autoreport.adapter.LvNameAdapter;
 import com.autoreport.adapter.NoScrollHorizontalScrollView;
 import com.autoreport.app.R;
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
+import com.autoreport.datastructure.AutoreportApp;
+import com.autoreport.datastructure.Info;
+import com.autoreport.datastructure.SignalInfo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AbsListView;
@@ -18,17 +26,10 @@ import android.widget.TextView;
 public class TabFlowActivity extends Activity
 {
 	private int position;
-
-	private NoScrollHorizontalScrollView sv_normalgoods_title;// 不可滑动的顶部左侧的ScrollView
-	private LinkedHorizontalScrollView sv_normalgoods_detail;// 底部左侧的ScrollView
-	private ListView lv_normalgoodname;// 底部左侧的ListView
-	private ListView lv_normalgood_info;// 底部右侧的ListView
-
-	boolean isLeftListEnabled = false;
-	boolean isRightListEnabled = false;
-
-	private LvNameAdapter mLvNormalNameAdapter;
-	private LvInfoAdapter mLvNormalInfoAdapter;
+	private TextView flowExcepTitle;
+	private TextView flowExcepInfo;
+	private TextView flowInfo;
+	private TextView flowTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -38,104 +39,55 @@ public class TabFlowActivity extends Activity
 
 		Intent intent = getIntent();
 		position = intent.getIntExtra("position", 0);
+		Info info = AutoreportApp.infolist.get(position);
 
-		initView();
-		initAdapter();
-	}
+		flowExcepTitle = (TextView) findViewById(R.id.flow_excep_title);
+		flowExcepInfo = (TextView) findViewById(R.id.flow_excep_info);
+		flowTitle = (TextView) findViewById(R.id.flow_title);
+		flowInfo = (TextView) findViewById(R.id.flow_info);
 
-	private void initView()
-	{
-		sv_normalgoods_title = (NoScrollHorizontalScrollView) findViewById(R.id.sv_title);
-		sv_normalgoods_detail = (LinkedHorizontalScrollView) findViewById(R.id.sv_good_detail);
-		lv_normalgoodname = (ListView) findViewById(R.id.lv_goodname);
-		lv_normalgood_info = (ListView) findViewById(R.id.lv_good_info);
-		combination(lv_normalgoodname, lv_normalgood_info, sv_normalgoods_title, sv_normalgoods_detail);
-	}
+		flowExcepTitle.setTextColor(Color.RED);
+		flowTitle.setTextColor(Color.RED);
 
-	private void initAdapter()
-	{
-		mLvNormalNameAdapter = new LvNameAdapter(this);
-		mLvNormalInfoAdapter = new LvInfoAdapter(this);
-		lv_normalgoodname.setAdapter(mLvNormalNameAdapter);
-		lv_normalgood_info.setAdapter(mLvNormalInfoAdapter);
-	}
+		flowExcepTitle.append("异常判决依据");
 
-	private void combination(final ListView lvName, final ListView lvDetail, final HorizontalScrollView title,
-			LinkedHorizontalScrollView content)
-	{
-		/**
-		 * 左右滑动同步
-		 */
-		content.setMyScrollChangeListener(new LinkedHorizontalScrollView.LinkScrollChangeListener()
+		flowExcepInfo.append(info.getExcepType());
+
+		flowTitle.append("流量信息");
+
+		// 查询对应的流量信息
+		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
+		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+		List<SignalInfo> signalInfos = databaseOperator.queryFromSignalInfoById(info.getId());
+		databaseOperator.CloseDatabase();
+
+		String siglist = "";
+		if (signalInfos.size() != 0)
 		{
-			@Override
-			public void onscroll(LinkedHorizontalScrollView view, int x, int y, int oldx, int oldy)
+			// 标注流量最大值和未通过通信测试点
+			int maxIndex = info.getMaxIndex();
+			int noRxIndex = info.getNoRxIndex();
+			if (maxIndex >= 0)
 			{
-				title.scrollTo(x, y);
+				String value = signalInfos.get(maxIndex).getRxByte();
+				signalInfos.get(maxIndex).setRxByte(value + "(最大值)");
+
 			}
-		});
-
-		/**
-		 * 上下滑动同步
-		 */
-		// 禁止快速滑动
-		lvName.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
-		lvDetail.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
-		// 左侧ListView滚动时，控制右侧ListView滚动
-		lvName.setOnScrollListener(new AbsListView.OnScrollListener()
-		{
-
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState)
+			if (noRxIndex >= 0)
 			{
-				// 这两个enable标志位是为了避免死循环
-				if (scrollState == SCROLL_STATE_TOUCH_SCROLL)
-				{
-					isRightListEnabled = false;
-					isLeftListEnabled = true;
-				} else if (scrollState == SCROLL_STATE_IDLE)
-				{
-					isRightListEnabled = true;
-				}
+				String value = signalInfos.get(noRxIndex).getRxByte();
+				signalInfos.get(noRxIndex).setRxByte(value + "(未通过通信测试)");
 			}
 
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
+			for (int i = 0; i < signalInfos.size(); i++)
 			{
-				View child = view.getChildAt(0);
-				if (child != null && isLeftListEnabled)
-				{
-					lvDetail.setSelectionFromTop(firstVisibleItem, child.getTop());
-				}
-			}
-		});
-
-		// 右侧ListView滚动时，控制左侧ListView滚动
-		lvDetail.setOnScrollListener(new AbsListView.OnScrollListener()
-		{
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState)
-			{
-				if (scrollState == SCROLL_STATE_TOUCH_SCROLL)
-				{
-					isLeftListEnabled = false;
-					isRightListEnabled = true;
-				} else if (scrollState == SCROLL_STATE_IDLE)
-				{
-					isLeftListEnabled = true;
-				}
+				siglist += signalInfos.get(i).getTimeStamp() + ", " + signalInfos.get(i).getTxByte() + ", "
+						+ signalInfos.get(i).getRxByte() + "\n\n";
 			}
 
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
-			{
-				View c = view.getChildAt(0);
-				if (c != null && isRightListEnabled)
-				{
-					lvName.setSelectionFromTop(firstVisibleItem, c.getTop());
-				}
-			}
-		});
+		}
+
+		flowInfo.append(siglist);
 
 	}
 

@@ -34,7 +34,7 @@ public class TabWirelessActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.tab_flow);
+		setContentView(R.layout.tab_wireless);
 
 		Intent intent = getIntent();
 		position = intent.getIntExtra("position", 0);
