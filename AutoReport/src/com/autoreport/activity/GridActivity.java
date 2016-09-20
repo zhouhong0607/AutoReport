@@ -55,7 +55,7 @@ public class GridActivity extends Activity
 		
 		
 		
-		GridView gridview = (GridView) findViewById(R.id.GridView);
+		GridView gridview = (GridView) findViewById(R.id.gridview);
 		ArrayList<HashMap<String, Object>> meumList = new ArrayList<HashMap<String, Object>>();
 
 		// 添加九宫格中数据源（功能选项）

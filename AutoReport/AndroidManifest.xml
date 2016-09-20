@@ -73,6 +73,12 @@
             android:label="@string/app_name" >
         </activity>
         
+         <activity
+            android:name="grid.GridIndexActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
+        
         
         <activity android:name="com.autoreport.activity.SecActivity" >
         </activity>

@@ -1,10 +1,17 @@
 package com.autoreport.activity;
 
+import java.util.List;
+
 import com.autoreport.adapter.LinkedHorizontalScrollView;
 import com.autoreport.adapter.LvInfoAdapter;
 import com.autoreport.adapter.LvNameAdapter;
 import com.autoreport.adapter.NoScrollHorizontalScrollView;
 import com.autoreport.app.R;
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
+import com.autoreport.datastructure.AutoreportApp;
+import com.autoreport.datastructure.Info;
+import com.autoreport.datastructure.SignalInfo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,6 +36,7 @@ public class TabWirelessActivity extends Activity
 
 	private LvNameAdapter mLvNormalNameAdapter;
 	private LvInfoAdapter mLvNormalInfoAdapter;
+	private List<SignalInfo> signalInfos;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -38,6 +46,14 @@ public class TabWirelessActivity extends Activity
 
 		Intent intent = getIntent();
 		position = intent.getIntExtra("position", 0);
+		Info info = AutoreportApp.infolist.get(position);
+		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
+		// //
+		// “AutoReport”
+		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+		signalInfos = databaseOperator.queryFromSignalInfoById(info.getId());
+
+		databaseOperator.CloseDatabase();
 
 		initView();
 		initAdapter();
@@ -54,8 +70,8 @@ public class TabWirelessActivity extends Activity
 
 	private void initAdapter()
 	{
-		mLvNormalNameAdapter = new LvNameAdapter(this);
-		mLvNormalInfoAdapter = new LvInfoAdapter(this);
+		mLvNormalNameAdapter = new LvNameAdapter(TabWirelessActivity.this, R.layout.item_lv_good_name, signalInfos);
+		mLvNormalInfoAdapter = new LvInfoAdapter(TabWirelessActivity.this,R.layout.item_lv_good_info,signalInfos);
 		lv_normalgoodname.setAdapter(mLvNormalNameAdapter);
 		lv_normalgood_info.setAdapter(mLvNormalInfoAdapter);
 	}

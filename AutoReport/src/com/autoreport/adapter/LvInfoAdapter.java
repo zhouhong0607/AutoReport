@@ -1,11 +1,15 @@
 package com.autoreport.adapter;
 
+import java.util.List;
+
 import com.autoreport.app.R;
+import com.autoreport.datastructure.SignalInfo;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,87 +18,47 @@ import android.widget.TextView;
 /**
  * Created by Lunger on 7/13 0013 16:06
  */
-public class LvInfoAdapter extends BaseAdapter
+public class LvInfoAdapter extends ArrayAdapter<SignalInfo>
 {
-	private Context context;
-
-	public LvInfoAdapter(Context context)
+	private int resourceId;
+	public LvInfoAdapter(Context context,int layoutId,List<SignalInfo> objects)
 	{
-		this.context = context;
+		super(context,layoutId,objects);
+		resourceId=layoutId;
 	}
-
-	@Override
-	public int getCount()
-	{
-		return 100;
-	}
-
-	@Override
-	public Object getItem(int position)
-	{
-		return null;
-	}
-
-	@Override
-	public long getItemId(int position)
-	{
-		return position;
-	}
-
+	
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		ViewHolder holder;
-		if (convertView == null)
-		{
-			holder = new ViewHolder();
-			convertView = LayoutInflater.from(context).inflate(R.layout.item_lv_good_info, null);
-			holder.tv_barcode = (TextView) convertView.findViewById(R.id.tv_barcode);
-			holder.tv_category = (TextView) convertView.findViewById(R.id.tv_category);
-			holder.tv_spec = (TextView) convertView.findViewById(R.id.tv_spec);
-			holder.tv_unit = (TextView) convertView.findViewById(R.id.tv_unit);
-			holder.tv_supplyer = (TextView) convertView.findViewById(R.id.tv_supplyer);
-			holder.tv_sale_money = (TextView) convertView.findViewById(R.id.tv_sale_money);
-			holder.tv_income_money = (TextView) convertView.findViewById(R.id.tv_income_money);
-			holder.tv_keep = (TextView) convertView.findViewById(R.id.tv_keep);
-			holder.tv_intime = (TextView) convertView.findViewById(R.id.tv_intime);
-			holder.tv_online = (ImageView) convertView.findViewById(R.id.iv_online);
-			convertView.setTag(holder);
-		} else
-		{
-			holder = (ViewHolder) convertView.getTag();
-		}
-		if (position < 10)
-		{
-			holder.tv_barcode.setText("1001200660" + position);
-		} else
-		{
-			holder.tv_barcode.setText("100120066" + position);
-		}
-		holder.tv_category.setText("类型" + position);
-		holder.tv_spec.setText("规格" + position);
-		holder.tv_unit.setText("个");
-		holder.tv_supplyer.setText("供应商" + position);
-		holder.tv_sale_money.setText("价格" + position);
-		holder.tv_keep.setText("1年");
-		holder.tv_intime.setText("2016-03-21");
-		holder.tv_income_money.setText("进货价" + position);
-
-		return convertView;
+		// TODO Auto-generated method stub
+		SignalInfo signalInfo=getItem(position);//获取当前Info实例
+		View view=LayoutInflater.from(getContext()).inflate(resourceId, null);
+		
+		TextView rsrp=(TextView)view.findViewById(R.id.rsrp);
+		TextView rsrq=(TextView)view.findViewById(R.id.rsrq);
+		TextView sinr=(TextView)view.findViewById(R.id.sinr);
+		TextView pci=(TextView)view.findViewById(R.id.pci);
+		TextView ci=(TextView)view.findViewById(R.id.ci);
+		TextView enodebId=(TextView)view.findViewById(R.id.enodeb_id);
+		TextView cellId=(TextView)view.findViewById(R.id.cell_id);
+		TextView tac=(TextView)view.findViewById(R.id.tac);
+		TextView netType=(TextView)view.findViewById(R.id.nettype);
+		TextView longitude=(TextView)view.findViewById(R.id.longitude);
+		TextView latitude=(TextView)view.findViewById(R.id.latitude);
+		TextView address=(TextView)view.findViewById(R.id.address);
+		rsrp.setText(signalInfo.getRsrp());
+		rsrq.setText(signalInfo.getRsrq());
+		sinr.setText(signalInfo.getRssinr());
+		pci.setText(signalInfo.getPci());
+		ci.setText(signalInfo.getCi());
+		enodebId.setText(signalInfo.getEnodbId());
+		cellId.setText(signalInfo.getCellId());
+		tac.setText(signalInfo.getTac());
+		netType.setText(signalInfo.getNetType());
+		longitude.setText(signalInfo.getLongitude());
+		latitude.setText(signalInfo.getLatitude());
+		address.setText(signalInfo.getAddr());
+		return view;
 	}
-}
-
-class ViewHolder
-{
-	TextView tv_barcode;
-	TextView tv_category;
-	TextView tv_spec;
-	TextView tv_unit;
-	TextView tv_supplyer;
-	TextView tv_sale_money;
-	TextView tv_income_money;
-	TextView tv_keep;
-	TextView tv_intime;
-	ImageView tv_online;
-
 }

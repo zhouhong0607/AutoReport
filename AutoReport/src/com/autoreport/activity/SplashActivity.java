@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
+import grid.GridIndexActivity;
 
 
 public class SplashActivity extends Activity
@@ -31,7 +32,7 @@ public class SplashActivity extends Activity
 		{
 			public void run()
 			{
-				Intent mainIntent = new Intent(SplashActivity.this, GridActivity.class);
+				Intent mainIntent = new Intent(SplashActivity.this, GridIndexActivity.class);
 				SplashActivity.this.startActivity(mainIntent);
 				SplashActivity.this.finish();
 			}
