@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.RandomAccessFile;
 
 import android.util.Log;
-
+/**
+ * 文件操作类
+ * @author 周宏
+ *
+ */
 public class FileUtil
 {
 	/****************数据记录到txt**********************/

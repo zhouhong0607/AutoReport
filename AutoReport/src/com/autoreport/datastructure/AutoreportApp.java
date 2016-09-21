@@ -12,7 +12,11 @@ import java.util.Vector;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-
+/**
+ * 全局变量
+ * @author 周宏
+ *
+ */
 public class AutoreportApp extends Application
 {
 	public static List<Info> infolist=new ArrayList<Info>();//用于ListView显示

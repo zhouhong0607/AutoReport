@@ -91,7 +91,11 @@ import android.net.NetworkInfo;
 import android.net.TrafficStats;
 import android.util.Log;
 import android.widget.Toast;
-
+/**
+ * 后台监控服务
+ * @author 周宏
+ *
+ */
 public class BackMonitor extends Service
 {
 	private static final String EXP_TYPE1 = "下行流量峰值过低";

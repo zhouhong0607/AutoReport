@@ -32,8 +32,12 @@ import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-/****************提取工具类，提取相关参数**********************/
 
+/**
+ * 提取工具类
+ * @author 周宏
+ *
+ */
 public class ExtraUtil 
 {
 	/****************提取本机IP地址Begin**********************/

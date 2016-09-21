@@ -1,12 +1,11 @@
 package com.autoreport.datastructure;
 
-/**
- * Created by Administrator on 2016/2/26.
- */
-
 import java.io.Serializable;
 import java.util.UUID;
-
+/**
+ * Info  模版
+ * Created by 周宏 on 2016/2/26.
+ */
 public class Info implements Serializable
 {
 	/**

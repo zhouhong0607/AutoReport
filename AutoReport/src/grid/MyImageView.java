@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 /**
- * @author wulianghuan
  * 该类为自定义ImageView，用于显示背景图片，并显示背景图片到移动效果
  *
  */
@@ -39,10 +38,9 @@ public class MyImageView extends ImageView{
 	    //屏幕高度
 	    int screenHeight = dm.heightPixels;      
 	   
-		back = BitmapFactory.decodeResource(context.getResources(), R.drawable.rootblock_default_bg);
+		back = BitmapFactory.decodeResource(context.getResources(), R.drawable.rootblock_default_bg5);
 		
 		mBitmap = Bitmap.createScaledBitmap(back, screenWidth*3, screenHeight, true);    
-		
 		
 		final Handler handler = new Handler()
 		{

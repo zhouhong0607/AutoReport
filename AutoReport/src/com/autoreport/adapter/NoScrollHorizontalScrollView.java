@@ -6,7 +6,9 @@ import android.view.MotionEvent;
 import android.widget.HorizontalScrollView;
 
 /**
- * Created by Binglun on 7/13 0013 17:26
+ * 固定滚动条View
+ * @author Administrator
+ *
  */
 public class NoScrollHorizontalScrollView extends HorizontalScrollView
 {

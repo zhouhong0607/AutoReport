@@ -7,7 +7,11 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import android.util.Log;
-
+/**
+ * 监控APP列表
+ * @author 周宏
+ *
+ */
 public class AppList
 {
 	private static final String[] AppName = { "UC浏览器", "QQ浏览器", "百度手机浏览器", "搜狐浏览器", "傲游浏览器", "360浏览器", "Chrome浏览器",

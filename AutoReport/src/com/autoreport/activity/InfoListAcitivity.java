@@ -35,7 +35,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+/**
+ * 数据列表展示界面
+ * @author 周宏
+ *
+ */
 public class InfoListAcitivity extends Activity
 {
 	// TextView textview1;

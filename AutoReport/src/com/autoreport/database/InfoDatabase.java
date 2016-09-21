@@ -7,7 +7,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by Administrator on 2016/2/25.
+ * 数据库
+ * Created by 周宏 on 2016/2/25.
  */
 public class InfoDatabase extends SQLiteOpenHelper
 {

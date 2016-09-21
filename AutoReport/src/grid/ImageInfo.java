@@ -1,9 +1,8 @@
 package grid;
 
 /**
- * 图像实体类
- * 
- * @author wulianghuan
+ * 九宫格   格子模版
+ * @author 周宏
  *
  */
 public class ImageInfo

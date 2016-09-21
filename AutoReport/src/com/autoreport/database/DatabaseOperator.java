@@ -13,8 +13,11 @@ import java.util.List;
 import com.autoreport.datastructure.Info;
 import com.autoreport.datastructure.SignalInfo;
 
+
 /**
- * Created by Administrator on 2016/2/26. 数据库操作类， 负责 添加 ，删除 ，更新 ，查询，数据
+ * 数据库操作类， 负责 添加 ，删除 ，更新 ，查询，数据
+ * @author 周宏
+ *
  */
 public class DatabaseOperator
 {

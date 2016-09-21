@@ -11,7 +11,8 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Created by User on 3/2/15.
+ * 使用记录类
+ * Created by 周宏 on 3/2/15.
  */
 public class UStats
 {

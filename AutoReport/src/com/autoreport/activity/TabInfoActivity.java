@@ -8,7 +8,11 @@ import android.view.LayoutInflater;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
-
+/**
+ * 选项卡界面
+ * @author 周宏
+ *
+ */
 public class TabInfoActivity extends ActivityGroup
 {
 	 private int position;

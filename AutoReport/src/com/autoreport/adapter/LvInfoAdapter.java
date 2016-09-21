@@ -14,9 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 /**
- * Created by Lunger on 7/13 0013 16:06
+ * 数据List适配器
+ * @author Administrator
+ *
  */
 public class LvInfoAdapter extends ArrayAdapter<SignalInfo>
 {

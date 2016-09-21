@@ -12,7 +12,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import grid.GridIndexActivity;
 
-
+/**
+ * 启动页面
+ * @author 周宏
+ *
+ */
 public class SplashActivity extends Activity
 {
 	/**

@@ -9,7 +9,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
-
+/**
+ * APP信息展示界面
+ * @author 周宏
+ *
+ */
 public class TabAppActivity extends Activity
 {
 	private int position;

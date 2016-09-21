@@ -34,8 +34,6 @@ import android.widget.Toast;
 /**
  * 自定义适配器
  * 
- * @author wulianghuan
- *
  */
 public class MyPagerAdapter extends PagerAdapter
 {
@@ -55,7 +53,7 @@ public class MyPagerAdapter extends PagerAdapter
 	public int getCount()
 	{
 		// TODO Auto-generated method stub
-		return 2;
+		return 1;
 	}
 
 	@Override
@@ -68,8 +66,6 @@ public class MyPagerAdapter extends PagerAdapter
 	@Override
 	public Object instantiateItem(ViewGroup container, final int index)
 	{
-
-
 		View view = activity.getLayoutInflater().inflate(R.layout.gridview, null);
 		GridView gridView = (GridView) view.findViewById(R.id.gridView1);
 		gridView.setNumColumns(2);
@@ -141,42 +137,42 @@ public class MyPagerAdapter extends PagerAdapter
 					// 启动后台服务 BackMonitor
 					try
 					{
-						Intent intent0 = new Intent(AutoreportApp.getContext(), BackMonitor.class);
-						AutoreportApp.getContext().startService(intent0);
-						Toast.makeText(AutoreportApp.getContext(), "开启服务成功", Toast.LENGTH_SHORT).show();
+						Intent intent0 = new Intent(activity, BackMonitor.class);
+						activity.startService(intent0);
+						Toast.makeText(activity, "开启服务成功", Toast.LENGTH_SHORT).show();
 					} catch (Exception e)
 					{
 						// TODO: handle exception
-						Toast.makeText(AutoreportApp.getContext(), "开启服务失败", Toast.LENGTH_SHORT).show();
+						Toast.makeText(activity, "开启服务失败", Toast.LENGTH_SHORT).show();
 					}
 
 					break;
 
 				case 1:
-					Intent intent1 = new Intent(AutoreportApp.getContext(), InfoListAcitivity.class);
-					intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-					AutoreportApp.getContext().startActivity(intent1);
+					Intent intent1 = new Intent(activity, InfoListAcitivity.class);
+//					intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+					activity.startActivity(intent1);
 					// Toast.makeText(getApplicationContext(),
 					// "信息列表",Toast.LENGTH_SHORT).show();
 					break;
 
 				case 2:
 
-					Intent intent2 = new Intent(AutoreportApp.getContext(), SecActivity.class);
+					Intent intent2 = new Intent(activity, SecActivity.class);
 					intent2.putExtra("position", 0);
-					 intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+//					 intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
 					
-					AutoreportApp.getContext().startActivity(intent2);
-					Toast.makeText(AutoreportApp.getContext(), "功能3", Toast.LENGTH_SHORT).show();
+					activity.startActivity(intent2);
+					Toast.makeText(activity, "功能3", Toast.LENGTH_SHORT).show();
 					break;
 				case 3:
-					Toast.makeText(AutoreportApp.getContext(), "功能4", Toast.LENGTH_SHORT).show();
+					Toast.makeText(activity, "功能4", Toast.LENGTH_SHORT).show();
 					break;
 				case 4:
-					Toast.makeText(AutoreportApp.getContext(), "功能5", Toast.LENGTH_SHORT).show();
+					Toast.makeText(activity, "功能5", Toast.LENGTH_SHORT).show();
 					break;
-				case 5:
-					Toast.makeText(AutoreportApp.getContext(), "退出", Toast.LENGTH_SHORT).show();
+				case 7:
+					Toast.makeText(activity, "退出", Toast.LENGTH_SHORT).show();
 					System.exit(0);
 					break;
 				default:

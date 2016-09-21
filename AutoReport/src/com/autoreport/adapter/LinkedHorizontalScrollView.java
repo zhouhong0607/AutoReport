@@ -5,7 +5,9 @@ import android.util.AttributeSet;
 import android.widget.HorizontalScrollView;
 
 /**
- * Created by Lunger on 7/11 0011 15:47
+ * 可连接滚动条
+ * @author Administrator
+ *
  */
 public class LinkedHorizontalScrollView extends HorizontalScrollView
 {

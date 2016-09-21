@@ -3,7 +3,11 @@ package com.autoreport.datastructure;
 import com.autoreport.database.DatabaseOperator;
 
 import android.util.Log;
-
+/**
+ * 数据跟踪器（队列）
+ * @author 周宏
+ *
+ */
 public class SignalQueue
 {
 

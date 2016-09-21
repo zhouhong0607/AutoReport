@@ -21,7 +21,11 @@ import android.widget.AbsListView;
 import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.TextView;
-
+/**
+ * 无线信息展示界面
+ * @author Administrator
+ *
+ */
 public class TabWirelessActivity extends Activity
 {
 	private int position;

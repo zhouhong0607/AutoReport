@@ -22,7 +22,11 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
+/**
+ * 九宫格导航界面
+ * @author 周宏
+ *
+ */
 public class GridIndexActivity extends Activity
 {
 	ArrayList<ImageInfo> data; // 菜单数据
@@ -94,15 +98,15 @@ public class GridIndexActivity extends Activity
 		data.add(new ImageInfo("功能5", R.drawable.icon5, R.drawable.icon_bg02));
 		data.add(new ImageInfo("功能6", R.drawable.icon6, R.drawable.icon_bg02));
 		data.add(new ImageInfo("功能7", R.drawable.icon7, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能8", R.drawable.icon8, R.drawable.icon_bg02));
-		data.add(new ImageInfo("ͨ功能9", R.drawable.icon9, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能10", R.drawable.icon10, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能11", R.drawable.icon11, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能12", R.drawable.icon12, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能13", R.drawable.icon13, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能14", R.drawable.icon14, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能15", R.drawable.icon15, R.drawable.icon_bg02));
-		data.add(new ImageInfo("功能16", R.drawable.icon16, R.drawable.icon_bg02));
+		data.add(new ImageInfo("退出", R.drawable.icon8, R.drawable.icon_bg01));
+//		data.add(new ImageInfo("ͨ功能9", R.drawable.icon9, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能10", R.drawable.icon10, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能11", R.drawable.icon11, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能12", R.drawable.icon12, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能13", R.drawable.icon13, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能14", R.drawable.icon14, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能15", R.drawable.icon15, R.drawable.icon_bg02));
+//		data.add(new ImageInfo("功能16", R.drawable.icon16, R.drawable.icon_bg02));
 	}
 
 	@Override

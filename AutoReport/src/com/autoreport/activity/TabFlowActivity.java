@@ -2,6 +2,7 @@ package com.autoreport.activity;
 
 import java.util.List;
 
+import com.autoreport.adapter.InfoFlowAdapter;
 import com.autoreport.adapter.LinkedHorizontalScrollView;
 import com.autoreport.adapter.LvInfoAdapter;
 import com.autoreport.adapter.LvNameAdapter;
@@ -22,15 +23,19 @@ import android.widget.AbsListView;
 import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.TextView;
-
+/**
+ * 流量信息展示界面
+ * @author 周宏
+ *
+ */
 public class TabFlowActivity extends Activity
 {
 	private int position;
 	private TextView flowExcepTitle;
 	private TextView flowExcepInfo;
-	private TextView flowInfo;
-	private TextView flowTitle;
 
+	private ListView flowListInfo;
+	private InfoFlowAdapter flowListAdapter;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -43,17 +48,18 @@ public class TabFlowActivity extends Activity
 
 		flowExcepTitle = (TextView) findViewById(R.id.flow_excep_title);
 		flowExcepInfo = (TextView) findViewById(R.id.flow_excep_info);
-		flowTitle = (TextView) findViewById(R.id.flow_title);
-		flowInfo = (TextView) findViewById(R.id.flow_info);
 
+
+		flowListInfo=(ListView)findViewById(R.id.tab_flow_list);
+		
 		flowExcepTitle.setTextColor(Color.RED);
-		flowTitle.setTextColor(Color.RED);
+
 
 		flowExcepTitle.append("异常判决依据");
-
 		flowExcepInfo.append(info.getExcepType());
+	
 
-		flowTitle.append("流量信息");
+
 
 		// 查询对应的流量信息
 		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
@@ -79,16 +85,14 @@ public class TabFlowActivity extends Activity
 				signalInfos.get(noRxIndex).setRxByte(value + "(未通过通信测试)");
 			}
 
-			for (int i = 0; i < signalInfos.size(); i++)
-			{
-				siglist += signalInfos.get(i).getTimeStamp() + ", " + signalInfos.get(i).getTxByte() + ", "
-						+ signalInfos.get(i).getRxByte() + "\n\n";
-			}
-
 		}
 
-		flowInfo.append(siglist);
 
+
+		
+		flowListAdapter=new InfoFlowAdapter(TabFlowActivity.this, R.layout.tab_flow_list_item, signalInfos);
+		flowListInfo.setAdapter(flowListAdapter);
+		
 	}
 
 }
