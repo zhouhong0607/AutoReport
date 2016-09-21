@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
-import grid.GridIndexActivity;
 
 /**
  * 启动页面

@@ -74,7 +74,7 @@
         </activity>
         
          <activity
-            android:name="grid.GridIndexActivity"
+            android:name="com.autoreport.activity.GridIndexActivity"
             android:label="@string/app_name" >
         </activity>
         

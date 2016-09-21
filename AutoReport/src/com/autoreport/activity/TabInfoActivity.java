@@ -48,10 +48,10 @@ public class TabInfoActivity extends ActivityGroup
 		intent4.putExtra("position", position);
 		
 		
-		th.addTab(th.newTabSpec("tab1").setIndicator("PHONE").setContent(intent1));
-		th.addTab(th.newTabSpec("tab2").setIndicator("APP").setContent(intent2));
-		th.addTab(th.newTabSpec("tab3").setIndicator("Wireless").setContent(intent3));
-		th.addTab(th.newTabSpec("tab4").setIndicator("Flow").setContent(intent4));
+		th.addTab(th.newTabSpec("tab1").setIndicator("手机").setContent(intent1));
+		th.addTab(th.newTabSpec("tab2").setIndicator("进程").setContent(intent2));
+		th.addTab(th.newTabSpec("tab3").setIndicator("无线").setContent(intent3));
+		th.addTab(th.newTabSpec("tab4").setIndicator("流量").setContent(intent4));
 		
 		
 	}
