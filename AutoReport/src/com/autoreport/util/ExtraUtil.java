@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.autoreport.datastructure.AutoreportApp;
+import com.autoreport.datamodel.AutoreportApp;
 
 import android.app.Activity;
 import android.app.ActivityManager;

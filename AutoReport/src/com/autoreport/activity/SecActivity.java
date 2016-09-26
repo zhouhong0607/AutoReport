@@ -7,9 +7,9 @@ import java.util.List;
 import com.autoreport.app.R;
 import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
-import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.SignalInfo;
-import com.autoreport.datastructure.AutoreportApp;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.SignalInfo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,6 +41,13 @@ public class SecActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sec);
+		
+		//读取数据库里面的数据
+		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
+		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
+		AutoreportApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
+		databaseOperator.CloseDatabase();
+		
 		mtextview1 = (TextView) findViewById(R.id.textview1);
 		mtextview2 = (TextView) findViewById(R.id.textview2);
 		mtextview3 = (TextView) findViewById(R.id.textview3);
@@ -76,7 +83,7 @@ public class SecActivity extends Activity
 			}
 		});
 
-		Info info = AutoreportApp.infolist.get(position);
+		BaseInfo info = AutoreportApp.infolist.get(position);
 		// 25项信息
 		// 手机基本信息
 		mtextview1.append("手机基本信息:");
@@ -116,10 +123,10 @@ public class SecActivity extends Activity
 		// mtextview6.append("LAC_GSM: " + info.getLAC_GSM() + "\n");
 		// mtextview6.append("Cell-ID_GSM: " + info.getCell_Id_GSM() + "\n\n");
 
-		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
+		 infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
 																					// //
 																					// “AutoReport”
-		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
+		 databaseOperator = new DatabaseOperator(infoDatabase);
 		List<SignalInfo> signalInfos = databaseOperator.queryFromSignalInfoById(info.getId());
 
 		databaseOperator.CloseDatabase();

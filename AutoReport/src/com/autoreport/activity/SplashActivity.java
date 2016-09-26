@@ -35,7 +35,7 @@ public class SplashActivity extends Activity
 		{
 			public void run()
 			{
-				Intent mainIntent = new Intent(SplashActivity.this, GridIndexActivity.class);
+				Intent mainIntent = new Intent(SplashActivity.this, RootActivity.class);
 				SplashActivity.this.startActivity(mainIntent);
 				SplashActivity.this.finish();
 			}

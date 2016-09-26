@@ -3,16 +3,16 @@ package com.autoreport.activity;
 import java.util.List;
 
 import com.autoreport.adapter.InfoFlowAdapter;
-import com.autoreport.adapter.LinkedHorizontalScrollView;
-import com.autoreport.adapter.LvInfoAdapter;
-import com.autoreport.adapter.LvNameAdapter;
-import com.autoreport.adapter.NoScrollHorizontalScrollView;
+import com.autoreport.adapter.InfoWirelessListDetailAdapter;
+import com.autoreport.adapter.InfoWirelessListNameAdapter;
 import com.autoreport.app.R;
 import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
-import com.autoreport.datastructure.AutoreportApp;
-import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.SignalInfo;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.SignalInfo;
+import com.autoreport.view.LinkedHorizontalScrollView;
+import com.autoreport.view.NoScrollHorizontalScrollView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -44,7 +44,7 @@ public class TabFlowActivity extends Activity
 
 		Intent intent = getIntent();
 		position = intent.getIntExtra("position", 0);
-		Info info = AutoreportApp.infolist.get(position);
+		BaseInfo info = AutoreportApp.infolist.get(position);
 
 		flowExcepTitle = (TextView) findViewById(R.id.flow_excep_title);
 		flowExcepInfo = (TextView) findViewById(R.id.flow_excep_info);

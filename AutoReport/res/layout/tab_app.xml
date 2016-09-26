@@ -3,16 +3,24 @@
     android:id="@+id/tab2Layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/listbackground"
     android:orientation="vertical" >
- <TextView
+
+    <TextView
         android:id="@+id/app_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-       />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/little_margin"
+        android:background="@drawable/bg_textview_title"
+        android:gravity="center"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/app_info"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/little_margin"
+        android:background="@drawable/bg_textview_info"
+        android:textSize="20sp" />
 
 </LinearLayout>

@@ -7,15 +7,21 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/listbackground"
-    tools:context="com.autoreport.activity.InfoListAcitivity" >
+    tools:context="com.autoreport.activity.InfoListAcitivity" 
+    android:background="@drawable/listbackground">
 
-    
-  <ListView
-      android:id="@+id/list_view"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-      
-  </ListView>
+   
 
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+  
+     android:divider="@null"
+      android:dividerHeight="2.0dp"  >
+
+       
+    </ListView>
+
+<!--       android:background="@drawable/bg_listview" -->
 </LinearLayout>

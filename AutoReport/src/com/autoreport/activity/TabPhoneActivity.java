@@ -1,8 +1,8 @@
 package com.autoreport.activity;
 
 import com.autoreport.app.R;
-import com.autoreport.datastructure.AutoreportApp;
-import com.autoreport.datastructure.Info;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,7 +34,7 @@ public class TabPhoneActivity extends Activity
 		
 		
 		
-		Info info = AutoreportApp.infolist.get(position);
+		BaseInfo info = AutoreportApp.infolist.get(position);
 		phoneTitle.append("手机基本信息:");
 		phoneInfo.append("手机品牌:            " + info.getBrand() + "\n");
 		phoneInfo.append("手机型号:            " + info.getType() + "\n");
@@ -44,7 +44,7 @@ public class TabPhoneActivity extends Activity
 		phoneInfo.append("IMSI:                    " + info.getIMSI() + "\n");
 		phoneInfo.append("内存占用率:        " + info.getMemRate() + "\n");
 		phoneInfo.append("CPU使用率:         " + info.getCpuRate() + "\n");
-		phoneInfo.append("运营商:                " + info.getCorporation() + "\n");
+		phoneInfo.append("运营商:                " + info.getCorporation() );
 		
 		 
 		

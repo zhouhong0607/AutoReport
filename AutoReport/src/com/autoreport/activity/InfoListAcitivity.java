@@ -1,17 +1,18 @@
 package com.autoreport.activity;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.autoreport.adapter.InfoListAdapter;
 import com.autoreport.app.R;
 import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
-import com.autoreport.datastructure.AutoreportApp;
-import com.autoreport.datastructure.Info;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.Info;
+import com.autoreport.datamodel.SignalInfo;
 import com.autoreport.service.BackMonitor;
 import com.autoreport.util.UStats;
 
@@ -32,6 +33,9 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import viewholder.InfoListViewHolder;
+import viewholder.MyAdapter;
+import viewholder.MyViewHolder;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,23 +84,6 @@ public class InfoListAcitivity extends Activity
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.info_list);
 
-		// Check if permission enabled
-//		try
-//		{
-//		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-//		{
-//			
-//			if (UStats.getUsageStatsList(this).isEmpty())
-//			{
-//				Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-//				startActivity(intent);
-//			}
-//		}
-//		}catch(Exception e)
-//		{
-//			Toast.makeText(getApplicationContext(), "权限不能获取", Toast.LENGTH_LONG).show();
-//			e.printStackTrace();
-//		}
 		// 注册广播
 		filter1.addAction("UPDATE_ACTION");
 		registerReceiver(mBroadcast, filter1);
@@ -137,20 +124,6 @@ public class InfoListAcitivity extends Activity
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-//			 Toast.makeText(getApplicationContext(), "收到广播",
-//			 Toast.LENGTH_SHORT).show();
-			if (AutoreportApp.infolist.size() != 0)// 有异常信息，显示到Listview
-			{
-				InfoListAdapter adapter = new InfoListAdapter(InfoListAcitivity.this, R.layout.info_list_item,
-						AutoreportApp.infolist);
-				listView.setAdapter(adapter);
-			}else
-			{
-				//无数据
-				 Toast.makeText(getApplicationContext(), "无数据",
-						 Toast.LENGTH_SHORT).show();
-			}
-
 		}
 	}
 
@@ -164,11 +137,14 @@ public class InfoListAcitivity extends Activity
 		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
 		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
 		AutoreportApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
-		
 		databaseOperator.CloseDatabase();
+		
 		if (AutoreportApp.infolist.size() != 0)// 有异常信息，显示到Listview
 		{
+			
 			InfoListAdapter adapter = new InfoListAdapter(InfoListAcitivity.this, R.layout.info_list_item, AutoreportApp.infolist);
+	
+//			MyAdapter adapter = new MyAdapter(InfoListAcitivity.this, R.layout.info_list_item, AutoreportApp.infolist,new InfoListViewHolder());
 			listView.setAdapter(adapter);
 		}else
 		{

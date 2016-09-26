@@ -1,8 +1,8 @@
 package com.autoreport.activity;
 
 import com.autoreport.app.R;
-import com.autoreport.datastructure.AutoreportApp;
-import com.autoreport.datastructure.Info;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,7 +33,7 @@ public class TabAppActivity extends Activity
 		appTitle.setTextColor(Color.RED);
 		appInfo = (TextView) findViewById(R.id.app_info);
 		
-		Info info = AutoreportApp.infolist.get(position);
+		BaseInfo info = AutoreportApp.infolist.get(position);
 		
 		appTitle.append("应用进程信息:");
 		appInfo.append("应用进程名称:   " + info.getAppName() + "\n");
@@ -44,7 +44,7 @@ public class TabAppActivity extends Activity
 		appInfo.append("UID:                     " + info.getUid() + "\n");
 		appInfo.append("PID:                     " + info.getPid() + "\n");
 		appInfo.append("进程数:               " + info.getPidNumber() + "\n");
-		appInfo.append("GID:                     " + info.getGid() + "\n");
+		appInfo.append("GID:                     " + info.getGid() );
 		
 		
 		

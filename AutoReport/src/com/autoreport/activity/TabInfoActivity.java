@@ -27,15 +27,8 @@ public class TabInfoActivity extends ActivityGroup
 		// 获取TabHost
 		TabHost th = (TabHost)findViewById(R.id.tabhost);
 		th.setup();
-		
-	      th.setup(this.getLocalActivityManager());   
-	      
-		// 通过TabHost获得存放Tab标签页内容的FrameLayout
-//		LayoutInflater.from(this).inflate(R.layout.tab_phone, th.getTabContentView());
-//		LayoutInflater.from(this).inflate(R.layout.tab_app, th.getTabContentView());
-//		LayoutInflater.from(this).inflate(R.layout.tab_wireless, th.getTabContentView());
-//		LayoutInflater.from(this).inflate(R.layout.tab_flow, th.getTabContentView());
-		
+	    th.setup(this.getLocalActivityManager());   
+	    
 	     // 设置Tab的标签内容和显示内容
 		Intent intent1=new Intent(getApplicationContext(),TabPhoneActivity.class);
 		Intent intent2=new Intent(getApplicationContext(),TabAppActivity.class);

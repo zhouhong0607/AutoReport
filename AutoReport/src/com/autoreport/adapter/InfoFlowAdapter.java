@@ -5,8 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.autoreport.app.R;
-import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.SignalInfo;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.SignalInfo;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -30,31 +30,47 @@ public class InfoFlowAdapter extends ArrayAdapter<SignalInfo>
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		// TODO Auto-generated method stub
-		SignalInfo info = getItem(position);// 获取当前Info实例
-		View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
-		TextView flowListTime = (TextView) view.findViewById(R.id.flow_list_time);
-		TextView flowListTx = (TextView) view.findViewById(R.id.flow_list_tx);
-		TextView flowListRx = (TextView) view.findViewById(R.id.flow_list_rx);
-
-		if (!isNumeric(info.getRxByte()))
+		View view = convertView;
+		ViewHolder viewHolder;
+		if (view == null)
 		{
-			flowListRx.setTextColor(Color.BLUE);
+			view = LayoutInflater.from(getContext()).inflate(resourceId, null);
+			viewHolder = new ViewHolder();
+			viewHolder.flowListTime = (TextView) view.findViewById(R.id.flow_list_time);
+			viewHolder.flowListTx = (TextView) view.findViewById(R.id.flow_list_tx);
+			viewHolder.flowListRx = (TextView) view.findViewById(R.id.flow_list_rx);
+			view.setTag(viewHolder);
+		} else
+		{
+			viewHolder = (ViewHolder) view.getTag();
 		}
-		
-		flowListTime.setText(info.getTimeStamp());
-		flowListTx.setText(info.getTxByte());
-		flowListRx.setText(info.getRxByte());
 
+		SignalInfo info = getItem(position);// 获取当前Info实例
+
+//		if (!isNumeric(info.getRxByte()))
+//		{
+//			viewHolder.flowListRx.setTextColor(Color.BLUE);
+//		}
 		
-			
-			
-			return view;
+		viewHolder.flowListTime.setText(info.getTimeStamp());
+		viewHolder.flowListTx.setText(info.getTxByte());
+		viewHolder.flowListRx.setText(info.getRxByte());
+		return view;
 	}
-/**
- * 判决是否是数字
- * @param str
- * @return
- */
+
+	private static class ViewHolder
+	{
+		private TextView flowListTime;
+		private TextView flowListTx;
+		private TextView flowListRx;
+	}
+
+	/**
+	 * 判决是否是数字
+	 * 
+	 * @param str
+	 * @return
+	 */
 	private boolean isNumeric(String str)
 	{
 		Pattern pattern = Pattern.compile("[0-9]*");

@@ -10,8 +10,8 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.SignalInfo;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.SignalInfo;
 
 
 /**
@@ -31,7 +31,7 @@ public class DatabaseOperator
 
 	/**%%%%%%%%%%%%%%%%%%%%%%%%%对表Info操作%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%**/	
 	/************添加数据,向表Info插入一条info******************/
-	public void insertToInfo(Info info)
+	public void insertToInfo(BaseInfo info)
 	{
 		db.beginTransaction();// 开启事务
 		try
@@ -103,7 +103,7 @@ public class DatabaseOperator
 	}
 
 	/*************更新数据,更新id位置数据，为新info******************/
-	public void updateFromInfo(Info info, String id)
+	public void updateFromInfo(BaseInfo info, String id)
 	{
 		db.beginTransaction();// 开启事务
 		try
@@ -158,9 +158,9 @@ public class DatabaseOperator
 	}
 
 	/*************查询数据，返回info的list******************/
-	public List<Info> queryFromInfo()
+	public List<BaseInfo> queryFromInfo()
 	{
-		List<Info> queryResult = new ArrayList<Info>();// 实例Info的容器
+		List<BaseInfo> queryResult = new ArrayList<BaseInfo>();// 实例Info的容器
 		db.beginTransaction();// 开启事务
 		try
 		{
@@ -169,7 +169,7 @@ public class DatabaseOperator
 			{
 				do
 				{
-					Info querydata = new Info();// 查询到的每个数据
+					BaseInfo querydata = new BaseInfo();// 查询到的每个数据
 					querydata.setId(cursor.getString(cursor.getColumnIndex("id")));
 					querydata.setBrand(cursor.getString(cursor.getColumnIndex("brand")));
 					querydata.setType(cursor.getString(cursor.getColumnIndex("type")));

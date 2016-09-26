@@ -1,6 +1,6 @@
 package alertpacket;
 
-import com.autoreport.datastructure.Info;
+import com.autoreport.datamodel.BaseInfo;
 
 public class AlertQueue
 {
@@ -10,7 +10,7 @@ public class AlertQueue
 	// private final static int RSRQ=4;
 	// private final static int RSSI=5;
 	int maxSize; // 队列长度，由构造函数初始化
-	Info[] queArray; // 队列
+	BaseInfo[] queArray; // 队列
 	// short para1;//参数1 CID 或者 LAC
 	// short para2;//参数2 RSRP 或者 RSRQ或者RSSI
 
@@ -24,7 +24,7 @@ public class AlertQueue
 	public AlertQueue(int s)// 两个参数构造, 预警次数和 位置信息（CID,LAC）
 	{
 		maxSize = s;
-		queArray = new Info[maxSize];
+		queArray = new BaseInfo[maxSize];
 		front = 0;
 		rear = 0;
 		nItems = 0;
@@ -32,7 +32,7 @@ public class AlertQueue
 	}
 
 	// --------------------------------------------------------------
-	public void insert(Info add_data) // 两个参数进队列
+	public void insert(BaseInfo add_data) // 两个参数进队列
 	{
 		if (nItems == maxSize) // 队列满,采取循环方式替换数据
 		{
@@ -49,22 +49,22 @@ public class AlertQueue
 	
 
 	// --------------------------------------------------------------
-	public Info removefront() // 删除队头元素，并返回该值,队列头前移一位
+	public BaseInfo removefront() // 删除队头元素，并返回该值,队列头前移一位
 	{
-		Info temp = queArray[front]; // 取值和修改队头指针
+		BaseInfo temp = queArray[front]; // 取值和修改队头指针
 		front = (front + 1) % maxSize;
 		nItems--;
 		return temp;
 	}
 
 	// --------------------------------------------------------------
-	public Info peekfront() // 取得队列的队头元素。该运算与 remove()不同，后者要修改队头元素指针。
+	public BaseInfo peekfront() // 取得队列的队头元素。该运算与 remove()不同，后者要修改队头元素指针。
 	{
 		return queArray[front];
 	}
 
 	// --------------------------------------------------------------
-	public Info removerear() // 删除队尾元素，并返回该值,队尾后移一位
+	public BaseInfo removerear() // 删除队尾元素，并返回该值,队尾后移一位
 	{
 
 		if (rear == 0)
@@ -74,13 +74,13 @@ public class AlertQueue
 		{
 			rear = rear - 1;
 		}
-		Info temp = queArray[rear];
+		BaseInfo temp = queArray[rear];
 		nItems--;
 		return temp;
 	}
 
 	// --------------------------------------------------------------
-	public Info peekrear() // 取得队列的队尾元素。该运算与 remove()不同，后者要修改队头元素指针。
+	public BaseInfo peekrear() // 取得队列的队尾元素。该运算与 remove()不同，后者要修改队头元素指针。
 	{
 		if (rear == 0)
 		{

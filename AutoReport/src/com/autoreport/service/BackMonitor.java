@@ -54,11 +54,11 @@ import org.apache.http.util.EntityUtils;
 
 import com.autoreport.database.DatabaseOperator;
 import com.autoreport.database.InfoDatabase;
-import com.autoreport.datastructure.AppList;
-import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.SignalInfo;
-import com.autoreport.datastructure.AutoreportApp;
-import com.autoreport.datastructure.SignalQueue;
+import com.autoreport.datamodel.AppList;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.SignalInfo;
+import com.autoreport.datamodel.SignalQueue;
 import com.autoreport.util.ExtraUtil;
 import com.autoreport.util.UStats;
 import com.baidu.location.BDLocation;
@@ -91,8 +91,10 @@ import android.net.NetworkInfo;
 import android.net.TrafficStats;
 import android.util.Log;
 import android.widget.Toast;
+
 /**
  * 后台监控服务
+ * 
  * @author 周宏
  *
  */
@@ -144,9 +146,9 @@ public class BackMonitor extends Service
 	String latitude = "";// 纬度
 	String addr = "";// 地址
 
-	int excepType;//异常类型  取值 1 2 3；
-//	int maxIndex=-1;//下行流量最大值索引
-//	int noRxIndex=-1;//未通过通信测试索引
+	int excepType;// 异常类型 取值 1 2 3；
+	// int maxIndex=-1;//下行流量最大值索引
+	// int noRxIndex=-1;//未通过通信测试索引
 
 	public LocationClient mLocationClient;
 	public BDLocationListener myListener;
@@ -232,7 +234,7 @@ public class BackMonitor extends Service
 
 							synchronized ("")
 							{
-								List<Info> uploadList = new ArrayList<Info>();
+								List<BaseInfo> uploadList = new ArrayList<BaseInfo>();
 								InfoDatabase infoDatabase = new InfoDatabase(getApplicationContext(), "AutoReprt.db",
 										null, 1);// 创建数据库 “AutoReport”
 								DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
@@ -352,7 +354,7 @@ public class BackMonitor extends Service
 
 								Log.i("AAA", "可疑异常出现");
 								Log.i("AAA", "开始http测试");
-								if (!upload_data(new Info()))// http测试不成功
+								if (!upload_data(new BaseInfo()))// http测试不成功
 								{
 									excepTime1 = ExtraUtil.getCurTime();
 									Log.i("AAA", "第一次异常时间" + excepTime1);
@@ -382,8 +384,6 @@ public class BackMonitor extends Service
 
 							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
 
-							
-							
 							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = ExtraUtil.getCurTime();
@@ -402,7 +402,7 @@ public class BackMonitor extends Service
 							if (exitQue.get_sum() > 0 && (exitQue.get_maxValue() < 10000 || exitQue.judege()))
 							{
 								Log.i("AAA", "开始http测试");
-								if (!upload_data(new Info()))// http测试不成功
+								if (!upload_data(new BaseInfo()))// http测试不成功
 								{
 									excepTime2 = ExtraUtil.getCurTime();
 									Log.i("AAA", "第二次异常时间" + excepTime2);
@@ -416,19 +416,19 @@ public class BackMonitor extends Service
 							}
 							if (isAbnormal2)
 							{
-								if(exitQue.judege())
+								if (exitQue.judege())
 								{
-									excepType=3;
-								}else
+									excepType = 3;
+								} else
 								{
-									excepType=2;
+									excepType = 2;
 								}
 								recordInfo(false);// 参数true 为 第二次 异常，
 							}
 						}
 						if (isAbnormal)// 第一次判决异常
 						{
-							excepType=1;
+							excepType = 1;
 							recordInfo(true);// 参数true为 第一次 异常，
 						}
 
@@ -561,7 +561,7 @@ public class BackMonitor extends Service
 		return signalInfo;
 	}
 
-	public boolean upload_data(Info info)
+	public boolean upload_data(BaseInfo info)
 	{
 		// String urlStr = "http://10.1.0.222:8080/androidweb/LoginServlet";
 		// String urlStr = "http://www.mengqi.win/InternalTesting/LoginServlet";
@@ -602,9 +602,6 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("pidNumber", info.getPidNumber()));
 		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
 		params.add(new BasicNameValuePair("Flag", info.getFlag()));
-		params.add(new BasicNameValuePair("excepType", info.getExcepType()));
-		params.add(new BasicNameValuePair("maxIndex", String.valueOf(info.getMaxIndex())));
-		params.add(new BasicNameValuePair("noRxIndex", String.valueOf(info.getNoRxIndex())));
 
 		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
 																					// //
@@ -623,14 +620,20 @@ public class BackMonitor extends Service
 						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getNetType() + ","
 						+ signalInfos.get(i).getPci() + "," + signalInfos.get(i).getCi() + ","
 						+ signalInfos.get(i).getEnodbId() + "," + signalInfos.get(i).getCellId() + ","
-						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + ","
+						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + "|"
 						+ signalInfos.get(i).getLongitude() + "," + signalInfos.get(i).getLatitude() + ","
 						+ signalInfos.get(i).getAddr() + "|";
 				// if((i+1)!=signalInfos.size())
 				// siglist+= "|";
 			}
-
 		}
+
+		params.add(new BasicNameValuePair("excepType", info.getExcepType()));
+		params.add(new BasicNameValuePair("maxIndex", String.valueOf(info.getMaxIndex())));
+		params.add(new BasicNameValuePair("noRxIndex", String.valueOf(info.getNoRxIndex())));
+//		params.add(new BasicNameValuePair("longitude", signalInfos.get(0).getLongitude()));
+//		params.add(new BasicNameValuePair("latutide", signalInfos.get(0).getLatitude()));
+//		params.add(new BasicNameValuePair("addr", signalInfos.get(0).getAddr()));
 
 		params.add(new BasicNameValuePair("signalInfo", siglist));
 
@@ -734,7 +737,7 @@ public class BackMonitor extends Service
 		InfoDatabase infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库“AutoReport”
 		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
 
-		Info updateinfo = new Info();
+		BaseInfo updateinfo = new BaseInfo();
 		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
 
 		updateinfo.setLaunTime(LaunTime);
@@ -775,7 +778,7 @@ public class BackMonitor extends Service
 			updateinfo.setExcepType(EXP_TYPE1);
 			break;
 		case 2:
-			updateinfo.setExcepType(EXP_TYPE2); 
+			updateinfo.setExcepType(EXP_TYPE2);
 			break;
 		case 3:
 			updateinfo.setExcepType(EXP_TYPE3);
@@ -790,10 +793,10 @@ public class BackMonitor extends Service
 		{
 			Log.i("AAA", "第一次记录异常时间" + excepTime1);
 			updateinfo.setExcepTime(excepTime1);
-			//设置流量最大值索引和未通过通信测试索引   默认-1
+			// 设置流量最大值索引和未通过通信测试索引 默认-1
 			updateinfo.setMaxIndex(launQue.getMaxIndex());
 			updateinfo.setNoRxIndex(launQue.getNoRxIndex());
-			
+
 			databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
 
 			launQue.setInfoId(updateinfo.getId());// 设置外键
@@ -805,10 +808,10 @@ public class BackMonitor extends Service
 		{
 			Log.i("AAA", "第二次记录异常时间" + excepTime2);
 			updateinfo.setExcepTime(excepTime2);
-			//设置流量最大值索引和未通过通信测试索引   默认-1
+			// 设置流量最大值索引和未通过通信测试索引 默认-1
 			updateinfo.setMaxIndex(exitQue.getMaxIndex());
 			updateinfo.setNoRxIndex(exitQue.getNoRxIndex());
-			
+
 			databaseOperator.insertToInfo(updateinfo);// 将这条信息插入到数据库
 
 			exitQue.setInfoId(updateinfo.getId());// 设置外键
