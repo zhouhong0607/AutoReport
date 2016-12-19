@@ -60,6 +60,7 @@ import com.autoreport.datamodel.BaseInfo;
 import com.autoreport.datamodel.SignalInfo;
 import com.autoreport.datamodel.SignalQueue;
 import com.autoreport.util.ExtraUtil;
+import com.autoreport.util.FileUtil;
 import com.autoreport.util.UStats;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -104,6 +105,12 @@ public class BackMonitor extends Service
 	private static final String EXP_TYPE2 = "下行流量峰值过低且响应超时";
 	private static final String EXP_TYPE3 = "未通过通信测试且响应超时";
 
+	/**文件操作**/
+	private StringBuilder fileRecord=new StringBuilder();
+	String filePath = "/sdcard/Test/";
+	String fileName = "drx.txt";
+	/**文件操作**/
+	
 	long tx1 = 0;
 	long rx1 = 0;
 	long drx = 0;
@@ -313,6 +320,12 @@ public class BackMonitor extends Service
 
 					if (Browserun)
 					{
+						/**文件记录部分**/
+						fileRecord.append(ExtraUtil.getCurTime()+" ");
+						fileRecord.append(ExtraUtil.getMemRate()+" ");
+						fileRecord.append(ExtraUtil.getCpuRate()+" ");
+						/**文件记录部分**/
+						
 						// 流量统计
 						count++;
 
@@ -443,6 +456,14 @@ public class BackMonitor extends Service
 						isAbnormal = false;
 						isAbnormal2 = false;
 
+						/**记录数据到文件， 清空StringBuilder**/
+						
+						
+						FileUtil.writeTxtToFile(fileRecord.toString(), filePath, fileName);
+						fileRecord.delete(0, fileRecord.length());
+						/**记录数据到文件， 清空StringBuilder**/
+						
+						
 					}
 
 				} else
@@ -488,18 +509,32 @@ public class BackMonitor extends Service
 	private SignalInfo getSignalInfo()
 	{
 		SignalInfo signalInfo = new SignalInfo();
-
+		
 		if (netType.equals("LTE"))
 		{
 			signalInfo.setRsrp(RSRP);
 			signalInfo.setRsrq(RSRQ);
 			signalInfo.setRssinr(RSSNR);
+			
+			/**文件记录部分**/
+			fileRecord.append(RSRP+" ");
+			fileRecord.append(RSRQ+" ");
+			fileRecord.append(RSSNR+" ");
+			/**文件记录部分**/
+			
+			
 
 		} else
 		{
 			signalInfo.setRsrp("N/A");
 			signalInfo.setRsrq("N/A");
 			signalInfo.setRssinr("N/A");
+			
+			/**文件记录部分**/
+			fileRecord.append("N/A"+" ");
+			fileRecord.append("N/A"+" ");
+			fileRecord.append("N/A"+" ");
+			/**文件记录部分**/
 
 		}
 
@@ -507,6 +542,12 @@ public class BackMonitor extends Service
 		signalInfo.setRxByte(String.valueOf(drx));
 		signalInfo.setNetType(netType);
 
+		/**文件记录部分**/
+		fileRecord.append(String.valueOf(dtx)+" ");
+		fileRecord.append(String.valueOf(drx)+" ");
+		fileRecord.append(netType+" ");
+		/**文件记录部分**/
+		
 		/******************** 4G位置信息 ***********************/
 		List<CellInfo> cellInfoList = tm.getAllCellInfo();
 
@@ -517,6 +558,14 @@ public class BackMonitor extends Service
 			signalInfo.setEnodbId(String.valueOf((location.getCid() / 256)));
 			signalInfo.setCellId(String.valueOf((location.getCid() % 256)));
 			signalInfo.setTac(String.valueOf(location.getLac()));
+			
+			/**文件记录部分**/
+			fileRecord.append("null ");
+			fileRecord.append(String.valueOf(location.getCid())+" ");
+			fileRecord.append(String.valueOf((location.getCid() / 256))+" ");
+			fileRecord.append(String.valueOf((location.getCid() % 256))+" ");
+			fileRecord.append(String.valueOf(location.getLac())+" ");
+			/**文件记录部分**/
 		}
 
 		for (CellInfo cellInfo : cellInfoList)
@@ -535,7 +584,16 @@ public class BackMonitor extends Service
 						signalInfo.setEnodbId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
 						signalInfo.setCellId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
 						signalInfo.setTac(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
-						//
+
+
+						/**文件记录部分**/
+						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci())+" ");
+						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi())+" ");
+						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256)+" ");
+						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256)+" ");
+						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac())+" ");
+						/**文件记录部分**/
+						
 					} else
 					{
 						signalInfo.setPci("N/A");
@@ -543,6 +601,15 @@ public class BackMonitor extends Service
 						signalInfo.setEnodbId("N/A");
 						signalInfo.setCellId("N/A");
 						signalInfo.setTac("N/A");
+						
+						/**文件记录部分**/
+						fileRecord.append("N/A"+" ");
+						fileRecord.append("N/A"+" ");
+						fileRecord.append("N/A"+" ");
+						fileRecord.append("N/A"+" ");
+						fileRecord.append("N/A"+" ");
+						/**文件记录部分**/
+						
 					}
 				}
 
@@ -558,6 +625,13 @@ public class BackMonitor extends Service
 		signalInfo.setLatitude(latitude);
 		signalInfo.setAddr(addr);
 
+		/**文件记录部分**/
+		fileRecord.append(longitude+" ");
+		fileRecord.append(latitude+" ");
+		fileRecord.append(addr+" ");
+		fileRecord.append("\n"); //数据换行
+		/**文件记录部分**/
+		
 		return signalInfo;
 	}
 

@@ -12,7 +12,7 @@ import android.util.Log;
 public class FileUtil
 {
 	/****************数据记录到txt**********************/
-	public final  void writeTxtToFile(String strcontent, String filePath, String fileName)
+	public static final  void writeTxtToFile(String strcontent, String filePath, String fileName)
 	{
 		// 生成文件夹之后，再生成文件，不然会出错
 		makeFilePath(filePath, fileName);
@@ -41,7 +41,7 @@ public class FileUtil
 		}
 	}
 	/****************生成文件**********************/
-	public final File makeFilePath(String filePath, String fileName)
+	public static final File makeFilePath(String filePath, String fileName)
 	{
 		File file = null;
 		makeRootDirectory(filePath);
@@ -60,7 +60,7 @@ public class FileUtil
 	}
 
 	/****************生成文件夹**********************/
-	public final void makeRootDirectory(String filePath)
+	public static final void makeRootDirectory(String filePath)
 	{
 		File file = null;
 		try
