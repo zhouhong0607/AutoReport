@@ -18,8 +18,8 @@ public class FileUtil
 		makeFilePath(filePath, fileName);
 
 		String strFilePath = filePath + fileName;
-		// 每次写入时，都换行写
-		String strContent = strcontent + "\r\n";
+		
+		String strContent = strcontent ;
 		try
 		{
 			File file = new File(strFilePath);

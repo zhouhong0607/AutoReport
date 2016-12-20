@@ -108,7 +108,8 @@ public class BackMonitor extends Service
 	/**文件操作**/
 	private StringBuilder fileRecord=new StringBuilder();
 	String filePath = "/sdcard/Test/";
-	String fileName = "drx.txt";
+	String fileName = "record.txt";
+	String[] records=new String[17];
 	/**文件操作**/
 	
 	long tx1 = 0;
@@ -321,9 +322,10 @@ public class BackMonitor extends Service
 					if (Browserun)
 					{
 						/**文件记录部分**/
-						fileRecord.append(ExtraUtil.getCurTime()+" ");
-						fileRecord.append(ExtraUtil.getMemRate()+" ");
-						fileRecord.append(ExtraUtil.getCpuRate()+" ");
+						records[0]=ExtraUtil.getCurTime();
+						records[1]=ExtraUtil.getMemRate();
+						records[2]=ExtraUtil.getCpuRate();
+						
 						/**文件记录部分**/
 						
 						// 流量统计
@@ -458,9 +460,9 @@ public class BackMonitor extends Service
 
 						/**记录数据到文件， 清空StringBuilder**/
 						
-						
 						FileUtil.writeTxtToFile(fileRecord.toString(), filePath, fileName);
 						fileRecord.delete(0, fileRecord.length());
+						
 						/**记录数据到文件， 清空StringBuilder**/
 						
 						
@@ -517,9 +519,9 @@ public class BackMonitor extends Service
 			signalInfo.setRssinr(RSSNR);
 			
 			/**文件记录部分**/
-			fileRecord.append(RSRP+" ");
-			fileRecord.append(RSRQ+" ");
-			fileRecord.append(RSSNR+" ");
+			records[3]=RSRP;
+			records[4]=RSRQ;
+			records[5]=RSSNR;
 			/**文件记录部分**/
 			
 			
@@ -531,9 +533,10 @@ public class BackMonitor extends Service
 			signalInfo.setRssinr("N/A");
 			
 			/**文件记录部分**/
-			fileRecord.append("N/A"+" ");
-			fileRecord.append("N/A"+" ");
-			fileRecord.append("N/A"+" ");
+			records[3]="N/A";
+			records[4]="N/A";
+			records[5]="N/A";
+			
 			/**文件记录部分**/
 
 		}
@@ -543,9 +546,10 @@ public class BackMonitor extends Service
 		signalInfo.setNetType(netType);
 
 		/**文件记录部分**/
-		fileRecord.append(String.valueOf(dtx)+" ");
-		fileRecord.append(String.valueOf(drx)+" ");
-		fileRecord.append(netType+" ");
+		records[6]=String.valueOf(dtx);
+		records[7]=String.valueOf(drx);
+		records[8]=netType;
+		
 		/**文件记录部分**/
 		
 		/******************** 4G位置信息 ***********************/
@@ -560,11 +564,12 @@ public class BackMonitor extends Service
 			signalInfo.setTac(String.valueOf(location.getLac()));
 			
 			/**文件记录部分**/
-			fileRecord.append("null ");
-			fileRecord.append(String.valueOf(location.getCid())+" ");
-			fileRecord.append(String.valueOf((location.getCid() / 256))+" ");
-			fileRecord.append(String.valueOf((location.getCid() % 256))+" ");
-			fileRecord.append(String.valueOf(location.getLac())+" ");
+			records[9]="null";
+			records[10]=String.valueOf(location.getCid());
+			records[11]=String.valueOf((location.getCid() / 256));
+			records[12]=String.valueOf((location.getCid() % 256));
+			records[13]=String.valueOf(location.getLac());
+			
 			/**文件记录部分**/
 		}
 
@@ -587,11 +592,13 @@ public class BackMonitor extends Service
 
 
 						/**文件记录部分**/
-						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci())+" ");
-						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi())+" ");
-						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256)+" ");
-						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256)+" ");
-						fileRecord.append(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac())+" ");
+						
+						records[9]=String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci());
+						records[10]=String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi());
+						records[11]=String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256);
+						records[12]=String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256);
+						records[13]=String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac());
+						
 						/**文件记录部分**/
 						
 					} else
@@ -603,11 +610,12 @@ public class BackMonitor extends Service
 						signalInfo.setTac("N/A");
 						
 						/**文件记录部分**/
-						fileRecord.append("N/A"+" ");
-						fileRecord.append("N/A"+" ");
-						fileRecord.append("N/A"+" ");
-						fileRecord.append("N/A"+" ");
-						fileRecord.append("N/A"+" ");
+						records[9]="N/A";
+						records[10]="N/A";
+						records[11]="N/A";
+						records[12]="N/A";
+						records[13]="N/A";
+						
 						/**文件记录部分**/
 						
 					}
@@ -626,10 +634,30 @@ public class BackMonitor extends Service
 		signalInfo.setAddr(addr);
 
 		/**文件记录部分**/
-		fileRecord.append(longitude+" ");
-		fileRecord.append(latitude+" ");
-		fileRecord.append(addr+" ");
-		fileRecord.append("\n"); //数据换行
+		records[14]=longitude;
+		records[15]=latitude;
+		records[16]=addr;
+		
+		fileRecord.append(records[0]+"\t");//时间
+		fileRecord.append(records[6]+"\t");//发送字节
+		fileRecord.append(records[7]+"\t");//接收字节
+		fileRecord.append(records[3]+"\t");//RSRP
+		fileRecord.append(records[4]+"\t");//RSRQ
+		fileRecord.append(records[5]+"\t");//SINR
+		fileRecord.append(records[9]+"\t");//PCI
+		fileRecord.append(records[10]+"\t");//CI
+		fileRecord.append(records[11]+"\t");//ENODBID
+		fileRecord.append(records[12]+"\t");//CELLID
+		fileRecord.append(records[13]+"\t");//TAC
+		fileRecord.append(records[8]+"\t");//网络类型
+		fileRecord.append(records[1]+"\t");//内存
+		fileRecord.append(records[2]+"\t");//CPU
+		fileRecord.append(records[14]+"\t");//经度
+		fileRecord.append(records[15]+"\t");//纬度
+		fileRecord.append(records[16]);//地址
+		fileRecord.append("\r\n");//换行
+		records=new String[17];
+		
 		/**文件记录部分**/
 		
 		return signalInfo;
