@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -230,9 +231,6 @@ public class BackMonitor extends Service
 		tm.listen(MyPhoneListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 		/******************* 信号强度监听 **********************/
 
-		
-		
-		
 		new Timer().schedule(new TimerTask()
 		{
 			@Override
@@ -341,11 +339,17 @@ public class BackMonitor extends Service
 						count++;
 
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 接收RX
-						long rx = TrafficStats.getUidRxBytes(uid);
+					
+					
+						long rx = TrafficStats.getMobileRxBytes();
+//						long rx = TrafficStats.getUidRxBytes(uid);
 						drx = rx - rx1;
 						rx1 = rx;
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 发送TX
-						long tx = TrafficStats.getUidTxBytes(uid);
+						
+						
+						long tx = TrafficStats.getMobileTxBytes();
+//						long tx = TrafficStats.getUidTxBytes(uid);
 						dtx = tx - tx1;
 						tx1 = tx;
 
@@ -408,7 +412,8 @@ public class BackMonitor extends Service
 
 							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
 
-							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
+							//launQue.get_sum() > 0 &&
+							if ( launQue.get_maxValue() < 10000)// 异常判决
 							{
 								excepTime1 = ExtraUtil.getCurTime();
 								Log.i("AAA", "第一次异常时间" + excepTime1);
@@ -473,9 +478,7 @@ public class BackMonitor extends Service
 						fileRecord1.delete(0, fileRecord1.length());
 
 						file2Record();
-						
-						
-						
+
 						/** 记录数据到文件， 清空StringBuilder **/
 
 					}
@@ -568,6 +571,7 @@ public class BackMonitor extends Service
 		if (cellInfoList == null || cellInfoList.size() == 0)
 		{
 			GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
+			signalInfo.setPci("null");
 			signalInfo.setCi(String.valueOf(location.getCid()));
 			signalInfo.setEnodbId(String.valueOf((location.getCid() / 256)));
 			signalInfo.setCellId(String.valueOf((location.getCid() % 256)));
@@ -581,57 +585,60 @@ public class BackMonitor extends Service
 			records1[13] = String.valueOf(location.getLac());
 
 			/** 文件记录部分 **/
-		}
-
-		for (CellInfo cellInfo : cellInfoList)
+		} else
 		{
-			// 获取所有Lte网络信息
-			if (cellInfo instanceof CellInfoLte)
+			for (CellInfo cellInfo : cellInfoList)
 			{
-
-				if (cellInfo.isRegistered())
+				// 获取所有Lte网络信息
+				if (cellInfo instanceof CellInfoLte)
 				{
 
-					if (netType.equals("LTE"))
+					if (cellInfo.isRegistered())
 					{
-						signalInfo.setPci(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci()));
-						signalInfo.setCi(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi()));
-						signalInfo.setEnodbId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
-						signalInfo.setCellId(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
-						signalInfo.setTac(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
 
-						/** 文件记录部分 **/
+						if (netType.equals("LTE"))
+						{
+							signalInfo.setPci(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci()));
+							signalInfo.setCi(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi()));
+							signalInfo.setEnodbId(
+									String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256));
+							signalInfo.setCellId(
+									String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256));
+							signalInfo.setTac(String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac()));
 
-						records1[9] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci());
-						records1[10] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi());
-						records1[11] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256);
-						records1[12] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256);
-						records1[13] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac());
+							/** 文件记录部分 **/
 
-						/** 文件记录部分 **/
+							records1[9] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getPci());
+							records1[10] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi());
+							records1[11] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() / 256);
+							records1[12] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getCi() % 256);
+							records1[13] = String.valueOf(((CellInfoLte) cellInfo).getCellIdentity().getTac());
 
-					} else
-					{
-						signalInfo.setPci("N/A");
-						signalInfo.setCi("N/A");
-						signalInfo.setEnodbId("N/A");
-						signalInfo.setCellId("N/A");
-						signalInfo.setTac("N/A");
+							/** 文件记录部分 **/
 
-						/** 文件记录部分 **/
-						records1[9] = "N/A";
-						records1[10] = "N/A";
-						records1[11] = "N/A";
-						records1[12] = "N/A";
-						records1[13] = "N/A";
+						} else
+						{
+							signalInfo.setPci("N/A");
+							signalInfo.setCi("N/A");
+							signalInfo.setEnodbId("N/A");
+							signalInfo.setCellId("N/A");
+							signalInfo.setTac("N/A");
 
-						/** 文件记录部分 **/
+							/** 文件记录部分 **/
+							records1[9] = "N/A";
+							records1[10] = "N/A";
+							records1[11] = "N/A";
+							records1[12] = "N/A";
+							records1[13] = "N/A";
 
+							/** 文件记录部分 **/
+
+						}
 					}
+
 				}
 
 			}
-
 		}
 
 		/******************** 4G位置信息 ***********************/
@@ -854,8 +861,6 @@ public class BackMonitor extends Service
 		BaseInfo updateinfo = new BaseInfo();
 		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
 
-		
-
 		updateinfo.setLaunTime(LaunTime);
 		updateinfo.setAppName(AppName);
 		updateinfo.setUid(String.valueOf(uid));
@@ -880,12 +885,12 @@ public class BackMonitor extends Service
 		{
 			updateinfo.setPid("N/A");
 			updateinfo.setPidNumber("N/A");
-			
+
 		} else
 		{
 			updateinfo.setPid(pidInfo[0]);
 			updateinfo.setPidNumber(String.valueOf(pidInfo[1]));
-			
+
 		}
 
 		updateinfo.setFlagOK();// 设置为异常数据
@@ -938,7 +943,7 @@ public class BackMonitor extends Service
 			databaseOperator.CloseDatabase();// 关闭数据库
 
 		}
-		
+
 		Log.i("AAA", "异常信息加入成功");
 
 	}
@@ -946,9 +951,7 @@ public class BackMonitor extends Service
 	/*********** 文件2记录 ***************/
 	public void file2Record()// 获取信息
 	{
-	
 
-		
 		GsmCellLocation location = (GsmCellLocation) tm.getCellLocation();// *#*#4636#*#*
 
 		/** 文件记录2 **/
@@ -966,24 +969,22 @@ public class BackMonitor extends Service
 		records2[11] = String.valueOf(uid);// 组ID（GID）
 		/** 文件记录2 **/
 
-		
-
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			
+
 			/** 文件记录2 **/
 			records2[12] = "N/A";// 进程ID（PID）
 			records2[13] = "N/A";// 进程数
 			/** 文件记录2 **/
 		} else
 		{
-		
+
 			/** 文件记录2 **/
 			records2[12] = pidInfo[0];// 进程ID（PID）
 			records2[13] = String.valueOf(pidInfo[1]);// 进程数
 			/** 文件记录2 **/
 		}
-		
+
 		/** 文件记录 **/
 		fileRecord2.append(records2[0] + "\t");
 		fileRecord2.append(records2[1] + "\t");
@@ -1001,14 +1002,12 @@ public class BackMonitor extends Service
 		fileRecord2.append(records2[13]);
 		fileRecord2.append("\r\n");
 		FileUtil.writeTxtToFile(fileRecord2.toString(), filePath, fileName2);
-		
-		records2=new String[14];
+
+		records2 = new String[14];
 		fileRecord2.delete(0, fileRecord2.length());
 		/** 文件记录 **/
 	}
-	
-	
-	
+
 	/********************* binder *****************/
 	public class UpdateBinder extends Binder
 	{
