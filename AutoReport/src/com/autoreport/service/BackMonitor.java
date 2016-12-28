@@ -199,7 +199,7 @@ public class BackMonitor extends Service
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
 
-							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[13])));
+							RSSNR = String.format("%.0f", 10.0*Math.log10(Double.valueOf(parts[13])));
 
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
@@ -208,7 +208,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[9];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
 						{
-							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[10])));
+							RSSNR = String.format("%.0f",  10.0*Math.log10(Double.valueOf(parts[10])));
 						}
 					} else
 					{
@@ -216,7 +216,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[10];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
 						{
-							RSSNR = String.format("%.0f", Math.log10(Double.valueOf(parts[11])));
+							RSSNR = String.format("%.0f", 10.0* Math.log10(Double.valueOf(parts[11])));
 						}
 					}
 
@@ -341,15 +341,15 @@ public class BackMonitor extends Service
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 接收RX
 					
 					
-						long rx = TrafficStats.getMobileRxBytes();
-//						long rx = TrafficStats.getUidRxBytes(uid);
+//						long rx = TrafficStats.getMobileRxBytes();
+						long rx = TrafficStats.getUidRxBytes(uid);
 						drx = rx - rx1;
 						rx1 = rx;
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 发送TX
 						
 						
-						long tx = TrafficStats.getMobileTxBytes();
-//						long tx = TrafficStats.getUidTxBytes(uid);
+//						long tx = TrafficStats.getMobileTxBytes();
+						long tx = TrafficStats.getUidTxBytes(uid);
 						dtx = tx - tx1;
 						tx1 = tx;
 
