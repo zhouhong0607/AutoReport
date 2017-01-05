@@ -124,9 +124,9 @@ public class BackMonitor extends Service
 	long drx = 0;
 	long dtx = 0;
 
-	boolean Browserun = false;// 浏览器运行判断
+	boolean browseRun = false;// 浏览器运行判断
 	boolean assit = false;// 辅助判断参数
-	boolean Browserquit = false;// 浏览器退出判断
+	boolean browserQuit = false;// 浏览器退出判断
 	SignalQueue launQue = new SignalQueue(30);// 构建发送接受队列，时间长度10秒
 	// SignalQueue rxqueue_laun = new SignalQueue(30);// 0.1秒间隔 ，20秒的数据
 	SignalQueue exitQue = new SignalQueue(10);// 构建发送接受队列，时间长度10秒
@@ -311,13 +311,12 @@ public class BackMonitor extends Service
 
 				if (getNetWorkType())// 有网络情况下再进行如下操作
 				{
-
 					// 对浏览器状态监视
 					if (AppList.FindAppName(ExtraUtil.getAppName(ExtraUtil.getCurPackname())) != null)// 查找当前应用是否在Applist
 					{
 						// 第一次进入应用获取pid与uid
 
-						Browserun = true;
+						browseRun = true;
 						if (assit == false)// 进入应用的时刻
 						{
 							LaunTime = ExtraUtil.getCurTime();
@@ -330,23 +329,23 @@ public class BackMonitor extends Service
 						}
 					} else
 					{
-						Browserun = false;
+						browseRun = false;
 					}
-					if (Browserun == false && assit == true)
+					if (browseRun == false && assit == true)
 					{
-						Browserquit = true;
+						browserQuit = true;
 						Log.i("AAA", "应用退出");
 						exitTime = ExtraUtil.getCurTime();
 						// handler.sendEmptyMessage(3);
 					} else
 					{
-						Browserquit = false;
+						browserQuit = false;
 
 					}
 
-					assit = Browserun;
+					assit = browseRun;
 
-					if (Browserun)
+					if (browseRun)
 					{
 						/** 文件记录部分 **/
 						records1[0] = ExtraUtil.getCurTime();
@@ -418,7 +417,7 @@ public class BackMonitor extends Service
 //							}
 //						}
 
-					} else if (Browserquit)// 浏览器退出时候进行判断，并清空两个队列，以及一些全局变量
+					} else if (browserQuit)// 浏览器退出时候进行判断，并清空两个队列，以及一些全局变量
 					{
 	
 						
@@ -492,6 +491,10 @@ public class BackMonitor extends Service
 						isAbnormal = false;
 						isAbnormal2 = false;
 
+						browseRun=false;
+						browserQuit=false;
+						assit=false;
+						
 						/** 记录数据到文件2， 清空StringBuilder **/
 
 						file2Record();
@@ -509,7 +512,10 @@ public class BackMonitor extends Service
 					exitQue.clear();
 					isAbnormal = false;
 					isAbnormal2 = false;
-
+					browseRun=false;
+					browserQuit=false;
+					assit=false;
+					
 				}
 			}
 		}, 0, 1000);
