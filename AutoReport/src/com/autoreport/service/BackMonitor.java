@@ -169,6 +169,23 @@ public class BackMonitor extends Service
 	public BDLocationListener myListener;
 
 	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+
+		return START_STICKY_COMPATIBILITY;
+	}
+
+	 @Override
+	 public void onDestroy()
+	 {
+		 Log.i("AAA", "服务被杀死");
+//	 Intent localIntent=new Intent();
+//	 localIntent.setClass(this, BackMonitor.class);
+//	 this.startService(localIntent);
+	
+	 }
+
+	@Override
 	public void onCreate()
 	{
 		super.onCreate();
@@ -199,8 +216,7 @@ public class BackMonitor extends Service
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
 
-							RSSNR = String.format("%.0f", 10.0*Math.log10(Double.valueOf(parts[13])));
-
+							RSSNR = String.format("%.0f", 10.0 * Math.log10(Double.valueOf(parts[13])));
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
 					{
@@ -208,7 +224,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[9];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[10])))))
 						{
-							RSSNR = String.format("%.0f",  10.0*Math.log10(Double.valueOf(parts[10])));
+							RSSNR = String.format("%.0f", 10.0 * Math.log10(Double.valueOf(parts[10])));
 						}
 					} else
 					{
@@ -216,7 +232,7 @@ public class BackMonitor extends Service
 						RSRQ = parts[10];
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[11])))))
 						{
-							RSSNR = String.format("%.0f", 10.0* Math.log10(Double.valueOf(parts[11])));
+							RSSNR = String.format("%.0f", 10.0 * Math.log10(Double.valueOf(parts[11])));
 						}
 					}
 
@@ -238,54 +254,58 @@ public class BackMonitor extends Service
 			{
 				upload_time++;
 				/******************** 自动上传 ****************************/
-				if (upload_time % 60 == 0 && isConnected())// 60秒上传一次
-				{
-					new Thread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							// TODO Auto-generated method stub
-
-							synchronized ("")
-							{
-								List<BaseInfo> uploadList = new ArrayList<BaseInfo>();
-								InfoDatabase infoDatabase = new InfoDatabase(getApplicationContext(), "AutoReprt.db",
-										null, 1);// 创建数据库 “AutoReport”
-								DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
-								uploadList = databaseOperator.queryFromInfo();
-
-								if (uploadList.size() != 0)// 有数据则上传
-								{
-									for (int i = 0; i < uploadList.size(); i++)
-									{
-										if (uploadList.get(i).getUpload_Flag() == 0)// 检测没上传过的
-										{
-											uploadList.get(i).setUploadTime(ExtraUtil.getCurTime());// 每次上传提取时间
-											if (upload_data(uploadList.get(i)))
-											{
-												uploadList.get(i).setUpload_FlagOK();// 上传成功设置上传标志位为true
-												Log.i("AAA", "60秒上传成功");
-											} else
-											{
-
-												uploadList.get(i).setUploadTime("");// 清空上传时间
-												uploadList.get(i).setUploadNumAdd();// 上传失败记录次数+1
-												Log.i("AAA", "60秒上传失败");
-											}
-										}
-										// 将改变的这条Info信息同步到数据库, 根据id更新
-										databaseOperator.updateFromInfo(uploadList.get(i), uploadList.get(i).getId());
-
-									}
-								}
-
-								databaseOperator.CloseDatabase();// 关闭数据库
-							}
-						}
-					}).start();
-
-				}
+				// if (upload_time % 60 == 0 && isConnected())// 60秒上传一次
+				// {
+				// new Thread(new Runnable()
+				// {
+				// @Override
+				// public void run()
+				// {
+				// // TODO Auto-generated method stub
+				//
+				// synchronized ("")
+				// {
+				// List<BaseInfo> uploadList = new ArrayList<BaseInfo>();
+				// InfoDatabase infoDatabase = new
+				// InfoDatabase(getApplicationContext(), "AutoReprt.db",
+				// null, 1);// 创建数据库 “AutoReport”
+				// DatabaseOperator databaseOperator = new
+				// DatabaseOperator(infoDatabase);
+				// uploadList = databaseOperator.queryFromInfo();
+				//
+				// if (uploadList.size() != 0)// 有数据则上传
+				// {
+				// for (int i = 0; i < uploadList.size(); i++)
+				// {
+				// if (uploadList.get(i).getUpload_Flag() == 0)// 检测没上传过的
+				// {
+				// uploadList.get(i).setUploadTime(ExtraUtil.getCurTime());//
+				// 每次上传提取时间
+				// if (upload_data(uploadList.get(i)))
+				// {
+				// uploadList.get(i).setUpload_FlagOK();// 上传成功设置上传标志位为true
+				// Log.i("AAA", "60秒上传成功");
+				// } else
+				// {
+				//
+				// uploadList.get(i).setUploadTime("");// 清空上传时间
+				// uploadList.get(i).setUploadNumAdd();// 上传失败记录次数+1
+				// Log.i("AAA", "60秒上传失败");
+				// }
+				// }
+				// // 将改变的这条Info信息同步到数据库, 根据id更新
+				// databaseOperator.updateFromInfo(uploadList.get(i),
+				// uploadList.get(i).getId());
+				//
+				// }
+				// }
+				//
+				// databaseOperator.CloseDatabase();// 关闭数据库
+				// }
+				// }
+				// }).start();
+				//
+				// }
 
 				/******************** 自动上传 ****************************/
 
@@ -339,16 +359,14 @@ public class BackMonitor extends Service
 						count++;
 
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 接收RX
-					
-					
-//						long rx = TrafficStats.getMobileRxBytes();
+
+						// long rx = TrafficStats.getMobileRxBytes();
 						long rx = TrafficStats.getUidRxBytes(uid);
 						drx = rx - rx1;
 						rx1 = rx;
 						// 如果返回-1，代表不支持使用该方法，注意必须是2.2以上的 发送TX
-						
-						
-//						long tx = TrafficStats.getMobileTxBytes();
+
+						// long tx = TrafficStats.getMobileTxBytes();
 						long tx = TrafficStats.getUidTxBytes(uid);
 						dtx = tx - tx1;
 						tx1 = tx;
@@ -369,97 +387,99 @@ public class BackMonitor extends Service
 
 						exitQue.insert(signalInfo);
 
-						if (count == 30)// 30秒进行第一个 判断
-						{
-							// rxqueue_laun.calculate_expectation();// 计算期望rx
-							// rxqueue_laun.calculate_variance();// 计算方差tx
-							//
-							// txqueue_laun.calculate_expectation();// 计算期望rx
-							// txqueue_laun.calculate_variance();// 计算方差tx
-
-							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
-							{
-
-								Log.i("AAA", "可疑异常出现");
-								Log.i("AAA", "开始http测试");
-								if (!upload_data(new BaseInfo()))// http测试不成功
-								{
-									excepTime1 = ExtraUtil.getCurTime();
-									Log.i("AAA", "第一次异常时间" + excepTime1);
-									isAbnormal = true;
-									Log.i("AAA", "异常出现");
-								} else
-								{
-									Log.i("AAA", "不是异常");
-
-								}
-
-							} else
-							{
-								Log.i("AAA", "初次判决不是异常");
-							}
-						}
+//						if (count == 30)// 30秒进行第一个 判断
+//						{
+//							// rxqueue_laun.calculate_expectation();// 计算期望rx
+//							// rxqueue_laun.calculate_variance();// 计算方差tx
+//							//
+//							// txqueue_laun.calculate_expectation();// 计算期望rx
+//							// txqueue_laun.calculate_variance();// 计算方差tx
+//
+//							if (launQue.get_sum() > 0 && launQue.get_maxValue() < 10000)// 异常判决
+//							{
+//
+//								Log.i("AAA", "可疑异常出现");
+//								Log.i("AAA", "开始http测试");
+//								if (!upload_data(new BaseInfo()))// http测试不成功
+//								{
+//									excepTime1 = ExtraUtil.getCurTime();
+//									Log.i("AAA", "第一次异常时间" + excepTime1);
+//									isAbnormal = true;
+//									Log.i("AAA", "异常出现");
+//								} else
+//								{
+//									Log.i("AAA", "不是异常");
+//
+//								}
+//
+//							} else
+//							{
+//								Log.i("AAA", "初次判决不是异常");
+//							}
+//						}
 
 					} else if (Browserquit)// 浏览器退出时候进行判断，并清空两个队列，以及一些全局变量
 					{
-						if (count > 4 && count < 30)// 5~30秒退出的情况
-						{
-							// rxqueue_laun.calculate_expectation();// 计算期望rx
-							// rxqueue_laun.calculate_variance();// 计算方差tx
-							//
-							// txqueue_laun.calculate_expectation();// 计算期望rx
-							// txqueue_laun.calculate_variance();// 计算方差tx
-
-							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
-
-							//launQue.get_sum() > 0 &&
-							if ( launQue.get_maxValue() < 10000)// 异常判决
-							{
-								excepTime1 = ExtraUtil.getCurTime();
-								Log.i("AAA", "第一次异常时间" + excepTime1);
-								isAbnormal = true;
-								Log.i("AAA", "30秒内异常出现");
-
-							} else
-							{
-								Log.i("AAA", "30秒内判决不是异常");
-							}
-						}
-
-						if (count > 35)// 进行第二次 测试
-						{
-							if (exitQue.get_sum() > 0 && (exitQue.get_maxValue() < 10000 || exitQue.judege()))
-							{
-								Log.i("AAA", "开始http测试");
-								if (!upload_data(new BaseInfo()))// http测试不成功
-								{
-									excepTime2 = ExtraUtil.getCurTime();
-									Log.i("AAA", "第二次异常时间" + excepTime2);
-									isAbnormal2 = true;
-									Log.i("AAA", "第二次异常出现");
-								} else
-								{
-									Log.i("AAA", "第二次不是异常");
-
-								}
-							}
-							if (isAbnormal2)
-							{
-								if (exitQue.judege())
-								{
-									excepType = 3;
-								} else
-								{
-									excepType = 2;
-								}
-								recordInfo(false);// 参数true 为 第二次 异常，
-							}
-						}
-						if (isAbnormal)// 第一次判决异常
-						{
-							excepType = 1;
-							recordInfo(true);// 参数true为 第一次 异常，
-						}
+	
+						
+//						if (count > 4 && count < 30)// 5~30秒退出的情况
+//						{
+//							// rxqueue_laun.calculate_expectation();// 计算期望rx
+//							// rxqueue_laun.calculate_variance();// 计算方差tx
+//							//
+//							// txqueue_laun.calculate_expectation();// 计算期望rx
+//							// txqueue_laun.calculate_variance();// 计算方差tx
+//
+//							Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
+//
+//							// launQue.get_sum() > 0 &&
+//							if (launQue.get_maxValue() < 10000)// 异常判决
+//							{
+//								excepTime1 = ExtraUtil.getCurTime();
+//								Log.i("AAA", "第一次异常时间" + excepTime1);
+//								isAbnormal = true;
+//								Log.i("AAA", "30秒内异常出现");
+//
+//							} else
+//							{
+//								Log.i("AAA", "30秒内判决不是异常");
+//							}
+//						}
+//
+//						if (count > 35)// 进行第二次 测试
+//						{
+//							if (exitQue.get_sum() > 0 && (exitQue.get_maxValue() < 10000 || exitQue.judege()))
+//							{
+//								Log.i("AAA", "开始http测试");
+//								if (!upload_data(new BaseInfo()))// http测试不成功
+//								{
+//									excepTime2 = ExtraUtil.getCurTime();
+//									Log.i("AAA", "第二次异常时间" + excepTime2);
+//									isAbnormal2 = true;
+//									Log.i("AAA", "第二次异常出现");
+//								} else
+//								{
+//									Log.i("AAA", "第二次不是异常");
+//
+//								}
+//							}
+//							if (isAbnormal2)
+//							{
+//								if (exitQue.judege())
+//								{
+//									excepType = 3;
+//								} else
+//								{
+//									excepType = 2;
+//								}
+//								recordInfo(false);// 参数true 为 第二次 异常，
+//							}
+//						}
+//						if (isAbnormal)// 第一次判决异常
+//						{
+//							excepType = 1;
+//							recordInfo(true);// 参数true为 第一次 异常，
+//						}
 
 						// 数据清零
 						rx1 = 0;
@@ -472,17 +492,12 @@ public class BackMonitor extends Service
 						isAbnormal = false;
 						isAbnormal2 = false;
 
-						/** 记录数据到文件， 清空StringBuilder **/
-
-						FileUtil.writeTxtToFile(fileRecord1.toString(), filePath, fileName1);
-						fileRecord1.delete(0, fileRecord1.length());
+						/** 记录数据到文件2， 清空StringBuilder **/
 
 						file2Record();
 
-						/** 记录数据到文件， 清空StringBuilder **/
-
+						/** 记录数据到文件2， 清空StringBuilder **/
 					}
-
 				} else
 				// 没网络情况把参数重置
 				{
@@ -672,6 +687,13 @@ public class BackMonitor extends Service
 		fileRecord1.append(records1[15] + "\t");// 纬度
 		fileRecord1.append(records1[16]);// 地址
 		fileRecord1.append("\r\n");// 换行
+
+		/** 记录数据到文件1， 清空StringBuilder **/
+
+		FileUtil.writeTxtToFile(fileRecord1.toString(), filePath, fileName1);
+		fileRecord1.delete(0, fileRecord1.length());
+		/** 记录数据到文件1， 清空StringBuilder **/
+
 		records1 = new String[17];
 
 		/** 文件记录部分 **/
@@ -978,7 +1000,6 @@ public class BackMonitor extends Service
 			/** 文件记录2 **/
 		} else
 		{
-
 			/** 文件记录2 **/
 			records2[12] = pidInfo[0];// 进程ID（PID）
 			records2[13] = String.valueOf(pidInfo[1]);// 进程数

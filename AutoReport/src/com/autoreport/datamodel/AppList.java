@@ -15,20 +15,19 @@ import android.util.Log;
 public class AppList
 {
 	private static final String[] AppName = { "UC浏览器", "QQ浏览器", "百度手机浏览器", "搜狐浏览器", "傲游浏览器", "360浏览器", "Chrome浏览器",
-			"火狐浏览器", "欧朋浏览器", "Safari浏览器", "猎豹浏览器", "海豚浏览器", "浏览器", "咪咕视频","优酷视频", "爱奇艺", "腾讯视频", "搜狐视频", "暴风影音", "百度视频",
+			"火狐浏览器", "欧朋浏览器", "Safari浏览器", "猎豹浏览器", "海豚浏览器", "浏览器", "咪咕视频","咪咕视频会员版","优酷视频", "爱奇艺", "腾讯视频", "搜狐视频", "暴风影音", "百度视频",
 			"乐视视频", "PPS影音", "土豆视频", "芒果TV", "腾讯新闻", "搜狐新闻", "今日头条", "网易新闻", "百度新闻", "凤凰新闻", "新浪新闻", "ZAKER", "畅读",
-			"一点资讯" };
+			"一点资讯" ,"阴阳师"};
 	public static String CurAppName = null;
 
 	public static String FindAppName(String SourceName)// 查找AppName是否在应用库里,在返回应用名称,不在返回null
 	{
 		CurAppName = null;
-		for (int i = 0; i < AppName.length; i++)
+		for (int i = 0; i < AppName.length;i++)
 		{
 			if (AppName[i].equals(SourceName))
 				CurAppName = SourceName;
 		}
 		return CurAppName;
 	}
-
 }
