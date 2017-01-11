@@ -121,8 +121,7 @@ public class ExtraUtil
 	/*************** 获取当前程序包名 Begin**********************************/
 	public static final String getCurPackname()
 	{
-		
-		String currentAppPkg = null;
+		String currentAppPkg = "testPKG";
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
 			if (!UStats.getUsageStatsList(AutoreportApp.getContext()).isEmpty())
@@ -130,7 +129,8 @@ public class ExtraUtil
 				@SuppressWarnings("ResourceType")
 				UsageStatsManager usm = (UsageStatsManager) AutoreportApp.getContext().getSystemService("usagestats");
 				long time = System.currentTimeMillis();
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000,
+				//设置  时间段  3600 *1000为1个小时   ，设置5小时
+				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 18000 * 1000,
 						time);
 				if (appList != null && appList.size() > 0)
 				{
@@ -184,7 +184,7 @@ public class ExtraUtil
 	{
 		ApplicationInfo appinfo = null;
 		PackageManager pkgmanager = null;
-		String appname = "";
+		String appname = "testAPP";
 	
 		if (pkgname != null)
 		{
@@ -199,7 +199,8 @@ public class ExtraUtil
 				appinfo = null;
 				// TODO: handle exception
 			}
-
+			
+			if(appinfo!=null)
 			appname = (String) pkgmanager.getApplicationLabel(appinfo);
 			// Log.i("AAA", appname);
 		}
