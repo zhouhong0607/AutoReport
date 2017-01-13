@@ -63,6 +63,7 @@ import com.autoreport.datamodel.AutoreportApp;
 import com.autoreport.datamodel.BaseInfo;
 import com.autoreport.datamodel.SignalInfo;
 import com.autoreport.datamodel.SignalQueue;
+import com.autoreport.receiver.UnlockReceiver;
 import com.autoreport.util.ExtraUtil;
 import com.autoreport.util.FileUtil;
 import com.autoreport.util.UStats;
@@ -76,11 +77,14 @@ import com.baidu.location.LocationClientOption.LocationMode;
 import android.content.Context;
 import android.content.Entity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.provider.Settings;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoLte;
@@ -171,9 +175,13 @@ public class BackMonitor extends Service
 	public LocationClient mLocationClient;
 	public BDLocationListener myListener;
 
+	private UnlockReceiver unlockReceiver = new UnlockReceiver();// 解锁广播
+	private WakeLock mwakeLock;// 电源锁
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
+		Log.i("AAA", "OnStartCommand");
 		/***** 前台服务 ******/
 		Notification notification = new Notification(R.drawable.launcher, "数据测试", System.currentTimeMillis());
 		notification.setLatestEventInfo(this, "数据测试", "请不要关闭", null);
@@ -185,20 +193,53 @@ public class BackMonitor extends Service
 	}
 
 	@Override
+	 public void onStart(Intent intent, int startId)
+	{
+		Log.i("AAA", "OnStart");
+	};
+	
+	@Override
 	public void onDestroy()
 	{
 		Log.i("AAA", "服务销毁");
-		 Intent localIntent=new Intent();
-		 localIntent.setClass(this, BackMonitor.class);
-		 this.startService(localIntent);
-		 super.onDestroy();
+		Intent localIntent = new Intent();
+		localIntent.setClass(this, BackMonitor.class);
+		this.startService(localIntent);
+		// unregisterReceiver(unlockReceiver);
+		/***** 释放电源锁 *****/
+		if (mwakeLock != null)
+		{
+			mwakeLock.release();
+			mwakeLock = null;
+		}
+		/***** 释放电源锁 *****/
 
+		super.onDestroy();
 	}
 
 	@Override
 	public void onCreate()
 	{
 		super.onCreate();
+		// /**** 屏幕点亮广播 *****/
+		// final IntentFilter filter = new IntentFilter();
+		// filter.addAction(Intent.ACTION_SCREEN_ON);
+		//
+		// registerReceiver(unlockReceiver, filter);
+		// Log.i("AAA", "注册屏幕点亮广播");
+		// /**** 屏幕点亮广播 *****/
+
+		/**** 申请电源锁 *****/
+		if (mwakeLock == null)
+		{
+			PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+			mwakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "BackMonitor");
+
+		} else
+		{
+			mwakeLock.acquire();
+		}
+		/**** 申请电源锁 *****/
 
 		tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
 
@@ -225,7 +266,6 @@ public class BackMonitor extends Service
 
 						if (ExtraUtil.isBigDecimal(String.format("%.5f", Math.log10(Double.valueOf(parts[13])))))
 						{
-
 							RSSNR = String.format("%.0f", 10.0 * Math.log10(Double.valueOf(parts[13])));
 						}
 					} else if (android.os.Build.BRAND.toUpperCase().equals("HONOR"))
@@ -535,9 +575,6 @@ public class BackMonitor extends Service
 			}
 		}, 0, 1000);
 	}
-
-	
-
 
 	private void initLocation()
 	{

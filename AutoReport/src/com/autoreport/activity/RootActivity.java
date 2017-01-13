@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import com.autoreport.adapter.GridPagerViewAdapter;
 import com.autoreport.app.R;
 import com.autoreport.datamodel.ImageInfo;
+import com.autoreport.receiver.UnlockReceiver;
 import com.autoreport.service.BackMonitor;
 import com.autoreport.util.UStats;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -30,10 +32,13 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 public class RootActivity extends Activity
 {
-	ArrayList<ImageInfo> data; // 菜单数据
+	private ArrayList<ImageInfo> data; // 菜单数据
 	private static TextView mynum; // 页码
-	GridView gridView;
+	private	GridView gridView;
 
+	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -41,6 +46,9 @@ public class RootActivity extends Activity
 //		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.root);
 
+		
+		
+		
 		// 检查安卓版本，设置权限
 		try
 		{
