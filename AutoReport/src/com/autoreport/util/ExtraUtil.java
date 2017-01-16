@@ -130,7 +130,7 @@ public class ExtraUtil
 				UsageStatsManager usm = (UsageStatsManager) AutoreportApp.getContext().getSystemService("usagestats");
 				long time = System.currentTimeMillis();
 				//设置  时间段  3600 *1000为1个小时   ，设置5小时
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 18000 * 1000,
+				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 100*3600 * 1000,
 						time);
 				if (appList != null && appList.size() > 0)
 				{
@@ -138,7 +138,7 @@ public class ExtraUtil
 					for (UsageStats usageStats : appList)
 					{
 						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-					}
+					} 
 					if (mySortedMap != null && !mySortedMap.isEmpty())
 					{
 						currentAppPkg = mySortedMap.get(mySortedMap.lastKey()).getPackageName();

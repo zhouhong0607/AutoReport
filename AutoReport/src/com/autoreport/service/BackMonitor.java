@@ -821,7 +821,7 @@ public class BackMonitor extends Service
 						+ signalInfos.get(i).getRxByte() + "," + signalInfos.get(i).getNetType() + ","
 						+ signalInfos.get(i).getPci() + "," + signalInfos.get(i).getCi() + ","
 						+ signalInfos.get(i).getEnodbId() + "," + signalInfos.get(i).getCellId() + ","
-						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + ","
+						+ signalInfos.get(i).getTac() + "," + signalInfos.get(i).getTimeStamp() + "|"
 						+ signalInfos.get(i).getLongitude() + "," + signalInfos.get(i).getLatitude() + ","
 						+ signalInfos.get(i).getAddr() + "|";
 				// if((i+1)!=signalInfos.size())
@@ -832,12 +832,9 @@ public class BackMonitor extends Service
 		params.add(new BasicNameValuePair("excepType", info.getExcepType()));
 		params.add(new BasicNameValuePair("maxIndex", String.valueOf(info.getMaxIndex())));
 		params.add(new BasicNameValuePair("noRxIndex", String.valueOf(info.getNoRxIndex())));
-		// params.add(new BasicNameValuePair("longitude",
-		// signalInfos.get(0).getLongitude()));
-		// params.add(new BasicNameValuePair("latutide",
-		// signalInfos.get(0).getLatitude()));
-		// params.add(new BasicNameValuePair("addr",
-		// signalInfos.get(0).getAddr()));
+//		params.add(new BasicNameValuePair("longitude", signalInfos.get(0).getLongitude()));
+//		params.add(new BasicNameValuePair("latutide", signalInfos.get(0).getLatitude()));
+//		params.add(new BasicNameValuePair("addr", signalInfos.get(0).getAddr()));
 
 		params.add(new BasicNameValuePair("signalInfo", siglist));
 
