@@ -1,0 +1,178 @@
+<!-- ?xml version="1.0" encoding="utf-8"? -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/listbackground" >
+
+    <TextView
+        android:id="@+id/title_name"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/little_margin"
+        
+        
+        android:background="@drawable/bg_textview_title"
+        android:gravity="center"
+        android:text="时间戳"
+        android:textColor="@color/red"
+        android:textSize="20sp" />
+
+    <com.autoreport.view.NoScrollHorizontalScrollView
+        android:id="@+id/sv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         android:layout_marginTop="@dimen/little_margin"
+        layout_marginLeft="@dimen/little_margin"
+        android:layout_toEndOf="@id/title_name"
+        android:background="@drawable/bg_textview_title"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="RSRP"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="RSRQ"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="SINR"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="PCI"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="CI"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="Enodeb_id"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="cell_id"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="TAC"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="网络类型"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="经度"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="纬度"
+                android:textColor="@color/red"
+                android:textSize="20sp" >
+            </TextView>
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:text="地址"
+                android:textColor="@color/red"
+                android:textSize="20sp" >
+            </TextView>
+        </LinearLayout>
+    </com.autoreport.view.NoScrollHorizontalScrollView>
+
+    <ListView
+        android:id="@+id/lv_goodname"
+        android:layout_width="100dp"
+        
+        android:layout_height="match_parent"
+         android:layout_marginTop="@dimen/little_margin"
+        android:layout_below="@id/title_name"
+        android:divider="@null"
+        android:dividerHeight="2dp"
+        android:scrollbars="none" >
+    </ListView>
+
+    <com.autoreport.view.LinkedHorizontalScrollView
+        android:id="@+id/sv_good_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+         android:layout_marginTop="@dimen/little_margin"
+          layout_marginLeft="@dimen/little_margin"
+        android:layout_below="@id/title_name"
+        android:layout_toEndOf="@id/lv_goodname"
+        android:scrollbars="none" >
+
+        <ListView
+            android:id="@+id/lv_good_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="2dp" >
+        </ListView>
+    </com.autoreport.view.LinkedHorizontalScrollView>
+
+</RelativeLayout>

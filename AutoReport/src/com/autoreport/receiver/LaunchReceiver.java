@@ -7,7 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
-
+/**
+ * 开机启动广播接收器
+ * @author 周宏
+ *
+ */
 public class LaunchReceiver extends BroadcastReceiver
 {
 	@Override
@@ -24,6 +28,7 @@ public class LaunchReceiver extends BroadcastReceiver
 																						// “AutoReport”
 		DatabaseOperator databaseOperator = new DatabaseOperator(infoDatabase);
 		databaseOperator.deleteFromInfo();// 每次开机 删除数据库里面数据
+		databaseOperator.deleteFromSignalInfo();
 		// Toast.makeText(context, "数据删除成功", Toast.LENGTH_SHORT).show();
 		// 开机启动
 		// Intent intent1=new Intent(context,MainActivity.class);

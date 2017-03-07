@@ -13,10 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.autoreport.datastructure.MyApp;
+import com.autoreport.datamodel.AutoreportApp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -31,8 +32,12 @@ import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-/****************提取工具类，提取相关参数**********************/
 
+/**
+ * 提取工具类
+ * @author 周宏
+ *
+ */
 public class ExtraUtil 
 {
 	/****************提取本机IP地址Begin**********************/
@@ -71,7 +76,7 @@ public class ExtraUtil
 	/****************提取手机内存使用率Begin**********************/
 	public static final  String getMemRate()
 	{
-		ActivityManager am = (ActivityManager)MyApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
+		ActivityManager am = (ActivityManager)AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
 		am.getMemoryInfo(mi);
 		return String.valueOf((mi.totalMem - mi.availMem) * 100 / mi.totalMem) + "%";// 内存使用率
@@ -116,16 +121,16 @@ public class ExtraUtil
 	/*************** 获取当前程序包名 Begin**********************************/
 	public static final String getCurPackname()
 	{
-		
-		String currentAppPkg = null;
+		String currentAppPkg = "testPKG";
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			if (!UStats.getUsageStatsList(MyApp.getContext()).isEmpty())
+			if (!UStats.getUsageStatsList(AutoreportApp.getContext()).isEmpty())
 			{
 				@SuppressWarnings("ResourceType")
-				UsageStatsManager usm = (UsageStatsManager) MyApp.getContext().getSystemService("usagestats");
+				UsageStatsManager usm = (UsageStatsManager) AutoreportApp.getContext().getSystemService("usagestats");
 				long time = System.currentTimeMillis();
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000,
+				//设置  时间段  3600 *1000为1个小时   ，设置5小时
+				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 100*3600 * 1000,
 						time);
 				if (appList != null && appList.size() > 0)
 				{
@@ -133,7 +138,7 @@ public class ExtraUtil
 					for (UsageStats usageStats : appList)
 					{
 						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-					}
+					} 
 					if (mySortedMap != null && !mySortedMap.isEmpty())
 					{
 						currentAppPkg = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
@@ -142,7 +147,7 @@ public class ExtraUtil
 			}
 		} else
 		{
-			ActivityManager am=(ActivityManager)MyApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
+			ActivityManager am=(ActivityManager)AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
 			RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
 			currentAppPkg = info1.topActivity.getPackageName();
 		}
@@ -161,7 +166,7 @@ public class ExtraUtil
 		{
 			try
 			{
-				pkgmanager = (PackageManager) MyApp.getContext().getPackageManager();
+				pkgmanager = (PackageManager) AutoreportApp.getContext().getPackageManager();
 				appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
 				return  appinfo.uid;
 			} catch (PackageManager.NameNotFoundException e)
@@ -179,13 +184,13 @@ public class ExtraUtil
 	{
 		ApplicationInfo appinfo = null;
 		PackageManager pkgmanager = null;
-		String appname = "";
+		String appname = "testAPP";
 	
 		if (pkgname != null)
 		{
 			try
 			{
-				pkgmanager = (PackageManager) MyApp.getContext().getPackageManager();
+				pkgmanager = (PackageManager) AutoreportApp.getContext().getPackageManager();
 				appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
 				
 			} catch (PackageManager.NameNotFoundException e)
@@ -194,7 +199,8 @@ public class ExtraUtil
 				appinfo = null;
 				// TODO: handle exception
 			}
-
+			
+			if(appinfo!=null)
 			appname = (String) pkgmanager.getApplicationLabel(appinfo);
 			// Log.i("AAA", appname);
 		}
@@ -210,7 +216,7 @@ public class ExtraUtil
 		String pid="";
 		int pidNum=0;
 		// 获取所有正在运行的app
-		ActivityManager am=(ActivityManager)MyApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
+		ActivityManager am=(ActivityManager)AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
 		List<RunningAppProcessInfo> appProcesses = am.getRunningAppProcesses();
 		// 遍历app，获取应用名称或者包名
 		for (RunningAppProcessInfo appProcess : appProcesses)

@@ -1,48 +1,28 @@
 package com.autoreport.activity;
-
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
+/**
+ * 显示详细信息（弃用）
+ */
 import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-
 import com.autoreport.app.R;
-import com.autoreport.datastructure.Info;
-import com.autoreport.datastructure.MyApp;
+import com.autoreport.database.DatabaseOperator;
+import com.autoreport.database.InfoDatabase;
+import com.autoreport.datamodel.AutoreportApp;
+import com.autoreport.datamodel.BaseInfo;
+import com.autoreport.datamodel.SignalInfo;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
+
 import android.text.TextPaint;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class SecActivity extends Activity
 {
@@ -61,6 +41,13 @@ public class SecActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sec);
+		
+		//读取数据库里面的数据
+		InfoDatabase infoDatabase=new InfoDatabase(this, "AutoReprt.db", null, 1);//创建数据库 “AutoReport”
+		DatabaseOperator databaseOperator=new DatabaseOperator(infoDatabase);
+		AutoreportApp.infolist=databaseOperator.queryFromInfo();//查询数据库里面所有数据
+		databaseOperator.CloseDatabase();
+		
 		mtextview1 = (TextView) findViewById(R.id.textview1);
 		mtextview2 = (TextView) findViewById(R.id.textview2);
 		mtextview3 = (TextView) findViewById(R.id.textview3);
@@ -88,7 +75,7 @@ public class SecActivity extends Activity
 				{
 					public void run()
 					{
-//						upload_info(MyApp.infolist.get(position));
+						// upload_info(MyApp.infolist.get(position));
 					}
 
 				}.start();
@@ -96,127 +83,96 @@ public class SecActivity extends Activity
 			}
 		});
 
-		Info info = MyApp.infolist.get(position);
+		BaseInfo info = AutoreportApp.infolist.get(position);
 		// 25项信息
 		// 手机基本信息
 		mtextview1.append("手机基本信息:");
-		mtextview2.append("品牌:          " + info.getBrand() + "\n");
-		mtextview2.append("型号:          " + info.getType() + "\n");
-		mtextview2.append("版本:           " + info.getVersion() + "\n");
-		mtextview2.append("IMEI:          " + info.getIMEI() + "\n");
-		mtextview2.append("IMSI:          " + info.getIMSI() + "\n");
-		mtextview2.append("本机IP地址:  " + info.getLocalIp() + "\n");
-		mtextview2.append("内存占用率:  " + info.getMemRate() + "\n");
-		mtextview2.append("CPU使用率:  " + info.getCpuRate() + "\n");
+		mtextview2.append("手机品牌:            " + info.getBrand() + "\n");
+		mtextview2.append("手机型号:            " + info.getType() + "\n");
+		mtextview2.append("Android版本:      " + info.getVersion() + "\n");
+		mtextview2.append("本机IP地址:        " + info.getLocalIp() + "\n");
+		mtextview2.append("IMEI:                    " + info.getIMEI() + "\n");
+		mtextview2.append("IMSI:                    " + info.getIMSI() + "\n");
+		mtextview2.append("内存占用率:        " + info.getMemRate() + "\n");
+		mtextview2.append("CPU使用率:         " + info.getCpuRate() + "\n");
+		mtextview2.append("运营商:                " + info.getCorporation() + "\n");
+
+		// 应用业务信息
+
+		mtextview3.append("应用进程信息:");
+		mtextview4.append("应用进程名称:   " + info.getAppName() + "\n");
+		mtextview4.append("异常时间:           " + info.getExcepTime() + "\n");
+		mtextview4.append("上报次数:           " + info.getUploadNum() + "\n");
+		mtextview4.append("启动时间:           " + info.getLaunTime() + "\n");
+		mtextview4.append("退出时间:           " + info.getExitTime() + "\n");
+		mtextview4.append("UID:                     " + info.getUid() + "\n");
+		mtextview4.append("PID:                     " + info.getPid() + "\n");
+		mtextview4.append("进程数:               " + info.getPidNumber() + "\n");
+		mtextview4.append("GID:                     " + info.getGid() + "\n");
+
+		mtextview4.append("判决依据:                     " + info.getExcepType() + "\n");
+		
+		// mtextview4.append("上报时间: " + info.getUploadTime() + "\n");
+		// mtextview4.append("运行时间: " + info.getUseTime() + "\n");
 
 		// 无线环境信息
 
-		mtextview3.append("无线环境信息:");
+		mtextview5.append("业务流量与无线环境信息:\n");
+		mtextview5.append("(时间戳，发送字节量，接收字节量，RSRP，RSRQ，SINR，PCI，CI，Enodeb_id，cell_id，TAC，网络类型，经度，纬度，地址)");
+		// mtextview6.append("运营商: " + info.getCorporation() + "\n");
+		// mtextview6.append("LAC_GSM: " + info.getLAC_GSM() + "\n");
+		// mtextview6.append("Cell-ID_GSM: " + info.getCell_Id_GSM() + "\n\n");
 
-		mtextview4.append("运营商:  " + info.getCorporation() + "\n");
-		mtextview4.append("网络类型:  " + info.getNetType() + "\n");
-		mtextview4.append("LAC_GSM:  " + info.getLAC_GSM() + "\n");
-		mtextview4.append("Cell-ID_GSM:  " + info.getCell_Id_GSM() + "\n");
+		 infoDatabase = new InfoDatabase(this, "AutoReprt.db", null, 1);// 创建数据库
+																					// //
+																					// “AutoReport”
+		 databaseOperator = new DatabaseOperator(infoDatabase);
+		List<SignalInfo> signalInfos = databaseOperator.queryFromSignalInfoById(info.getId());
+
+		databaseOperator.CloseDatabase();
+
 		
-		mtextview4.append("PCI:  " + info.getPCI() + "\n");
-		mtextview4.append("CI:  " + info.getCI() + "\n");
-		mtextview4.append("ENODBID:  " + info.getENODBID() + "\n");
-		mtextview4.append("CELLID:  " + info.getCELLID() + "\n");
-		mtextview4.append("TAC:  " + info.getTAC() + "\n");
 		
 		
+		
+		
+		String siglist = "";
+		if (signalInfos.size() != 0)
+		{
+			//标注流量最大值和未通过通信测试点
+			int maxIndex=info.getMaxIndex();
+			int noRxIndex=info.getNoRxIndex();
+			if(maxIndex>=0) 
+			{
+				String value=signalInfos.get(maxIndex).getRxByte();
+				signalInfos.get(maxIndex).setRxByte(value+"(最大值)");
+				
+			}
+			if(noRxIndex>=0)
+			{
+				String value=signalInfos.get(noRxIndex).getRxByte();
+				signalInfos.get(noRxIndex).setRxByte(value+"(未通过通信测试)");
+			}
+			
+			
+			for (int i = 0; i < signalInfos.size(); i++)
+			{
+				siglist += signalInfos.get(i).getTimeStamp() + ", " + signalInfos.get(i).getTxByte() + ", "
+						+ signalInfos.get(i).getRxByte() + ", " + signalInfos.get(i).getRsrp() + ", "
+						+ signalInfos.get(i).getRsrq() + ", " + signalInfos.get(i).getRssinr() + ", "
+						+ signalInfos.get(i).getPci() + ", " + signalInfos.get(i).getCi() + ", "
+						+ signalInfos.get(i).getEnodbId() + ", " + signalInfos.get(i).getCellId() + ", "
+						+ signalInfos.get(i).getTac() + ", " + signalInfos.get(i).getNetType() + ", "
+						+ signalInfos.get(i).getLongitude() + ", " + signalInfos.get(i).getLatitude() + ", "
+						+ signalInfos.get(i).getAddr() + "\n\n";
+				// if((i+1)!=signalInfos.size())
+				// siglist+= "|";
 
-		mtextview4.append("RSRP:  " + info.getRSRP() + "\n");
-		mtextview4.append("RSRQ:  " + info.getRSRQ() + "\n");
-//		mtextview4.append("RSSI:  " + info.getRSSI() + "\n");
-		mtextview4.append("SNR:  " + info.getRSSNR() + "\n");
-		// 应用业务信息
+			}
 
-		mtextview5.append("应用业务信息:");
+		}
 
-		mtextview6.append("启动时间:  " + info.getLaunTime() + "\n");
-		mtextview6.append("异常时间:  " + info.getExcepTime() + "\n");
-		mtextview6.append("上报时间:  " + info.getUploadTime() + "\n");
-		mtextview6.append("上报次数:  " + info.getUploadNum() + "\n");
-		mtextview6.append("退出时间:  " + info.getExitTime() + "\n");
-		mtextview6.append("运行时间:  " + info.getUseTime() + "\n");
-		mtextview6.append("应用名称:  " + info.getAppName() + "\n");
-		mtextview6.append("UID:  " + info.getUid() + "\n");
-		mtextview6.append("PID:  " + info.getPid() + "\n");
-		mtextview6.append("进程数量:  " + info.getPidNumber() + "\n");
-		mtextview6.append("GID:  " + info.getGid() + "\n");
-		mtextview6.append("发送字节量:  " + info.getTxByte() + "\n");
-		mtextview6.append("接收字节量:  " + info.getRxByte() + "\n");
-
+		mtextview6.append(siglist);
 	}
-
-//	public void upload_info(Info info)
-//	{
-//
-//		String urlStr = "http://www.mengqi.win/LoginServlet";
-//		HttpPost request = new HttpPost(urlStr);
-//		BasicHttpParams httpParams = new BasicHttpParams();
-//		// 设置请求超时
-//		int timeoutConnection = 2 * 1000;
-//		HttpConnectionParams.setConnectionTimeout(httpParams, timeoutConnection);
-//		// 设置响应超时
-//		int timeoutSocket = 2 * 1000;
-//		HttpConnectionParams.setSoTimeout(httpParams, timeoutSocket);
-//
-//		List<NameValuePair> params = new ArrayList<NameValuePair>();
-//
-//		// 上传信息加入
-//		params.add(new BasicNameValuePair("launtime", info.gettime()));
-//		params.add(new BasicNameValuePair("exittime", info.getextime()));
-//		params.add(new BasicNameValuePair("usetime", info.getusetime()));
-//		params.add(new BasicNameValuePair("brand", info.getbrand()));
-//		params.add(new BasicNameValuePair("type", info.gettype()));
-//		params.add(new BasicNameValuePair("version", info.getversion()));
-//		params.add(new BasicNameValuePair("IMEI", info.getIMEI()));
-//		params.add(new BasicNameValuePair("IMSI", info.getIMSI()));
-//		params.add(new BasicNameValuePair("corporation", info.getcorporation()));
-//		params.add(new BasicNameValuePair("LAC", info.getLAC()));
-//		params.add(new BasicNameValuePair("Cell_Id", info.getCell_Id()));
-//		params.add(new BasicNameValuePair("RSRP", info.getRSRP()));
-//		params.add(new BasicNameValuePair("RSSI", info.getRSSI()));
-//		params.add(new BasicNameValuePair("RSRQ", info.getRSRQ()));
-//		params.add(new BasicNameValuePair("cpuRate", info.getcpuRate()));
-//		params.add(new BasicNameValuePair("localIp", info.getlocalIp()));
-//		params.add(new BasicNameValuePair("AppName", info.getAppName()));
-//		params.add(new BasicNameValuePair("uid", info.getuid()));
-//		params.add(new BasicNameValuePair("pid", info.getpid()));
-//		params.add(new BasicNameValuePair("gid", info.getgid()));
-//		params.add(new BasicNameValuePair("pidNumber", info.getpidNumber()));
-//		params.add(new BasicNameValuePair("MemRate", info.getMemRate()));
-//		params.add(new BasicNameValuePair("TxByte", info.getTxByte()));
-//		params.add(new BasicNameValuePair("RxByte", info.getRxByte()));
-//		params.add(new BasicNameValuePair("NetType", info.getNetType()));
-//		params.add(new BasicNameValuePair("RSSNR", info.getSNR()));
-//		params.add(new BasicNameValuePair("Flag", info.getFlag()));
-//
-//		try
-//		{
-//			request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-//			HttpClient httpclient = new DefaultHttpClient(httpParams);
-//
-//			HttpResponse response = httpclient.execute(request);
-//
-//			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
-//			{
-//				Log.i("AAA", "上传成功");
-//				// Toast.makeText(this, "上传成功", Toast.LENGTH_LONG).show();
-//			} else
-//			{
-//				Log.i("AAA", "上传失败");
-//				// Toast.makeText(this, "上传失败", Toast.LENGTH_LONG).show();
-//			}
-//		} catch (Exception e)
-//		{
-//			// TODO: handle exception
-//			e.printStackTrace();
-//			Log.i("AAA", "上传失败");
-//			// Toast.makeText(this, "上传失败", Toast.LENGTH_LONG).show();
-//		}
-//	}
 
 }
