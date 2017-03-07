@@ -32,15 +32,15 @@ import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-
 /**
  * 提取工具类
+ * 
  * @author 周宏
  *
  */
-public class ExtraUtil 
+public class ExtraUtil
 {
-	/****************提取本机IP地址Begin**********************/
+	/**************** 提取本机IP地址Begin **********************/
 	public static final String getlocalIP()
 	{
 		try
@@ -69,21 +69,21 @@ public class ExtraUtil
 		return null;
 
 	}
-	/****************提取本机IP地址End**********************/
-	
-	
-	
-	/****************提取手机内存使用率Begin**********************/
-	public static final  String getMemRate()
+
+	/**************** 提取本机IP地址End **********************/
+
+	/**************** 提取手机内存使用率Begin **********************/
+	public static final String getMemRate()
 	{
-		ActivityManager am = (ActivityManager)AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
+		ActivityManager am = (ActivityManager) AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
 		am.getMemoryInfo(mi);
 		return String.valueOf((mi.totalMem - mi.availMem) * 100 / mi.totalMem) + "%";// 内存使用率
 	}
-	/****************提取手机内存使用率End**********************/
 
-	/****************提取手机CPU使用率Begin**********************/
+	/**************** 提取手机内存使用率End **********************/
+
+	/**************** 提取手机CPU使用率Begin **********************/
 	public static final String getCpuRate()
 	{ // 获取系统总CPU使用时间
 		String[] cpuInfos = null;
@@ -104,11 +104,10 @@ public class ExtraUtil
 
 		return String.valueOf(usedCpu * 100 / totalCpu) + "%";
 	}
-	/****************提取手机CPU使用率End**********************/
-	
-	
-	
-	/****************提取当前时间Begin***********************/
+
+	/**************** 提取手机CPU使用率End **********************/
+
+	/**************** 提取当前时间Begin ***********************/
 	public static final String getCurTime()
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -116,49 +115,47 @@ public class ExtraUtil
 		String str = formatter.format(curDate);
 		return str;
 	}
-	/****************提取当前时间End***********************/
-	
-	/*************** 获取当前程序包名 Begin**********************************/
+
+	/**************** 提取当前时间End ***********************/
+
+	/*************** 获取当前程序包名 Begin **********************************/
 	public static final String getCurPackname()
 	{
 		String currentAppPkg = "testPKG";
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
 		{
-			if (!UStats.getUsageStatsList(AutoreportApp.getContext()).isEmpty())
+			@SuppressWarnings("ResourceType")
+			UsageStatsManager usm = (UsageStatsManager) AutoreportApp.getContext().getSystemService("usagestats");
+			long time = System.currentTimeMillis();
+			// 设置 时间段 3600 *1000为1个小时 ，设置100小时
+			List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 100 * 3600 * 1000,
+					time);
+			if (appList != null && appList.size() > 0)
 			{
-				@SuppressWarnings("ResourceType")
-				UsageStatsManager usm = (UsageStatsManager) AutoreportApp.getContext().getSystemService("usagestats");
-				long time = System.currentTimeMillis();
-				//设置  时间段  3600 *1000为1个小时   ，设置5小时
-				List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 100*3600 * 1000,
-						time);
-				if (appList != null && appList.size() > 0)
+				UsageStats uStats = appList.get(0);
+				for (UsageStats usageStats : appList)
 				{
-					SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-					for (UsageStats usageStats : appList)
-					{
-						mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
-					} 
-					if (mySortedMap != null && !mySortedMap.isEmpty())
-					{
-						currentAppPkg = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-					}
+					uStats = usageStats.getLastTimeUsed() > uStats.getLastTimeUsed() ? usageStats : uStats;
+
 				}
+				currentAppPkg = uStats.getPackageName();
 			}
 		} else
 		{
-			ActivityManager am=(ActivityManager)AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
+			ActivityManager am = (ActivityManager) AutoreportApp.getContext()
+					.getSystemService(Activity.ACTIVITY_SERVICE);
 			RunningTaskInfo info1 = am.getRunningTasks(1).get(0);
 			currentAppPkg = info1.topActivity.getPackageName();
 		}
 		// Log.i("TAG", "Current App in foreground is: " + currentApp);
 		return currentAppPkg;
 	}
+
 	/*************** 获取当前程序包名End **********************************/
-	
-	/****************提取UidBegin***********************/ 
-	
-	public static final int getUid(String pkgname) //根据报名提取uid
+
+	/**************** 提取UidBegin ***********************/
+
+	public static final int getUid(String pkgname) // 根据报名提取uid
 	{
 		ApplicationInfo appinfo = null;
 		PackageManager pkgmanager = null;
@@ -168,7 +165,7 @@ public class ExtraUtil
 			{
 				pkgmanager = (PackageManager) AutoreportApp.getContext().getPackageManager();
 				appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
-				return  appinfo.uid;
+				return appinfo.uid;
 			} catch (PackageManager.NameNotFoundException e)
 			{
 				// TODO: handle exception
@@ -177,46 +174,48 @@ public class ExtraUtil
 		}
 		return 0;
 	}
-	/****************提取UidEnd***********************/
-	
+
+	/**************** 提取UidEnd ***********************/
+
 	/*************** 获取当前应用名称Begin **********************************/
-	public static final String getAppName(String pkgname)//根据包名提取应用程序名称
+	public static final String getAppName(String pkgname)// 根据包名提取应用程序名称
 	{
 		ApplicationInfo appinfo = null;
 		PackageManager pkgmanager = null;
 		String appname = "testAPP";
-	
+
 		if (pkgname != null)
 		{
 			try
 			{
 				pkgmanager = (PackageManager) AutoreportApp.getContext().getPackageManager();
 				appinfo = pkgmanager.getApplicationInfo(pkgname, 0);
-				
+
 			} catch (PackageManager.NameNotFoundException e)
 
 			{
 				appinfo = null;
 				// TODO: handle exception
 			}
-			
-			if(appinfo!=null)
-			appname = (String) pkgmanager.getApplicationLabel(appinfo);
+
+			if (appinfo != null)
+				appname = (String) pkgmanager.getApplicationLabel(appinfo);
 			// Log.i("AAA", appname);
 		}
 		return appname;
 	}
-	
+
 	/*************** 获取当前应用名称End **********************************/
-	
+
 	/*************** 提取pid信息Begin **********************************/
-	public static final String[] getPidInfo(int uid)  //根据uid提取pid ,返回容器list,第一项是pid信息,第二项是pidnum,
+	public static final String[] getPidInfo(int uid) // 根据uid提取pid
+														// ,返回容器list,第一项是pid信息,第二项是pidnum,
 	{
-		String[] pidInfo=new String[2];
-		String pid="";
-		int pidNum=0;
+		String[] pidInfo = new String[2];
+		String pid = "";
+		int pidNum = 0;
 		// 获取所有正在运行的app
-		ActivityManager am=(ActivityManager)AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
+		ActivityManager am = (ActivityManager) AutoreportApp.getContext().getSystemService(Activity.ACTIVITY_SERVICE);
 		List<RunningAppProcessInfo> appProcesses = am.getRunningAppProcesses();
 		// 遍历app，获取应用名称或者包名
 		for (RunningAppProcessInfo appProcess : appProcesses)
@@ -227,7 +226,7 @@ public class ExtraUtil
 				{
 					pid += String.valueOf(appProcess.pid) + ",";
 					pidNum++;
-					
+
 				} else
 				{
 					pid += String.valueOf(appProcess.pid);
@@ -235,14 +234,13 @@ public class ExtraUtil
 				}
 			}
 		}
-		pidInfo[0]=pid;
-		pidInfo[1]=String.valueOf(pidNum);
+		pidInfo[0] = pid;
+		pidInfo[1] = String.valueOf(pidNum);
 		return pidInfo;
 	}
+
 	/*************** 提取PID信息End **********************************/
-	
-	
-	
+
 	/*************** 获取手机运营商名字Begin ************************/
 	public static final String getProvidersName(String IMSI)
 	{
@@ -262,26 +260,13 @@ public class ExtraUtil
 		}
 		return ProvidersName;
 	}
+
 	/*************** 获取手机运营商名字End ************************/
-	
-	
-	
-	
-	
-	
-	
-	
-	/****************判断是否是小数Begin**********************/
-	public static final  boolean isBigDecimal(String str)
+
+	/**************** 判断是否是小数Begin **********************/
+	public static final boolean isBigDecimal(String str)
 	{
-		Boolean strResult = str.matches("-?[0-9]+.*[0-9]*");
-		if (strResult == true)
-		{
-			return true;
-		} else
-		{
-			return false;
-		}
+		return str.matches("-?[0-9]+.*[0-9]*");
 	}
-	/****************判断是否是小数End**********************/
+	/**************** 判断是否是小数End **********************/
 }

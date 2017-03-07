@@ -136,11 +136,11 @@ public class GridPagerViewAdapter extends PagerAdapter
 
 				case 2:
 
-					Intent intent2 = new Intent(context, SecActivity.class);
-					intent2.putExtra("position", 0);
-					// intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-					context.startActivity(intent2);
+//					Intent intent2 = new Intent(context, SecActivity.class);
+//					intent2.putExtra("position", 0);
+//					// intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//					context.startActivity(intent2);
 					Toast.makeText(context, "功能3", Toast.LENGTH_SHORT).show();
 					break;
 				case 3:
@@ -170,8 +170,13 @@ public class GridPagerViewAdapter extends PagerAdapter
 				case 4:
 					Toast.makeText(context, "功能5", Toast.LENGTH_SHORT).show();
 					break;
+				case 5:
+					Toast.makeText(context, "功能6", Toast.LENGTH_SHORT).show();
+					break;
+				case 6:
+					Toast.makeText(context, "功能7", Toast.LENGTH_SHORT).show();
+					break;
 				case 7:
-					Toast.makeText(context, "退出", Toast.LENGTH_SHORT).show();
 					System.exit(0);
 					break;
 				default:

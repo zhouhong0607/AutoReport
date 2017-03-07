@@ -440,100 +440,100 @@ public class BackMonitor extends Service
 
 						exitQue.insert(signalInfo);
 
-						// if (count == 30)// 30秒进行第一个 判断
-						// {
-						// // rxqueue_laun.calculate_expectation();// 计算期望rx
-						// // rxqueue_laun.calculate_variance();// 计算方差tx
-						// //
-						// // txqueue_laun.calculate_expectation();// 计算期望rx
-						// // txqueue_laun.calculate_variance();// 计算方差tx
-						//
-						// if (launQue.get_sum() > 0 && launQue.get_maxValue() <
-						// 10000)// 异常判决
-						// {
-						//
-						// Log.i("AAA", "可疑异常出现");
-						// Log.i("AAA", "开始http测试");
-						// if (!upload_data(new BaseInfo()))// http测试不成功
-						// {
-						// excepTime1 = ExtraUtil.getCurTime();
-						// Log.i("AAA", "第一次异常时间" + excepTime1);
-						// isAbnormal = true;
-						// Log.i("AAA", "异常出现");
-						// } else
-						// {
-						// Log.i("AAA", "不是异常");
-						//
-						// }
-						//
-						// } else
-						// {
-						// Log.i("AAA", "初次判决不是异常");
-						// }
-						// }
+						 if (count == 30)// 30秒进行第一个 判断
+						 {
+						 // rxqueue_laun.calculate_expectation();// 计算期望rx
+						 // rxqueue_laun.calculate_variance();// 计算方差tx
+						 //
+						 // txqueue_laun.calculate_expectation();// 计算期望rx
+						 // txqueue_laun.calculate_variance();// 计算方差tx
+						
+						 if (launQue.get_sum() > 0 && launQue.get_maxValue() <
+						 10000)// 异常判决
+						 {
+						
+						 Log.i("AAA", "可疑异常出现");
+						 Log.i("AAA", "开始http测试");
+						 if (!upload_data(new BaseInfo()))// http测试不成功
+						 {
+						 excepTime1 = ExtraUtil.getCurTime();
+						 Log.i("AAA", "第一次异常时间" + excepTime1);
+						 isAbnormal = true;
+						 Log.i("AAA", "异常出现");
+						 } else
+						 {
+						 Log.i("AAA", "不是异常");
+						
+						 }
+						
+						 } else
+						 {
+						 Log.i("AAA", "初次判决不是异常");
+						 }
+						 }
 
 					} else if (browserQuit)// 浏览器退出时候进行判断，并清空两个队列，以及一些全局变量
 					{
 
-						// if (count > 4 && count < 30)// 5~30秒退出的情况
-						// {
-						// // rxqueue_laun.calculate_expectation();// 计算期望rx
-						// // rxqueue_laun.calculate_variance();// 计算方差tx
-						// //
-						// // txqueue_laun.calculate_expectation();// 计算期望rx
-						// // txqueue_laun.calculate_variance();// 计算方差tx
-						//
-						// Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
-						//
-						// // launQue.get_sum() > 0 &&
-						// if (launQue.get_maxValue() < 10000)// 异常判决
-						// {
-						// excepTime1 = ExtraUtil.getCurTime();
-						// Log.i("AAA", "第一次异常时间" + excepTime1);
-						// isAbnormal = true;
-						// Log.i("AAA", "30秒内异常出现");
-						//
-						// } else
-						// {
-						// Log.i("AAA", "30秒内判决不是异常");
-						// }
-						// }
-						//
-						// if (count > 35)// 进行第二次 测试
-						// {
-						// if (exitQue.get_sum() > 0 && (exitQue.get_maxValue()
-						// < 10000 || exitQue.judege()))
-						// {
-						// Log.i("AAA", "开始http测试");
-						// if (!upload_data(new BaseInfo()))// http测试不成功
-						// {
-						// excepTime2 = ExtraUtil.getCurTime();
-						// Log.i("AAA", "第二次异常时间" + excepTime2);
-						// isAbnormal2 = true;
-						// Log.i("AAA", "第二次异常出现");
-						// } else
-						// {
-						// Log.i("AAA", "第二次不是异常");
-						//
-						// }
-						// }
-						// if (isAbnormal2)
-						// {
-						// if (exitQue.judege())
-						// {
-						// excepType = 3;
-						// } else
-						// {
-						// excepType = 2;
-						// }
-						// recordInfo(false);// 参数true 为 第二次 异常，
-						// }
-						// }
-						// if (isAbnormal)// 第一次判决异常
-						// {
-						// excepType = 1;
-						// recordInfo(true);// 参数true为 第一次 异常，
-						// }
+						 if (count > 4 && count < 30)// 5~30秒退出的情况
+						 {
+						 // rxqueue_laun.calculate_expectation();// 计算期望rx
+						 // rxqueue_laun.calculate_variance();// 计算方差tx
+						 //
+						 // txqueue_laun.calculate_expectation();// 计算期望rx
+						 // txqueue_laun.calculate_variance();// 计算方差tx
+						
+						 Log.i("AAA", "30秒内最大值" + launQue.get_maxValue());
+						
+						 // launQue.get_sum() > 0 &&
+						 if (launQue.get_maxValue() < 10000)// 异常判决
+						 {
+						 excepTime1 = ExtraUtil.getCurTime();
+						 Log.i("AAA", "第一次异常时间" + excepTime1);
+						 isAbnormal = true;
+						 Log.i("AAA", "30秒内异常出现");
+						
+						 } else
+						 {
+						 Log.i("AAA", "30秒内判决不是异常");
+						 }
+						 }
+						
+						 if (count > 35)// 进行第二次 测试
+						 {
+						 if (exitQue.get_sum() > 0 && (exitQue.get_maxValue()
+						 < 10000 || exitQue.judege()))
+						 {
+						 Log.i("AAA", "开始http测试");
+						 if (!upload_data(new BaseInfo()))// http测试不成功
+						 {
+						 excepTime2 = ExtraUtil.getCurTime();
+						 Log.i("AAA", "第二次异常时间" + excepTime2);
+						 isAbnormal2 = true;
+						 Log.i("AAA", "第二次异常出现");
+						 } else
+						 {
+						 Log.i("AAA", "第二次不是异常");
+						
+						 }
+						 }
+						 if (isAbnormal2)
+						 {
+						 if (exitQue.judege())
+						 {
+						 excepType = 3;
+						 } else
+						 {
+						 excepType = 2;
+						 }
+						 recordInfo(false);// 参数true 为 第二次 异常，
+						 }
+						 }
+						 if (isAbnormal)// 第一次判决异常
+						 {
+						 excepType = 1;
+						 recordInfo(true);// 参数true为 第一次 异常，
+						 }
 
 						// 数据清零
 						rx1 = 0;
